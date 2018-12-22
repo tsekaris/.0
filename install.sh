@@ -7,7 +7,8 @@ pkg install stow
 pkg install ranger
 pkg install curl
 
-pkg install vim vim-python
+pkg install vim 
+pkg install vim-python
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 stow --target=$HOME vim
 vim +PluginInstall +qall
