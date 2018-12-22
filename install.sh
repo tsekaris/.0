@@ -13,5 +13,5 @@ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 stow --target=$HOME vim
 vim +PluginInstall +qall
 
-pkg install zsh
-bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
+#pkg install zsh
+#bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
