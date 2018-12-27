@@ -6,6 +6,7 @@ pkg install git
 pkg install stow
 pkg install ranger
 pkg install curl
+pkg install nodejs
 
 pkg install vim 
 pkg install vim-python
