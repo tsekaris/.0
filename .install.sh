@@ -13,7 +13,6 @@ pkg install htop -y
 
 # ssh server
 pkg install openssh -y
-passwd # Για να ορίσω κωδικό. Από termux.
 
 # vpn
 pkg install wireguard-tools -y
@@ -40,3 +39,6 @@ pkg install mpv -y # Για radio.
 
 #pkg install zsh -y
 #bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
+
+stow --target=$HOME .dotfiles
+vim +PluginInstall +qall
