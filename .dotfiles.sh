@@ -1,6 +1,6 @@
 #!/bin/sh
 
-stow --target=$HOME --dir=.dotfiles/vim 
-vim +PluginInstall +qall
+cd .dotfiles
+stow --target=$HOME vim
+stow --target=$HOME termux
 
-stow --target=$HOME --dir=dotfiles/termux 
