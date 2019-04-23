@@ -44,5 +44,6 @@ pkg install mpv -y # Για radio.
 # dotfiles
 cd .dotfiles
 stow --target=$HOME vim
-vim +PluginInstall +qall
 stow --target=$HOME termux
+
+vim +PluginInstall +qall
