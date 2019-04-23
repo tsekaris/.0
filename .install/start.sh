@@ -40,9 +40,3 @@ pkg install mpv -y # Για radio.
 #pkg install zsh -y
 #bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
 
-# dotfiles
-cd .dotfiles
-stow --target=$HOME vim
-stow --target=$HOME termux
-
-vim +PluginInstall +qall
