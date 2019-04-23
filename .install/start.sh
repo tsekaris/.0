@@ -1,7 +1,6 @@
 #!/bin/sh
 
-
-pkg upgrade
+pkg upgrade -y
 termux-setup-storage # Για να βλέπω τους φακέλους του κινητού
 
 # system.
