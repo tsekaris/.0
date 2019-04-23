@@ -25,7 +25,8 @@ pkg install ranger -y
 pkg install nnn -y
 
 # Text editor.
-pkg install vim-python # Για να μπορώ να εγκαταστήσω plugins
+pkg install vim-python -y
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 
 # Coding.
 pkg install nodejs -y
@@ -39,3 +40,9 @@ pkg install mpv -y # Για radio.
 
 #pkg install zsh -y
 #bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
+
+# dotfiles
+cd .dotfiles
+stow --target=$HOME vim
+vim +PluginInstall +qall
+stow --target=$HOME termux
