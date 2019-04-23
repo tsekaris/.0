@@ -8,8 +8,7 @@ pkg install ranger
 pkg install curl
 pkg install nodejs
 
-pkg install vim 
-pkg install vim-python
+pkg install vim-python # Για να μπορώ να εγκαταστήσω pluguns
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 stow --target=$HOME vim
 vim +PluginInstall +qall
