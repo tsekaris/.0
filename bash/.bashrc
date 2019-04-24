@@ -60,8 +60,22 @@ listener 8000
 protocol websockets
 http_dir /data/data/com.termux/files/home/server
 EOF
-
-
-
     mosquitto -c ./.mosquitto.conf -v
+}
+
+pc-git-pull () {
+    git pull
+}
+
+pc-git-push () {
+    echo "Comment:"
+    read comment
+    git add .
+    git commit -m "$comment"
+    git push
+}
+
+pc-git-user () {
+    git config user.name "tsekaris"
+    git config user.email "tsemix@gmail.com"
 }
