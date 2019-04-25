@@ -45,3 +45,4 @@ stow --target=$HOME vim
 vim +PluginInstall +qall
 
 stow --target=$HOME termux
+stow --target=$HOME scripts

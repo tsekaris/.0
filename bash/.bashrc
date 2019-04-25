@@ -12,3 +12,6 @@ ranger() {
         exit
     fi
 }
+
+# fzf dropdown list and not dropup
+export FZF_DEFAULT_OPTS="--layout=reverse"
