@@ -15,5 +15,3 @@ pkg install git
 git clone https://github.com/tsekaris/termux
 sh ~/termux/install.sh
 ```
-
-
