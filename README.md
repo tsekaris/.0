@@ -18,5 +18,6 @@ sh ~/.0/scripts/system/install.sh
 ## Με μία εντολή.
 
 ```
-wget -O https://raw.githubusercontent.com/tsekaris/termux/master/scripts/system/clone_install.sh | bash
+pkg install curl #wget δεν λειτουργεί με https
+curl -O https://raw.githubusercontent.com/tsekaris/termux/master/scripts/system/clone_install.sh | bash
 ```
