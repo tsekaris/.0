@@ -16,4 +16,7 @@ git clone https://github.com/tsekaris/termux ~/.0
 sh ~/.0/scripts/system/install.sh
 ```
 ## Με μία εντολή.
+
+```
 wget -0 https://raw.githubusercontent.com/tsekaris/termux/master/scripts/system/clone_install.sh | bash
+```
