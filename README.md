@@ -18,5 +18,5 @@ sh ~/.0/scripts/system/install.sh
 ## Με μία εντολή.
 
 ```
-wget -0 https://raw.githubusercontent.com/tsekaris/termux/master/scripts/system/clone_install.sh | bash
+wget -O https://raw.githubusercontent.com/tsekaris/termux/master/scripts/system/clone_install.sh | bash
 ```
