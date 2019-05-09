@@ -10,6 +10,7 @@ pkg install curl -y
 pkg install tmux -y
 pkg install htop -y
 pkg install man -y
+pkg install rsync -y
 
 # ssh server
 pkg install openssh -y
