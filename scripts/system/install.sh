@@ -39,13 +39,13 @@ pkg install mosquitto -y
 pkg install mpv -y # Για radio.
 
 # install dotfiles
-sh $HOME/scripts/system/dotfiles.sh
+sh $HOME/.0/scripts/system/dotfiles.sh
 
 
 # Vim.
-#pkg install vim-python -y
-#git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-#vim +PluginInstall +qall
+pkg install vim-python -y
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+vim +PluginInstall +qall
 
 #pkg install zsh -y
 #bash -c "$(curl -fsSL https://git.io/oh-my-termux)"
