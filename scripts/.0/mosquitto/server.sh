@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # Αν δεν υπάρχει ο φάκελος να δημιουργηθεί
 [ -d $HOME/server ] || mkdir $HOME/server 
 
