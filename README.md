@@ -13,5 +13,5 @@ pkg install nnn
 ```
 pkg install git
 git clone https://github.com/tsekaris/termux ~/.0
-sh ~/.0/system/install.sh
+sh ~/.0/scripts/system/install.sh
 ```
