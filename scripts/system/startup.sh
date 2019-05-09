@@ -1,5 +1,7 @@
 #alias paok="echo 'paokra ole'"
 
+# Εκτελείτε στο .bashrc με source
+
 #if [ -z "$TMUX" ]; then
     #tmux attach -t pc || tmux new -s pc
 #fi
