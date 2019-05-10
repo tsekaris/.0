@@ -7,7 +7,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'w0rp/ale'
-"Plugin 'sirver/ultisnips'
+Plugin 'sirver/ultisnips'
 "Plugin 'tpope/vim-fugitive'
 call vundle#end()      
 filetype plugin indent on 
