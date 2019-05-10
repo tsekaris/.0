@@ -1,7 +1,7 @@
 #!/bin/sh
 
 install(){
-	sh $1/.install.sh
+	sh $HOME/.0/$1/.install.sh
 }
 
 install termux
