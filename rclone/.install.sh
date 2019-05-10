@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pkg install rclone-y
+pkg install rclone -y
