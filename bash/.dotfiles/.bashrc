@@ -14,7 +14,7 @@ pc () {
     prefix=${HOME}/.0/
     #Εμφάνιση των scripts χωρίς το prefix.
     #Το -L απαραίτητο για συντομεύσεις
-    script=$(find -L ~/.0 -name "*.sh" | awk '{ gsub("'${prefix}'","",$1); print $1 }'| fzf)
+    script=$(find -L ~/.0 -name "*.sh" ! -name ".install.sh" | awk '{ gsub("'${prefix}'","",$1); print $1 }'| fzf)
     #Το όνομα του tmux window.
     #Χωρίς / που γίνεται -. Χωρίς .sh.7
     window=$(echo $script | awk '{ gsub("/","-",$1); print $1 }' | awk '{ gsub(".sh","",$1); print $1 }')
