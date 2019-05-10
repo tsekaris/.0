@@ -4,13 +4,9 @@ install(){
 	sh $HOME/.0/$1/.install.sh
 }
 
-pkg upgrade -y
-install git # Θα έχει ήδη εγκαταστηθεί αν πρέπει να κάνουμε git clone.
-install stow
-# Τα παραπάνω έχουν σημασία να εγκατασταθούν πρώτα.
-
 install bash
 install fzf
+install git # Θα έχει ήδη εγκαταστηθεί αν πρέπει να κάνουμε git clone.
 install htop
 install mosquitto
 install mpv
@@ -20,6 +16,7 @@ install ranger
 install rclone
 install rsync
 install ssh
+install stow # Θα έχει ήδη εγκαταστηθεί αν πρέπει να κάνουμε git clone.
 install syncthing
 install termux
 install tmux
