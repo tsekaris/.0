@@ -8,6 +8,7 @@ install bash
 install fzf
 install git # Θα έχει ήδη εγκαταστηθεί αν πρέπει να κάνουμε git clone.
 install htop
+install man
 install mosquitto
 install mpv
 install nnn
