@@ -62,5 +62,10 @@ ranger() {
     fi
 }
 
+# Ποιο γρήγορο shortcut για το nnn
+n(){
+    nnn -l #χωρίς details
+}
+
 # fzf dropdown list and not dropup
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
