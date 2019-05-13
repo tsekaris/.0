@@ -5,6 +5,7 @@ menu () {
 }
 
 pc () {
+    #Οι εντολές εκτελούνται με bash για να δουλέψουμε με τα search με /.
     #Το $HOME στο termux είναι μακρύ.
     prefix=${HOME}/.0/
     #Εμφάνιση των scripts χωρίς το prefix.
@@ -25,11 +26,11 @@ pc () {
             then #Αν έχει επιλεχθεί script που υπάρχει.
                 if [ -z $(echo $sessions | grep -w pc) ]
                 then # Αν δεν υπάρχει το session pc.
-                    tmux new -s pc -n ${window} -d "sh ${prefix}${script};exit"
+                    tmux new -s pc -n ${window} -d "bash ${prefix}${script};exit"
                 else #Αν υπάρχει το session pc.
                     if [ -z $(echo $windows | grep -w $window) ]
                     then #Αν υπάρχει το window.
-                        tmux new-window -t pc -n ${window} -d "sh ${prefix}${script};exit"
+                        tmux new-window -t pc -n ${window} -d "bash ${prefix}${script};exit"
                     #else #Αν υπάρχει το window.
                     fi
                 fi
@@ -42,12 +43,12 @@ pc () {
         s)
             #read -p "In progress." dummy
             session=$(echo $script | awk '{ gsub("/","-",$1); print $1 }' | awk '{ gsub(".sh","",$1); print $1 }')
-            tmux a -t ${session} || tmux new -s ${session} "sh ${prefix}${script}"
+            tmux a -t ${session} || tmux new -s ${session} "bash ${prefix}${script}"
             ;;
         *)
             if [ -f ${prefix}${script} ] 
             then #Αν έχει επιλεχθεί script που υπάρχει.
-                sh ${prefix}${script}
+                bash ${prefix}${script}
             fi
             ;;
     esac
