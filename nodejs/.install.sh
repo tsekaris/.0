@@ -1,3 +1,3 @@
 #!/bin/sh
 
-pkg install nodejs -y
+pkg install nodejs-lts -y

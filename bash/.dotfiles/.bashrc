@@ -1,4 +1,5 @@
 #alias paok="echo 'paokra ole'"
+PAGER=more
 
 menu () {
     echo $@ | fmt -1 | fzf
@@ -62,11 +63,26 @@ ranger() {
         exit
     fi
 }
-
-# Ποιο γρήγορο shortcut για το nnn
-n(){
-    nnn -l #χωρίς details
+#nnn
+# Preventing nested nnn instances
+nnn() {
+    if [ -z "$NNNLVL" ]; then
+        /usr/bin/nnn "$@"
+    else
+        exit
+    fi
 }
+
+# Ποιο γρήγορο shortcut
+n(){
+    nnn -H 
+}
+#N(){
+#    sudo nnn -H 
+#}
+#[ -n "$NNNLVL" ] && PS1="N$NNNLVL $PS1"
 
 # fzf dropdown list and not dropup
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
+source ../usr/share/fzf/key-bindings.bash
+source ../usr/share/fzf/completion.bash
