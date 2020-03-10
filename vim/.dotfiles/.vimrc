@@ -73,7 +73,7 @@ highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 "let g:UltiSnipsExpandTrigger="<c-j>"
 
 " nerdtree
-"map <C-n> :NERDTreeToggle<CR>
+map <C-n> :NERDTreeToggle<CR>
 
 "Buffers
 set hidden "Για να φεύγω από unsaved buffer.:
