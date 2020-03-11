@@ -82,6 +82,12 @@ n(){
 #}
 #[ -n "$NNNLVL" ] && PS1="N$NNNLVL $PS1"
 
+q(){
+  exit
+}
+:q(){
+  exit
+}
 # fzf dropdown list and not dropup
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 # source ../usr/share/fzf/key-bindings.bash
