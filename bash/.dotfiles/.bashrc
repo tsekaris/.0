@@ -88,6 +88,10 @@ q(){
 :q(){
   exit
 }
+
+sudo(){
+tsudo
+}
 # fzf dropdown list and not dropup
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 # source ../usr/share/fzf/key-bindings.bash

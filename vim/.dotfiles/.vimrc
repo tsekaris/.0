@@ -3,8 +3,8 @@ call plug#begin('~/.vim/plugged')
 Plug 'dikiaap/minimalist' "theme
 Plug 'scrooloose/nerdtree'
 Plug 'w0rp/ale'
-"Plug 'sirver/ultisnips'
-"Plug 'honza/vim-snippets'
+Plug 'sirver/ultisnips'
+Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -62,10 +62,12 @@ let g:ale_open_list=1
 let g:ale_list_window_size=5
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_enter = 0
+let g:ale_lint_on_insert_leave = 0
 let g:ale_sign_error = 'x'
 let g:ale_sign_warning = '!'
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+let g:ale_completion_enabled = 1
 
 "let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
 
@@ -97,4 +99,4 @@ nmap <Leader>L :Lines<CR>
 "nmap <Leader>h :History<CR>
 "nmap <Leader>t :BTags<CR>
 "nmap <Leader>' :Marks<CR>
-"nmap <Leader>s :Snippets<CR>
+nmap <Leader>s :Snippets<CR>
