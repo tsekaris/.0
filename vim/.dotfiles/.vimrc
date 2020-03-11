@@ -1,5 +1,6 @@
 "Puggins
 call plug#begin('~/.vim/plugged')
+Plug'easymotion/vim-easymotion'
 Plug 'dikiaap/minimalist' "theme
 Plug 'scrooloose/nerdtree'
 Plug 'w0rp/ale'
