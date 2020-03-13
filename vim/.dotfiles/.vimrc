@@ -68,7 +68,7 @@ inoremap kj <esc>
 "let g:ale_sign_warning = '!'
 "highlight ALEErrorSign ctermbg=NONE ctermfg=red
 "highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
-"let g:ale_completion_enabled = 1
+"let g:ale_completion_enabled = 1 "Απαιτήται typescript nmp install
 
 "let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
 
