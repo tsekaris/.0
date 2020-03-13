@@ -3,7 +3,7 @@ call plug#begin('~/.vim/plugged')
 Plug'easymotion/vim-easymotion' "jump to word
 Plug 'dikiaap/minimalist' "theme
 Plug 'scrooloose/nerdtree'
-"Plug 'w0rp/ale'
+Plug 'w0rp/ale'
 Plug 'sirver/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'do': './install --bin' }
@@ -56,19 +56,19 @@ inoremap jk <esc>
 inoremap kj <esc>
 
 "ale
-"let g:ale_fixers = {
-"\   'javascript': ['eslint']
-"\}
-"let g:ale_open_list=1
-"let g:ale_list_window_size=5
-"let g:ale_lint_on_text_changed = 'never'
-"let g:ale_lint_on_enter = 0
-"let g:ale_lint_on_insert_leave = 0
-"let g:ale_sign_error = 'x'
-"let g:ale_sign_warning = '!'
-"highlight ALEErrorSign ctermbg=NONE ctermfg=red
-"highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
-"let g:ale_completion_enabled = 1 "Απαιτήται typescript nmp install
+let g:ale_fixers = {
+      \   'javascript': ['eslint']
+\}
+let g:ale_open_list=1
+let g:ale_list_window_size=5
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_insert_leave = 0
+let g:ale_sign_error = 'x'
+let g:ale_sign_warning = '!'
+highlight ALEErrorSign ctermbg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+let g:ale_completion_enabled = 1 "Απαιτήται typescript nmp install
 
 "let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
 
