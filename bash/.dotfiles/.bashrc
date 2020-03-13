@@ -81,6 +81,7 @@ n(){
 #    sudo nnn -H 
 #}
 #[ -n "$NNNLVL" ] && PS1="N$NNNLVL $PS1"
+[ -n "$NNNLVL" ] && PS1="nnn $PS1"
 
 q(){
   exit
