@@ -95,3 +95,4 @@ export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 # source ../usr/share/fzf/key-bindings.bash
 # source ../usr/share/fzf/completion.bash 
 export PATH=$PATH:~/.npm-global/bin
+export PAGER=less
