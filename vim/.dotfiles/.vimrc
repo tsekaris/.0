@@ -3,12 +3,12 @@ call plug#begin('~/.vim/plugged')
 Plug'easymotion/vim-easymotion' "jump to word
 Plug 'dikiaap/minimalist' "theme
 "Plug 'scrooloose/nerdtree'
-Plug 'w0rp/ale'
+"Plug 'w0rp/ale'
 Plug 'sirver/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mcchrish/nnn.vim'
 call plug#end()
 
@@ -60,32 +60,27 @@ inoremap kj <esc>
 "let g:ale_linters = {
 "      \   'javascript': ['eslint']
 "\}
-let g:ale_fixers = {
-      \   'javascript': ['eslint']
-\}
-let g:ale_open_list = 0 "Να μην ανοίγει λίστα για σφάλματα
-let g:ale_list_window_size = 5
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_enter = 0
-let g:ale_lint_on_insert_leave = 0
-let g:ale_lint_on_save = 1 "default 1
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = 'x'
-let g:ale_sign_warning = '!'
-let g:ale_set_highlights = 0 "να μην διαλέγει κείμενο στα σφάλματα
-highlight ALEErrorSign ctermbg=NONE ctermfg=red
-highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_completion_enabled = 1 "Απαιτείται typescript nmp install
+"let g:ale_fixers = {
+"      \   'javascript': ['eslint']
+"\}
+"let g:ale_open_list = 0 "Να μην ανοίγει λίστα για σφάλματα
+"let g:ale_list_window_size = 5
+"let g:ale_lint_on_text_changed = 'never'
+"let g:ale_lint_on_enter = 0
+"let g:ale_lint_on_insert_leave = 0
+"let g:ale_lint_on_save = 1 "default 1
+"let g:ale_sign_column_always = 1
+"let g:ale_sign_error = 'x'
+"let g:ale_sign_warning = '!'
+"let g:ale_set_highlights = 0 "να μην διαλέγει κείμενο στα σφάλματα
+"highlight ALEErrorSign ctermbg=NONE ctermfg=red
+"highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+"nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+"nmap <silent> <C-j> <Plug>(ale_next_wrap)
+"let g:ale_completion_enabled = 1 "Απαιτείται typescript nmp install
+"
+let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
 
-"let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
-
-" UltiSnips
-"let g:UltiSnipsExpandTrigger="<c-j>"
-
-" nerdtree
-"map <C-n> :NERDTreeToggle<CR>
 let g:nnn#command = 'nnn -H'
 let g:nnn#replace_netrw = 1
 
@@ -95,13 +90,6 @@ nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
 nnoremap <C-X> :bdelete<CR>
 
-"Folding
-"set foldmethod=syntax
-"set foldlevel=1
-"set foldclose=all
-
-"Χειροκίνητο folding με //{{{1 name }}}1
-"set foldmethod=marker
 
 "fzf
 nmap <Leader>f :Files<CR>
@@ -113,3 +101,5 @@ nmap <Leader>L :Lines<CR>
 "nmap <Leader>' :Marks<CR>
 nmap <Leader>s :Snippets<CR>
 "nnn (default):<Leader>n 
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+command! -nargs=0 Eslinter :CocCommand eslint.executeAutofix
