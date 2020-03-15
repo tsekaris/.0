@@ -10,6 +10,7 @@ Plug 'junegunn/fzf', { 'do': './install --bin' }
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mcchrish/nnn.vim'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 "leader key: space.
@@ -101,5 +102,4 @@ nmap <Leader>L :Lines<CR>
 "nmap <Leader>' :Marks<CR>
 nmap <Leader>s :Snippets<CR>
 "nnn (default):<Leader>n 
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-command! -nargs=0 Eslinter :CocCommand eslint.executeAutofix
+
