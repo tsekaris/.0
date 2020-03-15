@@ -1,5 +1,5 @@
 #!/bin/sh
 
-vim +PluginInstall +qall
-echo 'Press enter to continue'
+vim +PlugUpdate +qall
+vim +PlugUpgrade +qall
 read -p "Press enter" dummy
