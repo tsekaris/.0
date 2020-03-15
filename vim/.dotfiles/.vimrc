@@ -79,7 +79,7 @@ inoremap kj <esc>
 "nmap <silent> <C-j> <Plug>(ale_next_wrap)
 "let g:ale_completion_enabled = 1 "Απαιτείται typescript nmp install
 "
-let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html']
+let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html', 'coc-snippets']
 
 let g:nnn#command = 'nnn -H'
 let g:nnn#replace_netrw = 1
