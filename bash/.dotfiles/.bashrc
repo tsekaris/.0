@@ -1,4 +1,3 @@
-#alias paok="echo 'paokra ole'"
 PAGER=more
 
 menu () {
@@ -77,9 +76,10 @@ nnn() {
 n(){
     nnn -H 
 }
-#N(){
-#    sudo nnn -H 
-#}
+#Δεν λειτουργεί στο termux γιατί δεν υπάρχει sudo.
+N(){
+    sudo nnn -H 
+}
 #[ -n "$NNNLVL" ] && PS1="N$NNNLVL $PS1"
 [ -n "$NNNLVL" ] && PS1="n $PS1"
 
@@ -94,5 +94,3 @@ q(){
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 # source ../usr/share/fzf/key-bindings.bash
 # source ../usr/share/fzf/completion.bash 
-export PATH=$PATH:~/.npm-global/bin
-export PAGER=less
