@@ -53,6 +53,7 @@ pc () {
             ;;
     esac
 }
+export -f pc #για να το χρησιμοποιώ σε scripts
 
 # Preventing nested ranger instances
 ranger() {
