@@ -103,3 +103,6 @@ nmap <Leader>L :Lines<CR>
 nmap <Leader>s :Snippets<CR>
 "nnn (default):<Leader>n 
 
+"fzf: για να δείχνει κρυφά αρχεία και να αγνοεί .git και node_modules.
+"Πρέπε
+let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore node_modules --ignore .git -g ""'
