@@ -93,5 +93,5 @@ q(){
 
 # fzf dropdown list and not dropup
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
-# source ../usr/share/fzf/key-bindings.bash
-# source ../usr/share/fzf/completion.bash 
+source /data/data/com.termux/files/usr/share/fzf/completion.bash
+source /data/data/com.termux/files/usr/share/fzf/key-bindings.bash

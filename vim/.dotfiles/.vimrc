@@ -91,7 +91,6 @@ nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
 nnoremap <C-X> :bdelete<CR>
 
-
 "fzf
 nmap <Leader>f :Files<CR>
 nmap <Leader>b :Buffers<CR>
@@ -104,5 +103,5 @@ nmap <Leader>s :Snippets<CR>
 "nnn (default):<Leader>n 
 
 "fzf: για να δείχνει κρυφά αρχεία και να αγνοεί .git και node_modules.
-"Πρέπε
-let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore node_modules --ignore .git -g ""'
+let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore node_modules --ignore .git --ignore *.swp -g ""'
+let g:fzf_preview_window = 'right:60%'
