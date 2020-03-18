@@ -61,6 +61,7 @@ nnoremap <C-X> :bdelete<CR>
 "fzf
 "!: fullscreen
 nmap <Leader>f :Files!<CR> 
+nmap <Leader>w :Windows<CR> 
 nmap <Leader>b :Buffers<CR> 
 "ctrl-x: horizontal split
 "ctrl-v: vertical split
