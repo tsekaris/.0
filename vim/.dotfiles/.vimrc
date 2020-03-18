@@ -59,7 +59,8 @@ nnoremap <S-Tab> :bprevious<CR>
 nnoremap <C-X> :bdelete<CR>
 
 "fzf
-nmap <Leader>f :Files<CR>
+"!: fullscreen
+nmap <Leader>f :Files!<CR> 
 nmap <Leader>b :Buffers<CR> 
 "ctrl-x: horizontal split
 "ctrl-v: vertical split
