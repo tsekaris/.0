@@ -95,3 +95,5 @@ q(){
 export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
 source /data/data/com.termux/files/usr/share/fzf/completion.bash
 source /data/data/com.termux/files/usr/share/fzf/key-bindings.bash
+
+set -o vi #vi mode for bash
