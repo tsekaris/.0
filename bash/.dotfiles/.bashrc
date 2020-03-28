@@ -63,6 +63,14 @@ ranger() {
         exit
     fi
 }
+r() {
+  ranger
+}
+#Δεν λειτουργεί στο termux γιατί δεν υπάρχει sudo.
+R() {
+  sudo ranger
+}
+[ -n "$RANGER_LEVEL" ] && PS1="r $PS1"
 #nnn
 # Preventing nested nnn instances
 nnn() {
