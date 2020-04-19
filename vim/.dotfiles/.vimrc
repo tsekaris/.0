@@ -1,7 +1,6 @@
 "Puggins
 call plug#begin('~/.vim/plugged')
 Plug'easymotion/vim-easymotion' "jump to word
-Plug 'dikiaap/minimalist' "theme
 Plug 'sirver/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'do': './install --bin' }
@@ -24,7 +23,6 @@ set clipboard=unnamedplus
 "Εμφάνιση.
 set t_Co=256
 syntax on
-colorscheme minimalist
 
 "wrap lines
 set lbr!
