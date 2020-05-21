@@ -1,6 +1,5 @@
 #!/bin/sh
 
-git init
 touch index.js
 touch readme.md
 npx license MIT #LICENSE file
@@ -16,8 +15,3 @@ npm init -y
 
 npm install -D typescript  #Για το autocompletion.
 npx eslint --init # Ο wizard θα εγκαταστήσει την σωστή version eslint που θα συνδυάζεται με το airbnb γιαυτό δεν κάνουμε "npm install -D eslint"
-
-git config user.name "tsekaris"
-git config user.email "tsemix@gmail.com"
-git add -A
-git commit -m "Initial commit."
