@@ -1,5 +1,14 @@
 #!/bin/sh
 
+echo "Github link (Leave empty if not exist):"
+read link
+if [ -z "$link"  ]
+then
+  git init
+else
+  git clone $link
+fi
+
 touch index.js
 touch readme.md
 npx license MIT #LICENSE file
