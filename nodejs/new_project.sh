@@ -2,6 +2,7 @@
 
 git init
 touch index.js
+touch readme.md
 npx license MIT #LICENSE file
 npx gitignore node #gitignore file
 
@@ -13,9 +14,8 @@ npm set init.license "MIT"
 npm set init.version "0.0.0"
 npm init -y 
 
-npm install -D eslint #Αν εγκαταστήσω global ο wizard θα το  εγκαταστήσει και local.
 npm install -D typescript  #Για το autocompletion.
-npx eslint --init
+npx eslint --init # Ο wizard θα εγκαταστήσει την σωστή version eslint που θα συνδυάζεται με το airbnb γιαυτό δεν κάνουμε "npm install -D eslint"
 
 git config user.name "tsekaris"
 git config user.email "tsemix@gmail.com"
