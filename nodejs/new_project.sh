@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 git init
 touch index.js
 npx license MIT #LICENSE file
@@ -18,5 +17,7 @@ npm install -D eslint #Αν εγκαταστήσω global ο wizard θα το  �
 npm install -D typescript  #Για το autocompletion.
 npx eslint --init
 
+git config user.name "tsekaris"
+git config user.email "tsemix@gmail.com"
 git add -A
 git commit -m "Initial commit."
