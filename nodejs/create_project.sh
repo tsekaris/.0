@@ -6,7 +6,7 @@ if [ -z "$link"  ]
 then
   git init
 else
-  git clone $link
+  git clone $link $(pwd)
 fi
 
 touch index.js

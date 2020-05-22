@@ -5,11 +5,11 @@ pkg install nodejs-lts -y
 f(){
   mkdir ~/.npm-global
   npm config set prefix '~/.npm-global'
-  #line="export PATH=$PATH:~/.npm-global/bin"
-  #grep -Fxq "$line" ~/.bashrc || echo "$line" >> ~/.bashrc
   export PATH=$PATH:~/.npm-global/bin # Για να έχει συνέχεια τα installs χωρίς "source .bashrc"
   npm install -g npm
+  npm set init.author.name "Tsekaris Michael"
+  npm set init.author.email "tsemix@gmail.com"
+  npm set init.author.url "https://github.com/tsekaris/"
+  npm set init.license "MIT"
+  npm set init.version "0.0.0"
 }
-
-# Δεν χρειάζεται
-#f

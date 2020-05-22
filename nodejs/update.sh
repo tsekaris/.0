@@ -1,3 +1,3 @@
 #!/bin/sh
 
-npm update -g
+npm update
