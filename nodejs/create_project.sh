@@ -1,42 +1,22 @@
 #!/bin/bash
 
-ui(){
-  #ui: user interface
-  while [[ true ]]; do
-    # Το fzf θέλει στήλες.
-    # IFS: σύνδεση με $* και πρέπει να είναι local.
-    # $'\n': Περίεργος τρόπος για newline character.
-    local IFS=$'\n' 
-    # Global variable
-    uiValue=$(echo "$*" |  fzf )
-    if [[ -z $uiValue ]]; then
-      echo "Try again."
-    else
-      echo "$uiValue"
-      break;
-    fi
-  done
-}
-
-echo "Εισαγωγή github link (κενό αν δεν υπάρχει): "
-read link
-if [[ -z $link  ]]; then
-  echo "Git init? "
-  ui "yes" "no" 
-  [[ $uiValue = yes ]] && git init
+ui "Εισαγωγή github link (κενό αν δεν υπάρχει): "
+if [[ -z $ui  ]]; then
+  ui "Git init? " "yes" "no" 
+  [[ $ui = yes ]] && git init
 else 
-  echo "O φάκελος του νέου project θα δημιουργηθεί αυτόματα. Ok? "
-  ui "yes" "no" 
-  [[ $uiValue = yes ]] && git clone $link; cd $(basename $link .git)
+  ui "O φάκελος του νέου project θα δημιουργηθεί αυτόματα. Ok? " "yes" "no" 
+  if [[ $ui = yes ]]; then
+    git clone $link
+    cd $(basename $link .git)
+  fi
 fi
 
-echo "Δημιουργία gitingnore file;"
-ui "yes" "no"
-[[ $uiValue = yes ]] && npx gitignore node 
+ui "Δημιουργία gitingnore file;" "yes" "no"
+[[ $ui = yes ]] && npx gitignore node 
 
-echo "Δημιουργία LICENSE file;"
-ui "mit" "wizard" "no" 
-case $uiValue in
+ui "Δημιουργία LICENSE file;" "mit" "wizard" "no" 
+case $ui in
   mit )
     npx license "MIT"
     ;;
@@ -45,9 +25,8 @@ case $uiValue in
     ;;
 esac
 
-echo "Δημιουργία  index.js και readme.md;"
-ui "yes" "no"
-if [[ $uiValue = yes ]]; then
+ui "Δημιουργία  index.js και readme.md;" "yes" "no"
+if [[ $ui = yes ]]; then
   touch index.js
   touch readme.md 
 fi
@@ -55,11 +34,9 @@ fi
 echo "npm init."
 npm init
 
-echo "Install typescript για autocompletion;"
-ui "yes" "no"
-[[ $uiValue = yes ]] && npm install -D typescript
+ui "Install typescript για autocompletion;" "yes" "no"
+[[ $ui = yes ]] && npm install -D typescript
 
-echo "eslint wizard;"
-ui "yes" "no"
-[[ $uiValue = yes ]] && npx eslint --init 
+ui "eslint wizard;" "yes" "no"
+[[ $ui = yes ]] && npx eslint --init 
 # Ο wizard θα εγκαταστήσει την σωστή version eslint που θα συνδυάζεται με το airbnb γιαυτό δεν κάνουμε "npm install -D eslint"

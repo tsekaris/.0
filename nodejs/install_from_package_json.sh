@@ -2,19 +2,9 @@
 
 # Install όλα τα dependencies που είναι στο package.json
 
-menu(){
-  # IFS: σύνδεση με $* και πρέπει να είναι local.
-  # $'\n': Περίεργος τρόπος για newline character.
-  # --phony: απλό μενού και όχι fuzzy search.
-  # menuSelection: Global variable.
-  local IFS=$'\n' 
-  menuSelection=$(echo "$*" |  fzf --phony)
-}
+ui "Εγκατάσταση των development dependencies;" "yes" "no" "quit"
 
-echo "Εγκατάσταση των development dependencies; "
-menu "yes" "no" "quit"
-
-case $menuSelection in
+case $ui in
   yes )
     npm install 
     ;;

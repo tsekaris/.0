@@ -1,9 +1,5 @@
 PAGER=more
 
-menu () {
-    echo $@ | fmt -1 | fzf
-}
-
 pc () {
     #Οι εντολές εκτελούνται με bash για να δουλέψουμε με τα search με /.
     #Το $HOME στο termux είναι μακρύ.
@@ -54,6 +50,27 @@ pc () {
     esac
 }
 export -f pc #για να το χρησιμοποιώ σε scripts
+
+ui(){
+  #ui: user interface
+  local msg=$1
+  if [ $# -gt 1 ]; then
+    echo -n $msg
+    while [[ true ]]; do
+      # Το fzf θέλει στήλες.
+      ui=$(IFS=$'\n'; echo "${*:2}" |  fzf )
+      if [[ -z $ui ]]; then
+        echo -n "Try again. $msg"
+      else
+        echo "$msg $ui"
+        break;
+      fi
+    done
+  else
+    read -p "$msg " ui
+  fi
+}
+export -f ui #για να το χρησιμοποιώ σε scripts
 
 # Preventing nested ranger instances
 ranger() {
