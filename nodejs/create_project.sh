@@ -12,9 +12,6 @@ else
   fi
 fi
 
-ui "Δημιουργία gitingnore file;" "yes" "no"
-[[ $ui = yes ]] && npx gitignore node 
-
 ui "Δημιουργία LICENSE file;" "mit" "wizard" "no" 
 case $ui in
   mit )
@@ -25,10 +22,11 @@ case $ui in
     ;;
 esac
 
-ui "Δημιουργία  index.js και readme.md;" "yes" "no"
+ui "Δημιουργία .gitignore, index.js και readme.md;" "yes" "no"
 if [[ $ui = yes ]]; then
   touch index.js
   touch readme.md 
+  touch .gitignore
 fi
 
 echo "npm init."
