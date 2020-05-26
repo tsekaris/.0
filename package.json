@@ -1,0 +1,28 @@
+{
+  "name": "0",
+  "version": "0.0.0",
+  "description": "0",
+  "main": "index.js",
+  "directories": {
+    "man": "man"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsekaris/termux.git"
+  },
+  "author": "Tsekaris Michael <tsemix@gmail.com> (https://github.com/tsekaris/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tsekaris/termux/issues"
+  },
+  "homepage": "https://github.com/tsekaris/termux#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "typescript": "^3.9.3"
+  }
+}
