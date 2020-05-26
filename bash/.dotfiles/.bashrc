@@ -72,22 +72,6 @@ ui(){
 }
 export -f ui #για να το χρησιμοποιώ σε scripts
 
-# Preventing nested ranger instances
-ranger() {
-    if [ -z "$RANGER_LEVEL" ]; then
-        /usr/bin/ranger "$@"
-    else
-        exit
-    fi
-}
-r() {
-  ranger
-}
-#Δεν λειτουργεί στο termux γιατί δεν υπάρχει sudo.
-R() {
-  sudo ranger
-}
-[ -n "$RANGER_LEVEL" ] && PS1="r $PS1"
 #nnn
 # Preventing nested nnn instances
 nnn() {
