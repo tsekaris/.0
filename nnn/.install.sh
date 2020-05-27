@@ -8,6 +8,5 @@ text="source $(dirname $(realpath -s $0))/.bashrc"
 [[ -z $(rg "$text" ~/.bashrc) ]] && echo "$text" >> ~/.bashrc
 
 #dotfiles plugins:
-mkdir -p $HOME/.config/nnn/
-cd $HOME/.0/nnn
-stow --target=$HOME .dotfiles
+[ ! -d $HOME/.config/nnn ] && mkdir -p $HOME/.config/nnn/
+[ ! -d $HOME/.config/nnn/plugins ] && ln -s $HOME/.0/nnn/plugins $HOME/.config/nnn/plugins
