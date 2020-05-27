@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-cd $HOME/.0/bash
-stow --target=$HOME .dotfiles
+touch ~/.bashrc #Αν υπάρχει δεν το σβήνει.
+text="source $(dirname $(realpath -s $0))/.bashrc"
+[[ -z $(rg "$text" ~/.bashrc) ]] && echo "$text" >> ~/.bashrc

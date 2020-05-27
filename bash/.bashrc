@@ -72,37 +72,11 @@ ui(){
 }
 export -f ui #για να το χρησιμοποιώ σε scripts
 
-#nnn
-# Preventing nested nnn instances
-nnn() {
-    if [ -z "$NNNLVL" ]; then
-        /usr/bin/nnn "$@"
-    else
-        exit
-    fi
-}
-
-# Ποιο γρήγορο shortcut
-n(){
-    nnn -H 
-}
-#Δεν λειτουργεί στο termux γιατί δεν υπάρχει sudo.
-N(){
-    sudo nnn -H 
-}
-#[ -n "$NNNLVL" ] && PS1="N$NNNLVL $PS1"
-[ -n "$NNNLVL" ] && PS1="n $PS1"
-
 q(){
   exit
 }
 :q(){
   exit
 }
-
-# fzf dropdown list and not dropup
-export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
-source /data/data/com.termux/files/usr/share/fzf/completion.bash
-source /data/data/com.termux/files/usr/share/fzf/key-bindings.bash
 
 set -o vi #vi mode for bash
