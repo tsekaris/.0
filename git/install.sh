@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 pkg install git -y
 

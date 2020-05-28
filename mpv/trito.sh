@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=trito
 url=http://radiostreaming.ert.gr/ert-trito

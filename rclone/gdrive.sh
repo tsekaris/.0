@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 echo 
 echo "rclone syncing to gdrive..."
 rclone sync --verbose --progress ~/0 gdrive:0 --exclude "/engineering/**" 

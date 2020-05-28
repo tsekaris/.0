@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Comment:"
 read comment

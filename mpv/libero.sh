@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=libero
 url=http://eco.onestreaming.com:8081/listen.pls

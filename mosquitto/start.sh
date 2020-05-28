@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #Εμφάνιση των tags χωρίς το prefix.
 prefix=${HOME}

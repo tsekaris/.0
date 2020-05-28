@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=arena
 url=http://eco.onestreaming.com:8418/;stream.mp3 

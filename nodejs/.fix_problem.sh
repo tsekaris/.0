@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Από https://github.com/termux/termux-packages/issues/3114
  echo "set maxConcurrentWorkers to the number of cpu cores (or 1)"

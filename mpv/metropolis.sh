@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=metropolis
 url=http://s6.voscast.com:10478

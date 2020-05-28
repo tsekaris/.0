@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bqsh
 
 # Δεν λειτουργεί το search με sh αλλά μόνο με bash. Δεν θα τρέξει με το ranger.
 sshd

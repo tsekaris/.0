@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mosquitto_conf=${HOME}/.0/.tmp/mosquitto/mosquitto.conf
 if [ -f $mosquitto_conf ]

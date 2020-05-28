@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=ipiros
 url=http://213.239.206.179:9450

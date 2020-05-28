@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 station=rainbow
 url=http://62.212.82.197:8000
