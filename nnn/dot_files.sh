@@ -8,4 +8,4 @@ text="source $path/.home/.bashrc"
 
 #plugins:
 [ ! -d $HOME/.config/nnn ] && mkdir -p $HOME/.config/nnn/
-[ ! -d $HOME/.config/nnn/plugins ] && ln -s $path/.home//.config/nnn/plugins $HOME/.config/nnn/plugins
+ln -sfn $path/.home/.config/nnn/plugins $HOME/.config/nnn/plugins
