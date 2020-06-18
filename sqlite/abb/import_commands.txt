@@ -2,13 +2,14 @@ DROP TABLE IF EXISTS devices;
 
 create table devices (
   id number primary key,
-  type text,
+  name text,
   price number,
   a_min number,
   a_max number,
-  search text,
-  draw text
+  type text,
+  poles text,
+  filter text
 );
 
 .mode csv
-.import abb.csv devices
+.import abb.csv devices --skip 1
