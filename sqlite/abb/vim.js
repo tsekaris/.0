@@ -1,9 +1,18 @@
 const { exec, spawn } = require('child_process');
-const fs = require('fs');
 
-const fzf = spawn('vim selected', {
+const vim = spawn('vim .tmp/data', {
   stdio: 'inherit',
   shell: true,
+});
+
+vim.on('exit', (e, code) => {
+  exec('cat .tmp/data', (err, stdout, stderr) => {
+    if (err) {
+      console.error(`exec error: ${err}`);
+    }
+    console.log('data:');
+    console.log(`${stdout}`);
+  });
 });
 
 /*
@@ -20,13 +29,3 @@ child.stdout.on('data', (data) => {
   console.log(`stdout: ${data}`);
 });
 */
-
-fzf.on('exit', (e, code) => {
-  exec('cat selected', (err, stdout, stderr) => {
-    if (err) {
-      console.error(`exec error: ${err}`);
-    }
-    console.log('Selected');
-    console.log(`${stdout}`);
-  });
-});
