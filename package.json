@@ -26,6 +26,7 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
+    "shelljs": "^0.8.4",
     "sqlite3": "^4.2.0"
   }
 }
