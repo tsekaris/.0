@@ -26,8 +26,11 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
+    "colors": "^1.4.0",
     "inquirer": "^7.2.0",
+    "inquirer-search-list": "^1.2.6",
     "shelljs": "^0.8.4",
+    "sqlite": "^4.0.11",
     "sqlite3": "^4.2.0"
   }
 }
