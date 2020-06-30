@@ -4,11 +4,11 @@ create table devices (
   id number primary key,
   name text,
   price number,
-  a_min number,
-  a_max number,
   type text,
   poles text,
-  filter text
+  a_min number,
+  a_max number,
+  data text
 );
 
 .mode csv

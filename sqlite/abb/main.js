@@ -108,7 +108,7 @@ async function selectAmper() {
       message: 'Amper:',
     };
 
-    amper = fzf(promptData).value;
+    const amper = fzf(promptData).value;
     // const { amper } = await prompt(promptData);
 
     sql = `select distinct type  from devices where a_min <= ${amper} and a_max >= ${amper}`;
@@ -120,7 +120,7 @@ async function selectAmper() {
       choices: sqlResult.map((element) => element.type),
     };
 
-    type = fzf(promptData).value;
+    const type = fzf(promptData).value;
     // const { type } = await prompt(promptData);
 
     sql = `select distinct poles  from devices where type = '${type}' and a_min <= ${amper} and a_max >= ${amper}`;
@@ -132,22 +132,25 @@ async function selectAmper() {
       choices: sqlResult.map((element) => element.poles),
     };
 
-    poles = fzf(promptData).value;
+    const poles = fzf(promptData).value;
     // const { poles } = await prompt(promptData);
 
-    sql = `select distinct filter from devices where type = '${type}' and poles = '${poles}' and a_min <= ${amper} and a_max >= ${amper}`;
+    sql = `select distinct data from devices where type = '${type}' and poles = '${poles}' and a_min <= ${amper} and a_max >= ${amper}`;
     sqlResult = await db.all(sql);
+
     promptData = {
       type: 'list',
-      name: 'filter',
-      message: 'Filter:',
-      choices: sqlResult.map((element) => element.filter),
+      name: 'data',
+      message: 'Data:',
+      choices: sqlResult.map((element) => element.data.replace('[', '').replace(']', '')),
     };
 
-    filter = fzf(promptData).value;
-    // const { filter } = await prompt(promptData);
+    let data = fzf(promptData).value;
+    data = data.split(',');
+    data = JSON.stringify(data);
+    // const { data } = await prompt(promptData);
 
-    sql = `select id, name, price from devices where type = '${type}' and poles = '${poles}' and filter  = '${filter}' and a_min <= ${amper} and a_max >= ${amper}`;
+    sql = `select id, name, price from devices where type = '${type}' and poles = '${poles}' and data = '${data}' and a_min <= ${amper} and a_max >= ${amper}`;
     sqlResult = await db.all(sql);
     promptData = {
       type: 'list',
@@ -156,7 +159,7 @@ async function selectAmper() {
       choices: sqlResult.map((element) => `${element.id} ${element.name} ${element.price}€`),
     };
 
-    selection = fzf(promptData).value;
+    const selection = fzf(promptData).value;
     // const { selection } = await prompt(promptData);
 
     await db.close();
@@ -165,5 +168,40 @@ async function selectAmper() {
   }
 }
 
+async function starter() {
+  try {
+    const sqlite3 = require('sqlite3').verbose();
+    const { open } = require('sqlite');
+    const inquirer = require('inquirer');
+    const { prompt } = inquirer;
 
-selectAmper();
+    const db = await open({
+      filename: './.tmp/abb.db',
+      driver: sqlite3.cached.Database,
+    });
+    let sql;
+    let sqlResult;
+
+    const amper = fzf({
+      message: 'Amper',
+    }).value;
+    sql = `select *, max(a_max) from devices where type = 'mpcb' and a_min <= ${amper} and a_max >= ${amper}`;
+    sqlResult = await db.all(sql);
+    const mpcb = sqlResult[0];
+    delete mpcb['max(a_max)'];
+
+    sql = `select *, max(a_max) from devices where type = 'rly' and a_min <= ${amper * 1.25} and a_max >= ${amper}`;
+    sqlResult = await db.all(sql);
+    const rly = sqlResult[0];
+    delete rly['max(a_max)'];
+
+    console.log('mpcb:', mpcb);
+    console.log('rly:', rly);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+// selectAmper();
+starter();
