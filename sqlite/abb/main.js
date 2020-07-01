@@ -4,6 +4,13 @@
 
 const child_process = require('child_process');
 const colors = require('colors');
+const sqlite3 = require('sqlite3').verbose();
+const sqlite = require('sqlite'); // sqlite with promises
+const inquirer = require('inquirer');
+
+let database; // Ορίζεται στην main
+
+const { prompt } = inquirer;
 
 function sh(req) {
   const child = child_process.spawnSync(req, {
@@ -88,16 +95,6 @@ function fzf(db) {
 
 async function selectAmper() {
   try {
-    const sqlite3 = require('sqlite3').verbose();
-    const { open } = require('sqlite');
-    const inquirer = require('inquirer');
-    const { prompt } = inquirer;
-
-    const db = await open({
-      filename: './.tmp/abb.db',
-      driver: sqlite3.cached.Database,
-    });
-
     let sql = '';
     let sqlResult;
     let promptData; // Το έκανα για να πειραματίζομαι με inquirer και με το fzf
@@ -112,7 +109,7 @@ async function selectAmper() {
     // const { amper } = await prompt(promptData);
 
     sql = `select distinct type  from devices where a_min <= ${amper} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
+    sqlResult = await database.all(sql);
     promptData = {
       type: 'list',
       name: 'type',
@@ -124,7 +121,7 @@ async function selectAmper() {
     // const { type } = await prompt(promptData);
 
     sql = `select distinct poles  from devices where type = '${type}' and a_min <= ${amper} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
+    sqlResult = await database.all(sql);
     promptData = {
       type: 'list',
       name: 'poles',
@@ -135,13 +132,13 @@ async function selectAmper() {
     const poles = fzf(promptData).value;
     // const { poles } = await prompt(promptData);
 
-    sql = `select distinct data from devices where type = '${type}' and poles = '${poles}' and a_min <= ${amper} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
+    sql = `select distinct kA from devices where type = '${type}' and poles = '${poles}' and a_min <= ${amper} and a_max >= ${amper}`;
+    sqlResult = await database.all(sql);
 
     promptData = {
       type: 'list',
-      name: 'data',
-      message: 'Data:',
+      name: 'kA',
+      message: 'kA:',
       choices: sqlResult.map((element) => element.data.replace('[', '').replace(']', '')),
     };
 
@@ -151,7 +148,7 @@ async function selectAmper() {
     // const { data } = await prompt(promptData);
 
     sql = `select id, name, price from devices where type = '${type}' and poles = '${poles}' and data = '${data}' and a_min <= ${amper} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
+    sqlResult = await database.all(sql);
     promptData = {
       type: 'list',
       name: 'selection',
@@ -161,47 +158,51 @@ async function selectAmper() {
 
     const selection = fzf(promptData).value;
     // const { selection } = await prompt(promptData);
-
-    await db.close();
   } catch (error) {
     console.error(error);
   }
 }
 
-async function starter() {
-  try {
-    const sqlite3 = require('sqlite3').verbose();
-    const { open } = require('sqlite');
-    const inquirer = require('inquirer');
-    const { prompt } = inquirer;
+// select *, (0.8 - 1.0*(${amper}-a_min )/(a_max-a_min)) as test from devices
+async function mpcb(amper = fzf({ message: 'Amper' }).value) {
+  const ans = await database.all(`
+        select * from devices
+        where type = 'mpcb' and a_min <= ${amper} and a_max >= ${amper}
+      `);
+  console.log(ans);
+}
 
-    const db = await open({
+async function cb(...dbIn) {
+  const db = {
+    poles: '3p',
+    kA: 36,
+    characteristic: 'mch',
+    ...dbIn,
+  };
+  db.amper = db.amper || fzf({ message: 'Amper' }).value;
+
+  const ans = await database.all(`
+        select * from devices
+        where type = 'cb' and poles = '${db.poles}' and kA = ${db.kA} and characteristic = '${db.characteristic}' and a_min <= ${db.amper} and a_max >= ${db.amper}
+      `);
+  console.log(ans.length);
+  console.log(ans);
+}
+
+async function main() {
+  try {
+    database = await sqlite.open({
       filename: './.tmp/abb.db',
       driver: sqlite3.cached.Database,
     });
-    let sql;
-    let sqlResult;
 
-    const amper = fzf({
-      message: 'Amper',
-    }).value;
-    sql = `select *, max(a_max) from devices where type = 'mpcb' and a_min <= ${amper} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
-    const mpcb = sqlResult[0];
-    delete mpcb['max(a_max)'];
+    await cb();
 
-    sql = `select *, max(a_max) from devices where type = 'rly' and a_min <= ${amper * 1.25} and a_max >= ${amper}`;
-    sqlResult = await db.all(sql);
-    const rly = sqlResult[0];
-    delete rly['max(a_max)'];
-
-    console.log('mpcb:', mpcb);
-    console.log('rly:', rly);
+    await database.close();
   } catch (error) {
     console.error(error);
   }
 }
 
 
-// selectAmper();
-starter();
+main();

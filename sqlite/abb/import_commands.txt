@@ -8,6 +8,8 @@ create table devices (
   poles text,
   a_min number,
   a_max number,
+  kA number,
+  characteristic text,
   data text
 );
 
