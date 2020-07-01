@@ -183,7 +183,7 @@ async function cb(...dbIn) {
 
   const ans = await database.all(`
         select * from devices
-        where type = 'cb' and poles = '${db.poles}' and kA = ${db.kA} and characteristic = '${db.characteristic}' and a_min <= ${db.amper} and a_max >= ${db.amper}
+        where type = 'cb' and poles = '${db.poles}' and kA = ${db.kA} and a_min+(a_max - a_min)/5 <= ${db.amper} and a_min+4*(a_max - a_min)/5>= ${db.amper}
       `);
   console.log(ans.length);
   console.log(ans);
