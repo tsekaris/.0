@@ -163,30 +163,218 @@ async function selectAmper() {
   }
 }
 
-// select *, (0.8 - 1.0*(${amper}-a_min )/(a_max-a_min)) as test from devices
-async function mpcb(amper = fzf({ message: 'Amper' }).value) {
+async function mpcb({ amper = 0 } = {}) {
+  // Μέχρι 100 A.
+  // Αλλα πχ στα 99A Θεμομαγνητικό 80...100 Α. Πολύ οριακά.
+  // Τα cb έχουν μεγαλύτερο εύρος και το προυγούμενο θερμομαγνητικό μπαίνει στην ζώνη του άλλου.
   const ans = await database.all(`
-        select * from devices
-        where type = 'mpcb' and a_min <= ${amper} and a_max >= ${amper}
-      `);
-  console.log(ans);
+        select * , max(a_max) as max from devices
+        where type = 'mpcb' and a_min <= ${amper} and a_max > ${amper}
+  `);
+  delete ans[0].max;
+  if (ans[0].id === null) {
+    ans[0] = null;
+  }
+  return ans[0];
 }
 
-async function cb(...dbIn) {
+async function thr(dbIn) {
+  try {
+    const db = {
+      amper: 2000,
+      characteristic: 'el',
+      rly: null,
+      ...dbIn,
+    };
+
+    if (db.rly === null) {
+      db.rly = await rly({ amper: db.amper });
+    }
+
+    const ans = await database.all(`
+        select *, max(a_max) as max from devices, json_each(devices.data) as rly
+        where devices.type = 'thr' and devices.characteristic = '${db.characteristic}' and rly.value = '${db.rly.name.split('-')[0]}' and a_min <= ${db.amper} and a_max > ${db.amper}
+  `);
+    ans[0].type = 'thr'; // Υπάρχει και στο json_each
+    delete ans[0].max;
+    delete ans[0].key;
+    delete ans[0].value;
+    delete ans[0].atom;
+    delete ans[0].parent;
+    delete ans[0].fullkey;
+    delete ans[0].path;
+    ans[0].rly = db.rly.name;
+
+    if (ans[0].id === null) {
+      ans[0] = null;
+    }
+    return ans[0];
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+async function cb(dbIn) {
+  // Με el min = 0.4*max
+  // Με mch min = 0.7*max, mid = 0.85*max
+  // Tα el έχουν μεγαλύτερο εύρος και ακρίβεια. Νομίζω ότι μπορεί να χρησιμοποιηθεί και σαν θερμομαγνητικό.
+  // Τα mch δεν μπορεί να είναι θερμομαγνητικό γιαυτό πάιρνω το mid σαν πάνω όριο.
   const db = {
+    amper: 2000,
     poles: '3p',
     kA: 36,
-    characteristic: 'mch',
+    characteristic: 'el',
     ...dbIn,
   };
-  db.amper = db.amper || fzf({ message: 'Amper' }).value;
+
+  let sqlAmper;
+  if (db.characteristic === 'mch') {
+    sqlAmper = `and (a_max + a_min) * 0.5) >= ${db.amper}`;
+  } else {
+    sqlAmper = `and a_max >= ${db.amper}`;
+  }
 
   const ans = await database.all(`
-        select * from devices
-        where type = 'cb' and poles = '${db.poles}' and kA = ${db.kA} and a_min+(a_max - a_min)/5 <= ${db.amper} and a_min+4*(a_max - a_min)/5>= ${db.amper}
-      `);
-  console.log(ans.length);
-  console.log(ans);
+        select *, min(ABS(${db.amper} - (a_min + a_max)/2)) as distance from devices
+        where type = 'cb' and characteristic = '${db.characteristic}' and poles = '${db.poles}' and kA = ${db.kA} ${sqlAmper}
+  `);
+  delete ans[0].distance;
+  if (ans[0].id === null) {
+    ans[0] = null;
+  }
+  return ans[0];
+}
+
+async function rly(dbIn) {
+  // a_min: a_max του προυγούμενου ρελέ
+  // στα amper καλύτερα να βάζεις τα amper του ασφαλιστικού και όχι του κινητήρα
+  const db = {
+    amper: 4000,
+    poles: '3p',
+    characteristic: 'ac3',
+    ...dbIn,
+  };
+
+
+  if (db.characteristic === 'ac1') {
+  // 3p πχ για αντιστάσεις
+    db.amper *= 1.3;
+  }
+
+  //  Στα 4p λείπουν κάποια ρελέ και σε μερικά γίνεται υπερδιαστησολόγηση
+  const ans = await database.all(`
+        select *, min(a_max) as min from devices
+        where type = 'rly' and poles = '${db.poles}' and a_min >= ${db.amper}  
+  `);
+  delete ans[0].min;
+  if (ans[0].id === null) {
+    ans[0] = null;
+  }
+  return ans[0];
+}
+
+async function mcb(dbIn) {
+  // a_min: a_max του προυγούμενου
+  const db = {
+    amper: 4000,
+    poles: '3p',
+    characteristic: 'C',
+    kA: 10,
+    ...dbIn,
+  };
+
+  const ans = await database.all(`
+        select *, min(a_max) as min from devices
+        where type = 'mcb' and poles = '${db.poles}' and kA = ${db.kA} and a_min >= ${db.amper}  
+  `);
+  delete ans[0].min;
+  if (ans[0].id === null) {
+    ans[0] = null;
+  }
+  return ans[0];
+}
+
+
+async function cb_rly(dbIn) {
+  try {
+    const db = {
+      amper: 4000,
+      ...dbIn,
+    };
+    let cb1;
+    let rly1;
+
+    if (db.amper < 100) {
+      cb1 = await mpcb({ amper: db.amper });
+    } else {
+      cb1 = await cb({ amper: db.amper });
+    }
+    rly1 = await rly({ amper: db.amper });
+    return { cb1, rly1 };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function yYY(dbIn) {
+  try {
+    const db = {
+      amper: 4000,
+      ...dbIn,
+    };
+    let cb1;
+    let rly1;
+    let cb2;
+    let rly2;
+
+    if (db.amper < 100) {
+      cb1 = await mpcb({ amper: db.amper });
+    } else {
+      cb1 = await cb({ amper: db.amper });
+    }
+    cb2 = { ...cb1 };
+    rly1 = await rly({ amper: db.amper });
+    rly2 = { ...rly1 };
+    return {
+      cb1, rly1, cb2, rly2,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function yD(dbIn) {
+  try {
+    const db = {
+      amper: 4000,
+      ...dbIn,
+    };
+    let cb1;
+    let rlyMain;
+    let rlyDelta;
+    let rlyStar;
+    let thr1;
+
+    if (db.amper < 100) {
+      cb1 = await mpcb({ amper: db.amper });
+    } else {
+      cb1 = await cb({ amper: db.amper });
+    }
+    rlyMain = await rly({ amper: db.amper * 0.58 });
+    rlyDelta = { ...rlyMain };
+    rlyStar = await rly({ amper: db.amper * 0.33 });
+
+    // Μέχρι 200 a είναι mch
+    thr1 = await thr({ amper: db.amper * 0.58, rly: rlyDelta });
+
+    return {
+      cb1, rlyMain, rlyDelta, rlyStar, thr1,
+    };
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
 
 async function main() {
@@ -195,10 +383,19 @@ async function main() {
       filename: './.tmp/abb.db',
       driver: sqlite3.cached.Database,
     });
+    let nulls = 0;
 
-    await cb();
-
+    for (let i = 1; i < 800; i++) {
+      console.log();
+      const device = await yD({ amper: i });
+      if (device.thr1 === null) {
+        nulls += 1;
+      }
+      console.log(`${i} (D: ${i * 0.58}) A: `, device);
+    }
     await database.close();
+
+    console.log('nulls: ', nulls);
   } catch (error) {
     console.error(error);
   }
