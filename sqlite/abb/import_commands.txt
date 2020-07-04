@@ -5,11 +5,11 @@ create table devices (
   name text,
   price number,
   type text,
-  poles text,
-  a_min number,
-  a_max number,
+  p text,
+  aMin number,
+  aMax number,
   kA number,
-  characteristic text,
+  ch text,
   data text
 );
 
