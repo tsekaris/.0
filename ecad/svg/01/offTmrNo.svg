@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="72" height="53" viewBox="0 0 72 53" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g transform="translate(0.5 0.5)" v:json="{&quot;user&quot;:{&quot;group&quot;:1,&quot;priority&quot;:20,&quot;comp&quot;:&quot;74&quot;,&quot;cat&quot;:-12,&quot;pinstring&quot;:&quot;6,17,27,37,47,57,67,77,87,97||1,18,28,38,48,58,68,78,88,98&quot;,&quot;pinset&quot;:1,&quot;loctype&quot;:2},&quot;menu&quot;:{&quot;vertical&quot;:true,&quot;hidepins&quot;:false}}" id="_K.kcpwtegk3h5">
+        <g >
+            <g class="Pins.lay" transform="translate(5.001 0)" id="_P0.kcpwtegl3h8" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="7" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">17</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(5.001 40)" id="_P1.kcpwtegl3h9" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="7" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">18</tspan>
+                    </text>
+                </g>
+            </g>
+            <g stroke-width="0.5" transform="translate(5 0)">
+                <g >
+                    <g transform="translate(15 0)">
+                        <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(10 15)">
+                        <path d="M 1e-13 1e-13 L 5 20 L 5 35" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(4.75 27)">
+                        <path d="M 1e-13 1e-13 L 8.25 0" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(4.75 23)">
+                        <path d="M 7.25 0 L 1e-13 1e-13" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(0 20.0491)">
+                        <path d="M 1e-13 1e-13 C 2.815 0.2493 5 2.3743 5 4.9755 C 5 7.5767 2.815 9.7017 0 9.9511" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                </g>
+            </g>
+            <g class="Desc.lay" transform="translate(19.955 30)" id="_Desc.kcpwtego3hg" v:layer_name="Desc">
+                <rect fill="none" height="20" stroke="none" width="50" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="50" height="20" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="8" stroke="none">
+                        <tspan x="25" y="10">Off Delay </tspan>
+                        <tspan x="25" y="19.6">Contact</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+        <g transform="translate(19.955 20)">
+            <rect x="0" y="0" width="50" height="10" fill="none" stroke="none"/>
+            <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="25" y="6.64">K12</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

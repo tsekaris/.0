@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="62" height="53" viewBox="0 0 62 53" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g transform="translate(0.5 0.5)" id="_K.kcpx2mrp3q8" v:json="{&quot;user&quot;:{&quot;group&quot;:1,&quot;priority&quot;:20,&quot;comp&quot;:&quot;8&quot;,&quot;cat&quot;:-8,&quot;pinstring&quot;:&quot;6,13||1,14&quot;,&quot;pinset&quot;:1,&quot;loctype&quot;:2},&quot;menu&quot;:{&quot;vertical&quot;:true,&quot;hidepins&quot;:false}}">
+        <g >
+            <g stroke-width="0.5">
+                <g >
+                    <g transform="translate(20 0)">
+                        <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(20 35)">
+                        <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g stroke-width="0.5" transform="translate(0 15)">
+                        <g >
+                            <g transform="translate(10 10)">
+                                <path d="M 7.5 0 L 1e-13 1e-13" fill="none" stroke-dasharray="1.5 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                            </g>
+                            <g stroke-width="0.5" transform="translate(0 5)">
+                                <g >
+                                    <g>
+                                        <rect fill="#ffffff" fill-opacity="1" height="10" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" width="10" x="0" y="0"/>
+                                    </g>
+                                    <g transform="translate(3.1368 1.9526)">
+                                        <path d="M 2.0898 3.4609 L 0.75 3.4609 L 0.75 5.6875 L 0 5.6875 L 0 0 L 2.0977 0 Q 3.0313 0 3.5605 0.4766 Q 4.0898 0.9531 4.0898 1.7383 Q 4.0898 2.5664 3.5723 3.0137 Q 3.0547 3.4609 2.0898 3.4609 Z M 0.75 0.6172 L 0.75 2.8477 L 2.0977 2.8477 Q 2.6992 2.8477 3.0195 2.5645 Q 3.3398 2.2813 3.3398 1.7461 Q 3.3398 1.2383 3.0195 0.9336 Q 2.6992 0.6289 2.1406 0.6172 L 0.75 0.6172 Z" fill="#000000" stroke="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                                    </g>
+                                </g>
+                            </g>
+                            <g transform="translate(15 0)">
+                                <path d="M 1e-13 1e-13 L 5 20" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(5 0)" id="_P0.kcpx2mrs3qk" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">13</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(5 40)" id="_P1.kcpx2mrs3ql" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">14</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Desc.lay" transform="translate(20 30)" id="_Desc.kcpx2mrt3qm" v:layer_name="Desc">
+                <rect fill="none" height="20" stroke="none" width="40" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="40" height="20" fill="none" stroke="none"/>
+                    <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                        <tspan x="20" y="10">Pressure </tspan>
+                        <tspan x="20" y="19.6">Switch</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+        <g transform="translate(20 20)">
+            <rect x="0" y="0" width="40" height="10" fill="none" stroke="none"/>
+            <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="20" y="6.64">K5</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

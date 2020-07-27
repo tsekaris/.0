@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="52" height="52" viewBox="0 0 52 52" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g class="Wires.lay" transform="translate(0.25 25.25)" id="_Wire.kcpwqje73db" v:layer_name="Wire">
+        <path d="M 1e-13 1e-13 L 49.9991 0.2919" fill="none" stroke-width="0.5"/>
+        <g transform="translate(-24.942 -15.8539)">
+            <rect x="0" y="0" width="100px" height="20px" fill="none" stroke="none"/>
+            <text fill="#000000" fill-opacity="1" stroke="none" font-size="8px">
+                <tspan x="50" y="12.64">35</tspan>
+            </text>
+        </g>
+    </g>
+    <g class="CLJump.cls Wires.lay" transform="translate(25.25 0.25)" id="_Wire.kcpwrd693dl" v:layer_name="Wire">
+        <path d="M 1e-13 1e-13 L 0 22.146 Q 3 22.146 3 25.146 Q 3 28.146 0 28.146 L 0 50" fill="none" stroke-width="0.5"/>
+        <g transform="translate(-13.5 15)">
+            <rect x="0" y="0" width="50" height="20" fill="none" stroke="none"/>
+            <text font-size="8px" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="25" y="12.64">37</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

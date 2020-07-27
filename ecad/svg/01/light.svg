@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="77" height="53" viewBox="0 0 77 53" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g transform="translate(5.5 0.5)" v:json="{&quot;user&quot;:{&quot;group&quot;:1,&quot;priority&quot;:20,&quot;comp&quot;:&quot;16&quot;,&quot;cat&quot;:-15,&quot;pinstring&quot;:&quot;6,X1,||1, X2,&quot;,&quot;pinset&quot;:1,&quot;loctype&quot;:0},&quot;menu&quot;:{&quot;vertical&quot;:true,&quot;hidepins&quot;:false}}" id="_PL.kcpwkgo039t">
+        <g >
+            <g class="Pins.lay" transform="translate(-5 0)" id="_P0.kcpwkgo139w" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="7" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">X1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(-5 40)" id="_P1.kcpwkgo139x" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="7" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">X2</tspan>
+                    </text>
+                </g>
+            </g>
+            <g stroke-width="0.5">
+                <g >
+                    <g transform="translate(0 15)">
+                        <ellipse cx="10" cy="10" fill="#ffffff" fill-opacity="1" rx="10" ry="10" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(3 18)">
+                        <path d="M 0 14 L 14 0" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(3 18)">
+                        <path d="M 14 14 L 1e-13 1e-13" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(10 0)">
+                        <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(10 35)">
+                        <path d="M 0 15 L 1e-13 1e-13" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                </g>
+            </g>
+            <g class="Desc.lay" transform="translate(20 30)" id="_Desc.kcpwkgo23a4" v:layer_name="Desc">
+                <rect fill="none" height="20" stroke="none" width="50" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="50" height="20" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="8" stroke="none">
+                        <tspan x="25" y="10">Pilot Light</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+        <g transform="translate(20 20)">
+            <rect x="0" y="0" width="50" height="10" fill="none" stroke="none"/>
+            <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="25" y="6.64">PL2</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

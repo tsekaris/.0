@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:v="http://vecta.io"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="mcb.svg"
+   id="svg174"
+   version="1.1"
+   v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}"
+   viewBox="0 0 113 53"
+   height="53"
+   width="113">
+  <metadata
+     id="metadata178">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:current-layer="svg174"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:cy="26.5"
+     inkscape:cx="56.5"
+     inkscape:zoom="9.2831858"
+     showgrid="false"
+     id="namedview176"
+     inkscape:window-height="1027"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <style
+     id="style2"><![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]></style>
+  <defs
+     id="defs6">
+    <style
+       id="style4">@import url(&quot;https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&quot;);</style>
+  </defs>
+  <g
+     id="g421">
+    <g
+       class="Pins.lay"
+       transform="translate(5.502,0.5)"
+       id="_P0.kcpw2h502ot"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect8" />
+      <g
+         id="g16">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect10" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text14"><tspan
+             x="13"
+             y="9"
+             id="tspan12">1</tspan></text>
+      </g>
+    </g>
+    <g
+       class="Pins.lay"
+       transform="translate(5.502,40.5)"
+       id="_P1.kcpw2h502ou"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect19" />
+      <g
+         id="g27">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect21" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text25"><tspan
+             x="13"
+             y="6.8099999"
+             id="tspan23">2</tspan></text>
+      </g>
+    </g>
+    <g
+       class="Pins.lay"
+       transform="translate(25.501,0.5)"
+       id="_P2.kcpw2h512ov"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect30" />
+      <g
+         id="g38">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect32" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text36"><tspan
+             x="13"
+             y="9"
+             id="tspan34">3</tspan></text>
+      </g>
+    </g>
+    <g
+       class="Pins.lay"
+       transform="translate(25.501,40.5)"
+       id="_P3.kcpw2h512ow"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect41" />
+      <g
+         id="g49">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect43" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text47"><tspan
+             x="13"
+             y="6.8099999"
+             id="tspan45">4</tspan></text>
+      </g>
+    </g>
+    <g
+       class="Pins.lay"
+       transform="translate(45.5,0.5)"
+       id="_P4.kcpw2h522ox"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect52" />
+      <g
+         id="g60">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect54" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text58"><tspan
+             x="13"
+             y="9"
+             id="tspan56">5</tspan></text>
+      </g>
+    </g>
+    <g
+       class="Pins.lay"
+       transform="translate(45.5,40.5)"
+       id="_P5.kcpw2h522oy"
+       v:layer_name="Pins">
+      <rect
+         fill="none"
+         height="10"
+         stroke="none"
+         width="15"
+         x="0"
+         y="0"
+         id="rect63" />
+      <g
+         id="g71">
+        <rect
+           x="0"
+           y="0"
+           width="15"
+           height="10"
+           fill="none"
+           stroke="none"
+           id="rect65" />
+        <text
+           font-size="7px"
+           fill="#000000"
+           fill-opacity="1"
+           text-anchor="end"
+           stroke="none"
+           id="text69"><tspan
+             x="13"
+             y="6.8099999"
+             id="tspan67">6</tspan></text>
+      </g>
+    </g>
+    <g
+       stroke-width="0.5"
+       transform="translate(8.875,0.5)"
+       id="g148">
+      <g
+         id="g146">
+        <g
+           transform="translate(11.625)"
+           id="g76">
+          <path
+             d="M 0,0 V 15"
+             fill="none"
+             stroke-width="0.5"
+             id="path74" />
+        </g>
+        <g
+           transform="translate(6.625,15)"
+           id="g80">
+          <path
+             d="M 5,35 V 20 L 0,0"
+             fill="none"
+             stroke-width="0.5"
+             id="path78" />
+        </g>
+        <g
+           transform="translate(31.625)"
+           id="g84">
+          <path
+             d="M 0,0 V 15"
+             fill="none"
+             stroke-width="0.5"
+             id="path82" />
+        </g>
+        <g
+           transform="translate(26.625,15)"
+           id="g88">
+          <path
+             d="M 5,35 V 20 L 0,0"
+             fill="none"
+             stroke-width="0.5"
+             id="path86" />
+        </g>
+        <g
+           transform="translate(51.625)"
+           id="g92">
+          <path
+             d="M 0,0 V 15"
+             fill="none"
+             stroke-width="0.5"
+             id="path90" />
+        </g>
+        <g
+           transform="translate(46.625,15)"
+           id="g96">
+          <path
+             d="M 5,35 V 20 L 0,0"
+             fill="none"
+             stroke-width="0.5"
+             id="path94" />
+        </g>
+        <g
+           transform="translate(9.125,25)"
+           id="g100">
+          <path
+             d="M 40,0 H 0"
+             fill="none"
+             stroke-dasharray="1.5, 2"
+             stroke-width="0.5"
+             id="path98" />
+        </g>
+        <g
+           stroke-width="0.5"
+           transform="translate(0,22)"
+           id="g116">
+          <g
+             id="g114">
+            <g
+               transform="rotate(30,3.4063719,5.1020952)"
+               id="g104">
+              <path
+                 d="M 6.1178,0 4.0786,2.0049 2.0392,0 0,2.0049 2.0392,4.0099 0,6.0147"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path102" />
+            </g>
+            <g
+               transform="rotate(30,13.406372,42.422603)"
+               id="g108">
+              <path
+                 d="M 6.1178,0 4.0786,2.0049 2.0392,0 0,2.0049 2.0392,4.0099 0,6.0147"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path106" />
+            </g>
+            <g
+               transform="rotate(30,23.406372,79.743111)"
+               id="g112">
+              <path
+                 d="M 6.1178,0 4.0786,2.0049 2.0392,0 0,2.0049 2.0392,4.0099 0,6.0147"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path110" />
+            </g>
+          </g>
+        </g>
+        <g
+           stroke-width="0.5"
+           transform="translate(1.1249,27.4267)"
+           id="g144">
+          <g
+             id="g142">
+            <g
+               transform="rotate(-103,1.7951579,1.9075395)"
+               id="g120">
+              <path
+                 d="M 3.0258,5.0568 1.5131,0 0,5.0568 Z"
+                 fill="#000000"
+                 fill-opacity="0.99"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-opacity="1"
+                 stroke-width="0.5"
+                 id="path118" />
+            </g>
+            <g
+               transform="rotate(167,4.2868328,0.78417572)"
+               id="g124">
+              <path
+                 d="M 0,0 H 3.8007"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path122" />
+            </g>
+            <g
+               transform="rotate(-103,11.795258,-6.0468992)"
+               id="g128">
+              <path
+                 d="M 3.0258,5.0568 1.5131,0 0,5.0568 Z"
+                 fill="#000000"
+                 fill-opacity="0.99"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-opacity="1"
+                 stroke-width="0.5"
+                 id="path126" />
+            </g>
+            <g
+               transform="rotate(167,14.286833,1.9235318)"
+               id="g132">
+              <path
+                 d="M 0,0 H 3.8007"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path130" />
+            </g>
+            <g
+               transform="rotate(-103,21.795258,-14.001258)"
+               id="g136">
+              <path
+                 d="M 3.0258,5.0568 1.5131,0 0,5.0568 Z"
+                 fill="#000000"
+                 fill-opacity="0.99"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-opacity="1"
+                 stroke-width="0.5"
+                 id="path134" />
+            </g>
+            <g
+               transform="rotate(167,24.286833,3.0628879)"
+               id="g140">
+              <path
+                 d="M 0,0 H 3.8007"
+                 fill="none"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 stroke-width="0.5"
+                 id="path138" />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

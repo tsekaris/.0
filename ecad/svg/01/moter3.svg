@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="87" height="83" viewBox="0 0 87 83" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g stroke-width="0.5" transform="translate(5.496 0.502)" v:json="{&quot;user&quot;:{&quot;group&quot;:1,&quot;priority&quot;:10,&quot;comp&quot;:6,&quot;cat&quot;:-6,&quot;pinstring&quot;:&quot;6,U1||6,V1||6,W1||6,PE||1,PE&quot;,&quot;pinset&quot;:1,&quot;loctype&quot;:0},&quot;menu&quot;:{&quot;vertical&quot;:true,&quot;hidepins&quot;:false,&quot;chk1&quot;:0}}" id="_M.kcpwi43c38a">
+        <g >
+            <g stroke-width="0.5" transform="translate(49 25)" display="none">
+                <g >
+                    <g transform="translate(5 5) rotate(270 5 0)">
+                        <path d="M 1e-13 1e-13 L 10 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(10 5) rotate(270 3 0)">
+                        <path d="M 1e-13 1e-13 L 6 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(15 5) rotate(270 1 0)">
+                        <path d="M 1e-13 1e-13 L 2 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(0 5)">
+                        <path d="M 10 0 L 1e-13 1e-13" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(0 3)">
+                        <path d="M 1e-13 1e-13 L 0 4" fill="none" stroke-width="0.5"/>
+                    </g>
+                </g>
+            </g>
+            <g transform="translate(13 14)">
+                <ellipse cx="16" cy="16" fill="#ffffff" fill-opacity="1" rx="16" ry="16" stroke-width="0.5"/>
+            </g>
+            <g stroke-width="0.5" transform="translate(21 21.3082)">
+                <g >
+                    <g transform="translate(3.4624 0)">
+                        <path d="M 0 0 L 1.2109 0 L 3.5352 5.8008 L 5.8594 0 L 7.0752 0 L 7.0752 7.1094 L 6.1377 7.1094 L 6.1377 4.3408 L 6.2256 1.3525 L 3.8916 7.1094 L 3.1738 7.1094 L 0.8447 1.3672 L 0.9375 4.3408 L 0.9375 7.1094 L 0 7.1094 L 0 0 Z" fill="#000000" stroke="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                    </g>
+                    <g stroke-width="0.5" transform="translate(0 10.8094)">
+                        <g >
+                            <g transform="translate(5 1.0742)">
+                                <path d="M 10 2.1651 C 5 9.6651 5 -5.3349 0 2.165" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(-1 0)">
+                                <path d="M 1.3008 3.5552 L 1.3008 2.8916 L 1.9116 2.8916 Q 2.4873 2.8828 2.8169 2.5884 Q 3.1465 2.2939 3.1465 1.793 Q 3.1465 0.668 2.0259 0.668 Q 1.4985 0.668 1.1843 0.969 Q 0.8701 1.27 0.8701 1.7666 L 0.0571 1.7666 Q 0.0571 1.0063 0.613 0.5032 Q 1.1689 0 2.0259 0 Q 2.9312 0 3.4453 0.479 Q 3.9595 0.958 3.9595 1.8105 Q 3.9595 2.228 3.6892 2.6191 Q 3.4189 3.0103 2.9531 3.2036 Q 3.4805 3.3706 3.7683 3.7573 Q 4.0562 4.144 4.0562 4.7021 Q 4.0562 5.5635 3.4937 6.0688 Q 2.9312 6.5742 2.0303 6.5742 Q 1.1294 6.5742 0.5647 6.0864 Q 0 5.5986 0 4.7988 L 0.8174 4.7988 Q 0.8174 5.3042 1.147 5.6074 Q 1.4766 5.9106 2.0303 5.9106 Q 2.6191 5.9106 2.9312 5.603 Q 3.2432 5.2954 3.2432 4.7197 Q 3.2432 4.1616 2.9004 3.8628 Q 2.5576 3.564 1.9116 3.5552 L 1.3008 3.5552 Z" fill="#000000" stroke="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5"/>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g transform="translate(45 0)" display="none">
+                <path d="M 0 30 L 4.1667 30 L 25 12.8571 L 25 0" fill="none" stroke-width="0.5"/>
+            </g>
+            <g stroke-width="0.5" transform="translate(10 0)">
+                <g >
+                    <g transform="translate(13 7) rotate(270 7 0)">
+                        <path d="M 14 0 L 1e-13 1e-13" fill="none" stroke-width="0.5"/>
+                    </g>
+                    <g transform="translate(32.56 0)">
+                        <path d="M 7.4375 0 L 7.4375 15.3191 L 0 21.4375" fill="none" stroke-width="0.5"/>
+                    </g>
+                    <g>
+                        <path d="M 1e-13 1e-13 L 0 15.1596 L 5.5 21" fill="none" stroke-width="0.5"/>
+                    </g>
+                </g>
+            </g>
+            <g stroke-width="0.5" transform="translate(49 6)" display="none">
+                <g >
+                    <g stroke-width="0.5" transform="translate(0 22)">
+                        <g >
+                            <g stroke-width="0.5">
+                                <g />
+                            </g>
+                            <g>
+                                <path d="M 1e-13 1e-13 L 0 4" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(0.25 2)">
+                                <path d="M 1e-13 1e-13 L 9.75 0 L 9.75 14" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(5 16)">
+                                <path d="M 1e-13 1e-13 L 10 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(7 19)">
+                                <path d="M 1e-13 1e-13 L 6 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(9 22)">
+                                <path d="M 1e-13 1e-13 L 2 0" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="0.5"/>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g class="Desc.lay" transform="translate(4 60.002)" id="_Desc.kcpwi43g394" v:layer_name="Desc">
+                <rect fill="none" height="20" stroke="none" width="50" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="50" height="20" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" font-size="8" stroke="none">
+                        <tspan x="25" y="10">AC Motor 3P</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(-4.996 -0.002)" id="_P0.kcpwi43g395" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" text-anchor="end" font-size="7px" stroke="none">
+                        <tspan x="13" y="9">U1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(15.004 -0.002)" id="_P1.kcpwi43g396" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" text-anchor="end" font-size="7px" stroke="none">
+                        <tspan x="13" y="9">V1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(35.004 -0.002)" id="_P2.kcpwi43h397" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" text-anchor="end" font-size="7px" stroke="none">
+                        <tspan x="13" y="9">W1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(55 0)" display="none" id="_P3.kcpwi43h398" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text fill="#000000" fill-opacity="1" text-anchor="end" font-size="7px" stroke="none">
+                        <tspan x="13" y="9">PE</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+        <g transform="translate(4 50.002)">
+            <rect x="0" y="0" width="50" height="10" fill="none" stroke="none"/>
+            <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="25" y="10">M11</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

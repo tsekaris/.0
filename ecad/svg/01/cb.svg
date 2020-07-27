@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:v="http://vecta.io" width="122" height="53" viewBox="0 0 122 53" v:json="{&quot;_titleBlocks_datadata&quot;:&quot;&quot;,&quot;settings&quot;:{&quot;locA&quot;:&quot;1.25 in&quot;,&quot;locB&quot;:&quot;0.75 in&quot;,&quot;locC&quot;:&quot;1.25 in&quot;,&quot;locD&quot;:&quot;0.75 in&quot;,&quot;locSep&quot;:&quot;.&quot;,&quot;locPage&quot;:&quot;/&quot;},&quot;_titleBlocks_dataCompany&quot;:&quot;&quot;,&quot;_titleBlocks_dataProject&quot;:&quot;&quot;,&quot;_titleBlocks_dataClient&quot;:&quot;&quot;,&quot;_titleBlocks_dataDrawingNo&quot;:&quot;&quot;}">
+    <style>
+        <![CDATA[svg{stroke:#000;stroke-linecap:round;stroke-linejoin:round;fill:#fff;fill-rule:evenodd;font-family:Roboto;font-size:14px;text-anchor:middle}svg text{stroke:none}]]>
+    </style>
+    <defs>
+        <style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style>
+    </defs>
+    <g transform="translate(0.5 0.5)" id="_Q.kcpwcogl2yi" v:json="{&quot;user&quot;:{&quot;group&quot;:1,&quot;priority&quot;:20,&quot;comp&quot;:3,&quot;cat&quot;:-3,&quot;pinstring&quot;:&quot;6,1||1,2||6,3||1,4||6,5||1,6&quot;,&quot;pinset&quot;:1,&quot;loctype&quot;:1},&quot;menu&quot;:{&quot;vertical&quot;:true,&quot;hidepins&quot;:false,&quot;chk1&quot;:0}}">
+        <g >
+            <g class="Pins.lay" transform="translate(15.004 0)" id="_P0.kcpwcogm2yp" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">1</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(15.004 40)" id="_P1.kcpwcogm2yq" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">2</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(35.004 0)" id="_P2.kcpwcogn2yr" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">3</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(35.004 40)" id="_P3.kcpwcogn2ys" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">4</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(55.004 0)" id="_P4.kcpwcogo2yt" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="9">5</tspan>
+                    </text>
+                </g>
+            </g>
+            <g class="Pins.lay" transform="translate(55.004 40)" id="_P5.kcpwcogo2yu" v:layer_name="Pins">
+                <rect fill="none" height="10" stroke="none" width="15" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="15" height="10" fill="none" stroke="none"/>
+                    <text font-size="7" fill="#000000" fill-opacity="1" text-anchor="end" stroke="none">
+                        <tspan x="13" y="6.81">6</tspan>
+                    </text>
+                </g>
+            </g>
+            <g stroke-width="0.5" transform="translate(10 0)">
+                <g >
+                    <g stroke-width="0.5" transform="translate(0 20)" display="none">
+                        <g >
+                            <g>
+                                <path d="M 1e-13 1e-13 L 0 10" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(0 5)">
+                                <path d="M 1e-13 1e-13 L 8 0" fill="none" stroke-dasharray="1.5 2" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(8 5)">
+                                <path d="M 4 0 L 2 5 L 1e-13 1e-13" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(12 5)">
+                                <path d="M 5.5 0 L 1e-13 1e-13" fill="none" stroke-dasharray="1.5 2" stroke-width="0.5"/>
+                            </g>
+                        </g>
+                    </g>
+                    <g stroke-width="0.5" transform="translate(15 0)">
+                        <g >
+                            <g transform="translate(5 0)">
+                                <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(0 15)">
+                                <path d="M 5 35 L 5 20 L 1e-13 1e-13" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(25 0)">
+                                <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(20 15)">
+                                <path d="M 5 35 L 5 20 L 1e-13 1e-13" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(45 0)">
+                                <path d="M 1e-13 1e-13 L 0 15" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(40 15)">
+                                <path d="M 5 35 L 5 20 L 1e-13 1e-13" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(2.5 25)">
+                                <path d="M 40 0 L 1e-13 1e-13" fill="none" stroke-dasharray="1.5 2" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(2.5 12.5)">
+                                <path d="M 1e-13 1e-13 L 5 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(2.5 12.5)">
+                                <path d="M 5 0 L 0 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(22.5 12.5)">
+                                <path d="M 1e-13 1e-13 L 5 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(22.5 12.5)">
+                                <path d="M 5 0 L 0 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(42.5 12.5)">
+                                <path d="M 1e-13 1e-13 L 5 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                            <g transform="translate(42.5 12.5)">
+                                <path d="M 5 0 L 0 5" fill="none" stroke-width="0.5"/>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g class="Desc.lay" transform="translate(70 30)" id="_Desc.kcpwcogr2zf" v:layer_name="Desc">
+                <rect fill="none" height="20" stroke="none" width="50" x="0" y="0"/>
+                <g>
+                    <rect x="0" y="0" width="50" height="20" fill="none" stroke="none"/>
+                    <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                        <tspan x="25" y="10">Circuit </tspan>
+                        <tspan x="25" y="19.6">Breaker 3P</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+        <g transform="translate(70 20)">
+            <rect x="0" y="0" width="50" height="10" fill="none" stroke="none"/>
+            <text font-size="8" fill="#000000" fill-opacity="1" stroke="none">
+                <tspan x="25" y="6.64">Q10</tspan>
+            </text>
+        </g>
+    </g>
+</svg>
