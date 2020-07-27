@@ -1,3 +1,7 @@
+/* eslint-disable max-classes-per-file */
+// Το παραπάνω ενεργοποιήθηκε από το babel-eslint
+// Το babel-eslint το εγκατεέστησα για να δημιουργώ class properties χωρίς this.
+
 // https://github.com/junegunn/fzf/issues/662
 // import { spawn } from 'child_process';
 // den letourgei me es6
@@ -95,80 +99,11 @@ function fzf(db) {
   return returnObj;
 }
 
-async function selectAmper() {
-  try {
-    let sql = '';
-    let sqlResult;
-    let promptData; // Το έκανα για να πειραματίζομαι με inquirer και με το fzf
-
-    promptData = {
-      type: 'input',
-      name: 'amper',
-      message: 'Amper:',
-    };
-
-    const amper = fzf(promptData).value;
-    // const { amper } = await prompt(promptData);
-
-    sql = `select distinct type  from devices where aMin <= ${amper} and aMax >= ${amper}`;
-    sqlResult = await database.all(sql);
-    promptData = {
-      type: 'list',
-      name: 'type',
-      message: 'Type:',
-      choices: sqlResult.map((element) => element.type),
-    };
-
-    const type = fzf(promptData).value;
-    // const { type } = await prompt(promptData);
-
-    sql = `select distinct poles  from devices where type = '${type}' and aMin <= ${amper} and aMax >= ${amper}`;
-    sqlResult = await database.all(sql);
-    promptData = {
-      type: 'list',
-      name: 'poles',
-      message: 'Poles:',
-      choices: sqlResult.map((element) => element.poles),
-    };
-
-    const poles = fzf(promptData).value;
-    // const { poles } = await prompt(promptData);
-
-    sql = `select distinct kA from devices where type = '${type}' and poles = '${poles}' and aMin <= ${amper} and aMax >= ${amper}`;
-    sqlResult = await database.all(sql);
-
-    promptData = {
-      type: 'list',
-      name: 'kA',
-      message: 'kA:',
-      choices: sqlResult.map((element) => element.data.replace('[', '').replace(']', '')),
-    };
-
-    let data = fzf(promptData).value;
-    data = data.split(',');
-    data = JSON.stringify(data);
-    // const { data } = await prompt(promptData);
-
-    sql = `select id, name, price from devices where type = '${type}' and poles = '${poles}' and data = '${data}' and aMin <= ${amper} and aMax >= ${amper}`;
-    sqlResult = await database.all(sql);
-    promptData = {
-      type: 'list',
-      name: 'selection',
-      message: 'Select:',
-      choices: sqlResult.map((element) => `${element.id} ${element.name} ${element.price}€`),
-    };
-
-    const selection = fzf(promptData).value;
-    // const { selection } = await prompt(promptData);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 const sel = {
   database: null,
 
   async open() {
+    // Ανοίγει την βάση δεδομένων
     try {
       this.database = await sqlite.open({
         filename: './.tmp/abb.db',
@@ -180,6 +115,7 @@ const sel = {
   },
 
   async close() {
+    // Κλείνει την βάση δεδομένων
     try {
       await this.database.close();
       this.database = null;
@@ -188,16 +124,22 @@ const sel = {
     }
   },
 
-  async all({ type = 'mcb', n = 100 }) {
+  async all({ type = 'mcb', ...data }) {
+    // Εμφανίζει όλες τι επιλογές από ένα type.
+    // a: Τα amper της τελευταίας επιλογής.
+    // Promise.all βγάζει προειδοποίηση για memory leak
+    const aMax = data.a;
     try {
       const promises = [];
-      for (let i = 1; i <= n; i += 1) {
-        promises.push(this[type]({ a: i }));
+      for (let i = 1; i <= aMax; i += 1) {
+        promises.push(this[type]({ ...data, a: i }));
       }
       const devices = await Promise.all(promises);
       devices.forEach((device, index) => {
-        console.log(index, device.name);
+        device.a = index;
+        console.log(device);
       });
+      // console.log(devices);
     } catch (e) {
       console.log(e);
     }
@@ -216,6 +158,7 @@ const sel = {
           price: d.price,
           type: d.type,
           p: d.p,
+          kA: d.kA,
           aMin: d.aMin,
           aMax: d.aMax,
           ch: d.ch,
@@ -293,7 +236,6 @@ const sel = {
     // στα a καλύτερα να βάζεις τα a του ασφαλιστικού και όχι του κινητήρα
     try {
       let amper = a;
-
       if (ch === 'ac1') {
         // για αντιστάσεις
         amper /= 1.3;
@@ -331,76 +273,53 @@ const sel = {
       return null;
     }
   },
+  volt(type, clients = 0) {
+    return {
+      type,
+      clients,
+    };
+  },
 };
 
-async function mpcb_rly(dbIn) {
+async function yYY({ a = 0, cb = {}, rly = {} }) {
   try {
-    const db = {
-      a: 0,
-      ...dbIn,
-    };
-    let cb1;
-    let rly1;
-
-    cb1 = await mpcb({ a: db.a });
-    rly1 = await rly({ a: db.a });
-
-    return { cb1, rly1 };
+    // p for page
+    const p = {};
+    p.cb1 = await sel.mpcb({ a, ...cb });
+    p.rly1 = await sel.rly({ a, ...rly });
+    p.cb2 = { ...p.cb1 };
+    p.rly2 = { ...p.rly1 };
+    return p;
   } catch (e) {
     return null;
   }
 }
 
-async function yYY(dbIn) {
+async function yD({ a = 0, cb = {}, thr = {} } = {}) {
   try {
-    const db = {
-      a: 0,
-      ...dbIn,
-    };
-    let cb1;
-    let rly1;
-    let cb2;
-    let rly2;
-
-    cb1 = await mpcb({ a: db.a });
-    cb2 = { ...cb1 };
-    rly1 = await rly({ a: db.a });
-    rly2 = { ...rly1 };
-    return {
-      cb1,
-      rly1,
-      cb2,
-      rly2,
-    };
-  } catch (e) {
-    return null;
-  }
-}
-
-async function yD(dbIn) {
-  try {
-    const db = {
-      a: 0,
-      ...dbIn,
-    };
     let cb1;
     let rlyMain;
     let rlyDelta;
     let rlyStar;
     let thr1;
 
-    if (db.a < 100) {
-      cb1 = await mpcb({ a: db.a });
-    } else {
-      cb1 = await cb({ a: db.a });
-    }
-    rlyMain = await rly({ a: db.a * 0.58 });
+    rlyMain = await sel.rly({ a: a * 0.58 });
     rlyDelta = { ...rlyMain };
-    rlyStar = await rly({ a: db.a * 0.33 });
-
-    thr1 = await thr({ a: db.a * 0.58, rly: rlyDelta });
-
+    rlyStar = await sel.rly({ a: a * 0.33 });
+    if (a < 100) {
+      cb1 = await sel.mpcb({ a });
+      return {
+        a,
+        cb1,
+        rlyMain,
+        rlyDelta,
+        rlyStar,
+      };
+    }
+    cb1 = await sel.cb({ a, ...cb });
+    thr1 = await sel.thr({ a: a * 0.58, rly: rlyDelta, ...thr });
     return {
+      a,
       cb1,
       rlyMain,
       rlyDelta,
@@ -408,9 +327,164 @@ async function yD(dbIn) {
       thr1,
     };
   } catch (e) {
-    console.log(e);
     return null;
   }
 }
 
-sel.all({ type: 'rly', n: 200 });
+async function mpcbRly({ a = 0 } = {}) {
+  // 3p+pe -> mpcb1.3p -> rly1.3p -> x.3p+pe -> moter.3p+pe
+  // dcL -> mpcb1.no -> di1
+  // dcL -> rly1.no -> di2
+  // do1 -> mrly1.coil -> dcM
+  // acL -> mrly1.no -> rly1.coil -> acN
+  try {
+    const mpcb1 = await sel.mpcb({ a });
+    const rly1 = await sel.rly({ a });
+    return { a, mpcb1, rly1 };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function simpleStarter({ motors = 1, a = 0 } = {}) {
+  try {
+    if (motors === 1) {
+      const mpcb = await sel.mpcb({ a });
+      const rly = await sel.rly({ a });
+      return { a, mpcb, rly };
+    }
+    const aTotal = a * motors;
+    const mcb = await sel.mcb({ a: aTotal });
+    const rly = await sel.rly({ a: aTotal });
+    const mpcbs = Array(motors).fill(await sel.mpcb({ a }));
+    return {
+      a,
+      aTotal,
+      mcb,
+      rly,
+      mpcbs,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+class Page {
+  constructor({ id, text } = {}) {
+    this.id = id;
+    this.text = text;
+    this.elements = {};
+  }
+
+  draw(x = 0, y = 0) {
+    this.xStart = x;
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+
+  cell(width = 1) {
+    this.x += width;
+    return this;
+  }
+
+  row() {
+    this.x = this.xStart;
+    this.y += 1;
+    return this;
+  }
+
+  main(type, id, data = {}) {
+    const w = data.w || 1; // width
+    const h = data.x || 1; // height
+    const name = type + id;
+    this.elements[name] = {
+      x: this.x,
+      y: this.y,
+      w,
+      h,
+      name,
+      type,
+      ...data,
+      subs: [],
+    };
+    this.x += w;
+    return this;
+  }
+
+  sub(mainName, name, data = {}) {
+    const w = data.w || 1; // width
+    const h = data.h || 1; // height
+    this.elements[mainName].subs.push({ name, x: this.x, y: this.y });
+    this.x += w;
+    return this;
+  }
+
+  ext(type, id, data = {}) {
+    const w = data.w || 1; // width
+    const h = data.h || 1; // height
+    const name = type + id;
+    this.elements[name] = {
+      x: this.x,
+      y: this.y,
+      w,
+      h,
+      name,
+      type,
+      ...data,
+    };
+    this.x += w;
+    return this;
+  }
+}
+
+// sel.all({ type: 'cb', kA: 50, a: 10 });
+//
+async function main() {
+  // const devices = await yYY({ a: 10 });
+  // console.log(devices);
+  const p1 = new Page({ id: 1, text: 'Paokara' });
+
+  p1.draw(0, 0)
+    .ext('l')
+    .ext('l2')
+    .ext('l3')
+    .row()
+    .main('mpcb', 1, {
+      w: 3,
+      p: '3p',
+      no: 1,
+    })
+    .row()
+    .main('rly', 1, {
+      w: 3,
+      p: '3p',
+      no: 1,
+    });
+  p1.draw(4, 0)
+    .ext('dcL', { type: 'dcL' })
+    .row()
+    .sub('mpcb1', 'no1')
+    .row()
+    .ext('di1', { type: 'di' })
+    .row()
+    .row()
+    .ext('do1', { type: 'do' })
+    .row()
+    .main('mrly', 1, { volts: 'dcL', no: 1 })
+    .row()
+    .ext('dcM', { type: 'dcM' });
+  p1.draw(5, 0)
+    .ext('dcL', { type: '24 dc' })
+    .row()
+    .sub('rly1', 'no1')
+    .row()
+    .ext('di2', { type: 'di' })
+    .row()
+    .ext('acL', { type: 'acL' })
+    .sub('mrly1', 'no1')
+    .sub('rly1', 'coil')
+    .ext('acN', { type: 'acN' });
+  console.log(JSON.stringify(p1, null, ' '));
+}
+
+main();
