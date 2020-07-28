@@ -9,7 +9,7 @@ async function main() {
     let file = await fetch('svg/main.svg');
     let text = await file.text();
     document.body.insertAdjacentHTML('afterbegin', text);
-    window.mpcb = SVG('#text');
+    window.txt = SVG('#text');
   } catch (error) {
     console.log(error);
   }
