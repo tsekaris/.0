@@ -3,8 +3,9 @@ const fetch = require('node-fetch');
 const fsp = require('fs').promises;
 const inquirer = require('inquirer');
 
+const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=xlsx';
+
 (async () => {
-  const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=xlsx';
   const response = await fetch(link);
   const buffer = await response.buffer();
   const workbook = xlsx.read(buffer, { type: 'buffer' });
