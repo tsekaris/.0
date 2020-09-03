@@ -22,4 +22,6 @@ const inquirer = require('inquirer');
   await fsp.mkdir('.tmp', { recursive: true }); // Απαραίτητο το recursive στην περίπτωση που υπάρχει ο φάκελος
   await fsp.writeFile('.tmp/data.json', JSON.stringify(data, null, 2));
   return data;
-})().then(console.dir);
+})().then((data) => {
+  console.log(data.length);
+});
