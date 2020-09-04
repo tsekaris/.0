@@ -6,7 +6,7 @@ pc () {
     prefix=${HOME}/.0/
     #Εμφάνιση των scripts χωρίς το prefix.
     #Το -L απαραίτητο για συντομεύσεις
-    script=$(find -L ~/.0 -name "*.sh" ! -name ".install.sh" ! -name ".install_all.sh" | awk '{ gsub("'${prefix}'","",$1); print $1 }'| fzf)
+    script=$(find -L ~/.0 -name "*.sh" -or -name "*.pc.js" ! -name ".install.sh" ! -name ".install_all.sh" | awk '{ gsub("'${prefix}'","",$1); print $1 }'| fzf)
     case "$1" in
         w)
             #Το όνομα του tmux window.
@@ -44,7 +44,11 @@ pc () {
         *)
             if [ -f ${prefix}${script} ] 
             then #Αν έχει επιλεχθεί script που υπάρχει.
-                bash ${prefix}${script}
+                if echo "$script" | grep -q ".pc.js"; then
+                  node ${prefix}${script}
+                else
+                  bash ${prefix}${script}
+                fi
             fi
             ;;
     esac
