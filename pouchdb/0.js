@@ -9,22 +9,36 @@ db.sync(dbServer, {
     console.log(err);
 });
 
-let a = 14;
+db.createIndex({
+    index: {
+        fields: ['brand', 'type', 'p', 'ch', 'kA', 'a'],
+        name: 'abb',
+        ddoc: 'tsekIndexes'
+    }
+})
 
-querry = {
-    selector: {
-        type: 'mcb',
-        p: '1p',
-        ch: 'B',
-        kA: 10,
-        aMin: {
-            $gte: a
-        }
-    },
-    fields: ['_id'],
-    limit: 1
+let abb = {
+    mcb: function({p='1p', ch='C', kA=10, a=0, n=0.8}) {
+        db.find({
+            selector: {
+                brand: 'abb',
+                type: 'mcb',
+                p,
+                ch,
+                kA,
+                a: {
+                    $gte: a / n
+                },
+            },
+            fields: ['_id'],
+            use_index: ['tsekIndexes', 'abb'],
+            limit: 1,
+        }).then(console.log).catch(console.log);
+    }
 }
 
-
-db.find(querry).then(console.log);
-
+abb.mcb({
+    p: "1p",
+    ch: 'B',
+    a: 24
+});
