@@ -27,6 +27,7 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
+    "axios": "^0.20.0",
     "colors": "^1.4.0",
     "inquirer": "^7.2.0",
     "inquirer-search-list": "^1.2.6",
