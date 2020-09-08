@@ -13,7 +13,7 @@ db.createIndex({
     index: {
         fields: ['brand', 'type', 'p', 'ch', 'kA', 'a'],
         name: 'abb',
-        ddoc: 'tsekIndexes'
+        ddoc: 'indexes'
     }
 })
 
@@ -31,7 +31,7 @@ let abb = {
                 },
             },
             fields: ['_id'],
-            use_index: ['tsekIndexes', 'abb'],
+            use_index: ['indexes', 'abb'],
             limit: 1,
         }).then(console.log).catch(console.log);
     }
