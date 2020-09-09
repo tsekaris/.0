@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const fsp = require('fs').promises;
 const inquirer = require('inquirer');
 
-const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=xlsx';
+const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJSXIfxc37QtcXd_3Q4P7ZKHxExqj3A8g0Dh8n-q-aFrGlgCJAyPOAvFcTQvHpTpfndPnwKy-xUtrd/pub?output=xlsx';
 
 (async () => {
   const response = await fetch(link);
