@@ -9,6 +9,7 @@ db.destroy().then(function() {
     }).on('error', function(err) {
         console.log(err);
     });
+    
 
 })
 
