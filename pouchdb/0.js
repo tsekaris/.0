@@ -1,104 +1,57 @@
-var db = new PouchDB('db');
-
 var dbServer = new PouchDB('http://192.168.1.4:3000/parts');
+var db = new PouchDB('db');
+db.destroy().then(function() {
+    db = new PouchDB('db');
+    db.sync(dbServer, {
+        live: true,
+    }).on('change', function(change) {
+        console.log(change);
+    }).on('error', function(err) {
+        console.log(err);
+    });
 
-db.sync(dbServer, {
-    live: true,
-}).on('change', function(change) {
-    console.log(change);
-}).on('error', function(err) {
-    console.log(err);
-});
-
-
-db.createIndex({
-    index: {
-        fields: ['brand', 'type', 'p', 'a'], // Ισως να μπει και ch
-        name: 'abb',
-        ddoc: 'indexes'
-    }
 })
 
+async function abb(query={}) {
+    try {
+        let createIndex = await db.createIndex({
+            index: {
+                fields: ['brand', 'type', 'p', 'a'],
+                name: 'abb',
+                ddoc: 'indexes'
+            }
+        });
+        if (createIndex.result === 'created' || createIndex.result === 'exists') {
+            console.log(createIndex);
+            query.brand = 'abb';
+            if (query.type === undefined) {
+                query.type = {
+                    $gt: null
+                }
+            }
 
-let abb = {
-    mcb: function({p=3, ch='C', kA=10, a=0, n=0.8}) {
-        db.find({
-            selector: {
-                brand: 'abb',
-                type: 'mcb',
-                p,
-                a: {
-                    $gte: a / n
-                },
-                ch,
-                kA,
+            if (query.p === undefined) {
+                query.p = {
+                    $gt: null
+                }
+            }
 
-            },
-            fields: ['_id'],
-            //use_index: ['indexes', 'abb'],
-            limit: 1, //Θα διαλέξει με τα μικρότερα a λόγω του _id
-        }).then(console.log).catch(console.log);
-    },
-    cb: function({p=3, ch='mch', kA=36, a=0, n=0.8}) {
-        db.find({
-            selector: {
-                brand: 'abb',
-                type: 'cb',
-                p,
-                a: {
-                    $gte: a / n
-                },
-                ch,
-                kA,
-            },
-            fields: ['_id'],
-            //use_index: ['indexes', 'abb'],
-            limit: 1, //Θα διαλέξει με τα μικρότερα a λόγω του _id
-        }).then(console.log).catch(console.log);
-    },
-    mpcb: function({a=0}) {
-        db.find({
-            selector: {
-                brand: 'abb',
-                type: 'mpcb',
-                p: 3,
-                a: {
-                    $gte: a
-                },
-                aMin: {
-                    $lte: a
-                },
+            //απαραίτητο αν δεν ορίσω καμία μια μεταβλητή από το index. Με null δεν λειτουργεί
+            if (query.a === undefined) {
+                query.a = {
+                    $gt: 0
+                }
+            }
 
-            },
-            fields: ['_id'],
-            //use_index: ['indexes', 'abb'],
-            //limit: 1, //Θα διαλέξει με τα μικρότερα a λόγω του _id
-        }).then(console.log).catch(console.log);
-    },
-    rly: function({type='rly', p=3, a=0, n=0.8}) {
-        db.find({
-            selector: {
-                brand: 'abb',
-                type, //Γιατί υπάρχει και rly_rail
-                p,
-                a: {
-                    $gte: a / n
-                },
-            },
-            fields: ['_id'],
-            //use_index: ['indexes', 'abb'],
-            limit: 1, //Θα διαλέξει με τα μικρότερα a λόγω του _id
-        }).then(console.log).catch(console.log);
-    },
-
+            let result = await db.find({
+                selector: query,
+                fields: ['_id'],
+                use_index: ['indexes', 'abb'],
+            });
+            console.log(result);
+            return result;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 }
-
-abb.mcb({
-    p: 1,
-    ch: 'B',
-    a: 24
-});
-
-abb.rly({
-    a: 36
-});
