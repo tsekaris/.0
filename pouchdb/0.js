@@ -16,31 +16,24 @@ db.destroy().then(function() {
 */
 var db = new PouchDB('parts');
 
-//let link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=tsv';
-//let link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=csv';
-//let link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pubhtml';
-
-
-/*
-fetch(link, {
-    mode: 'no-cors'
-}).then(response => response.text()).then(data => console.log(data));
-
-*/
-async function getFile(link){
-    let response = await fetch(link, {mode: 'no-cors'});
-    let text = await response.text();
-    return text;
+async function parts() {
+    try {
+        let response = await fetch('parts.json');
+        let data = await response.json();
+        let result = await db.bulkDocs(data);
+        return result;
+    } catch (err) {
+        console.log(err);
+    }
 }
 
-
-//getFile(link).then(console.log).catch(console.log);
+parts('parts.json').then(console.log);
 
 async function abbIndex() {
     try {
         return await db.createIndex({
             index: {
-                fields: ['brand', 'type', 'p', 'a'],
+                fields: ['brand', 'type', 'p'],
                 name: 'abb',
                 ddoc: 'indexes'
             }
@@ -69,14 +62,18 @@ async function abb(query={}) {
 
         //απαραίτητο αν δεν ορίσω καμία μια μεταβλητή από το index. Με null δεν λειτουργεί
         if (query.a === undefined) {
-            query.a = {
-                $gt: 0
-            }
-        }
+            let a = {
+                max: {
+                    $gt: 0                    
+                }
+            };
+            query.a = a;
 
+        }
+        console.log(query);
         let result = await db.find({
             selector: query,
-            fields: ['_id'],
+            //fields: ['_id'],
             use_index: ['indexes', 'abb'],
         });
         console.log(result);
