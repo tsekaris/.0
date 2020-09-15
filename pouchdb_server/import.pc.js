@@ -1,9 +1,8 @@
-const xlsx = require('xlsx');
 const fetch = require('node-fetch');
-const inquirer = require('inquirer');
+const fs = require('fs');
 const PouchDB = require('pouchdb');
 
-const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQJSXIfxc37QtcXd_3Q4P7ZKHxExqj3A8g0Dh8n-q-aFrGlgCJAyPOAvFcTQvHpTpfndPnwKy-xUtrd/pub?output=xlsx';
+const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=tsv';
 
 async function parts() {
   try {
@@ -11,17 +10,12 @@ async function parts() {
     await dbOld.destroy(); // delete και ξαναδημιουργία
     const db = new PouchDB('http://localhost:3000/parts');
     const response = await fetch(link);
-    const buffer = await response.buffer();
-    const workbook = xlsx.read(buffer, { type: 'buffer' });
-    const answer = await inquirer.prompt({
-      type: 'checkbox',
-      name: 'sheets',
-      message: 'Select sheets:',
-      choices: workbook.SheetNames,
-    });
+    const tsv = await response.text();
+    // const lines = tsv.split(/(?:\r\n|\r|\n)/g);
+    const lines = tsv.split('\n');
     let data = [];
-    answer.sheets.forEach((sheetName) => {
-      data = [...data, ...xlsx.utils.sheet_to_json(workbook.Sheets[sheetName])];
+    lines.forEach((line) => {
+      data = [...data, ...JSON.parse(line)];
     });
     console.log(data.length);
     return await db.bulkDocs(data);
