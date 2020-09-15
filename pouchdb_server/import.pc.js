@@ -1,33 +1,58 @@
 const fetch = require('node-fetch');
-const fs = require('fs');
 const PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-find'));
 
-const link = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIltzx-zQxBvDdgkBaP8Jbl62hUheFKy0NnkswMyG4Pl1HFxJfr1LXD3uRitr06OqucT5_TG34Yqfr/pub?output=tsv';
+let db = new PouchDB('http://localhost:3000/parts');
 
 async function parts() {
+  // Δεδομένα από google sheets.
+  // File -> Publish to the web
+  // Δεν χρειάζεται shared.
+  const id = '13_HE3uL66MY-mu_dwQHKcY6Hyq2k5lRdVmTIFXt02GA';
+  const sheet = 1;
   try {
-    const dbOld = new PouchDB('http://localhost:3000/parts');
-    await dbOld.destroy(); // delete και ξαναδημιουργία
-    const db = new PouchDB('http://localhost:3000/parts');
-    const response = await fetch(link);
-    const tsv = await response.text();
-    // const lines = tsv.split(/(?:\r\n|\r|\n)/g);
-    const lines = tsv.split('\n');
+    const response = await fetch(
+      `https://spreadsheets.google.com/feeds/cells/${id}/${sheet}/public/full?alt=json`,
+    );
+    const googleData = await response.json();
     let data = [];
-    lines.forEach((line) => {
-      data = [...data, ...JSON.parse(line)];
+    const dataTotals = {};
+    googleData.feed.entry.forEach((item) => {
+      const groupData = JSON.parse(item.content.$t);
+      dataTotals[groupData[0].type] = groupData.length;
+      data = [...data, ...groupData];
     });
-    console.log(data.length);
-    return await db.bulkDocs(data);
+    // Delete and create:
+    await db.destroy();
+    db = new PouchDB('http://localhost:3000/parts');
+    // Εισαγωγή docs
+    const docsResult = await db.bulkDocs(data);
+    const docsOk = [];
+    const docsNoOk = [];
+    docsResult.forEach((item) => {
+      if (item.ok) {
+        docsOk.push(item);
+      } else {
+        docsNoOk.push(item);
+      }
+    });
+    // Δημιουργία index.
+    const indexResult = await db.createIndex({
+      index: {
+        fields: ['brand', 'type', 'p', 'a.max'],
+        name: 'abb',
+        ddoc: 'indexes',
+      },
+    });
+    return {
+      data,
+      dataTotals,
+      docsNoOk,
+      docsOk,
+      indexResult,
+    };
   } catch (err) {
     console.log(err);
   }
 }
-
-parts().then((result) => {
-  result.forEach((item) => {
-    if (!item.ok) {
-      console.log(item.id);
-    }
-  });
-});
+parts().then(console.log);
