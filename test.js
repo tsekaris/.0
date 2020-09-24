@@ -1,4 +1,5 @@
-const fzf = require(`${process.env.HOME}/.0/fzf/module`);
+// const os = require(`${process.env.HOME}/.0/os/module`);
+const sh = require('sh');
 
 const choices = [
   'pe',
@@ -57,4 +58,4 @@ const choices = [
   'rtd i-',
 ];
 
-console.log(fzf.run({ message: 'Are you paok ?', choices }));
+console.log(sh.fzf({ message: 'Select voltage:', choices }));
