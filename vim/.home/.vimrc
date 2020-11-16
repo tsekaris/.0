@@ -43,7 +43,7 @@ inoremap jk <esc>
 inoremap kj <esc>
 
 "coc: fork of vscode
-let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html', 'coc-snippets']
+let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html', 'coc-snippets', 'coc-sh']
 "'coc-eslint': Πάντα εγκατάσταση local σε κάθε project
 
 "nnn
