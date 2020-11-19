@@ -1,5 +1,6 @@
 "Puggins
 call plug#begin('~/.vim/plugged')
+Plug 'liuchengxu/space-vim-theme'
 Plug'easymotion/vim-easymotion' "jump to word
 Plug 'sirver/ultisnips'
 Plug 'honza/vim-snippets'
@@ -18,6 +19,11 @@ let mapleader=" "
 "Εμφάνιση.
 set t_Co=256
 syntax on
+" Theme
+" Μου αρέσει γιατί χρωματίζει σωστά το vim-which-key.
+" Είναι και ο δημιουργός του vim-which-key.
+colorscheme space_vim_theme
+set background=dark
 
 " wrap type
 set lbr!
@@ -57,6 +63,9 @@ let g:which_key_map.v = {
       \ 's' : [':source ~/.vimrc'     , 'source .vimrc'],
       \ 'u' : [':PlugUpdate'     , 'update plugins'],
       \ 'w' : [':set wrap!'     , 'wrap lines'],
+      \ 't' : [':Colors'       , 'themes'],
+      \ 'd' : [':set background=dark'     , 'dark theme'],
+      \ 'l' : [':set background=light'     , 'light theme'],
       \ 'g' : [':PlugUpgrade'     , 'upGrade plugin manager']
       \ }
 
@@ -93,7 +102,9 @@ let g:which_key_map.b = {
 
 " fzf: για να δείχνει κρυφά αρχεία και να αγνοεί .git και node_modules.
 let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore node_modules --ignore .git --ignore *.swp -g ""'
-let g:fzf_preview_window = 'right:60%'
+let g:fzf_preview_window = 'up:70%'
+"let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
+let g:fzf_layout = { 'window': { 'width': 1, 'height': 1} }
 let g:which_key_map.f = {
       \ 'name' : '+fzf' ,
       \ 'f' : [':Files!'     , 'files'],
@@ -102,5 +113,6 @@ let g:which_key_map.f = {
       \ 'l' : [':BLines'       , 'lines of buffer'],
       \ 'L' : [':Lines'       , 'lines of buffers'],
       \ 's' : [':Snippets'       , 'snippets'],
+      \ 't' : [':Colors'       , 'themes'],
       \ 'h' : [':History'       , 'history']
       \ }
