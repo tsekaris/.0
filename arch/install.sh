@@ -95,7 +95,7 @@ chroot_actions(){
 
     # coding
     pacman -S git --noconfirm
-    pacman -S nodejs npm --noconfirm
+    pacman -S nodejs-lts-fermium npm --noconfirm
     pacman -S python python2 --noconfirm
 
     # xorg - hardware
@@ -104,6 +104,7 @@ chroot_actions(){
     pacman -S xorg-drivers --noconfirm #Όλοι οι drivers για κάρτες γραφικών, πληκτρολόγιο, ποντίκι, touch pads.
     pacman -S acpi --noconfirm #Για κατάσταση μπαταρίας.
     # Graphic drivers 
+    # Απο arch wiki για install σε usb.ε
     pacman -S xf86-video-vesa --noconfirm
     pacman -S xf86-video-ati --noconfirm
     pacman -S xf86-video-intel --noconfirm
@@ -124,7 +125,6 @@ chroot_actions(){
     # system
     pacman -S rxvt-unicode --noconfirm
     pacman -S urxvt-perls --noconfirm
-    pacman -S alacritty
     # pacman -S ntp --noconfirm
     # systemctl enable ntpd.service
     systemctl enable systemd-timesyncd.service
@@ -152,7 +152,6 @@ chroot_actions(){
     # sound
     pacman -S pulseaudio --noconfirm
     pacman -S pulseaudio-alsa --noconfirm
-    #pacman -S alsa-utils --noconfirm
     pacman -S pulsemixer --noconfirm
 
     # display
@@ -166,10 +165,10 @@ chroot_actions(){
     pacman -S rsync --noconfirm
     pacman -S sshfs --noconfirm
     pacman -S ntfs-3g --noconfirm
-    #pacman -S samba --noconfirm
-    #pacman -S gparted --noconfirm #we dont need gui
+    pacman -S samba --noconfirm
+    pacman -S gparted --noconfirm #we dont need gui
     pacman -S parted --noconfirm
-    #pacman -S pcmanfm --noconfirm #Δεν πιάνει χώρο αλλά να χρησιμοποιούμε μόνο τον nnn 
+    pacman -S pcmanfm --noconfirm #Δεν πιάνει χώρο αλλά να χρησιμοποιούμε μόνο τον nnn 
 
     # office
     pacman -S vim --noconfirm
@@ -181,13 +180,10 @@ chroot_actions(){
     pacman -S curl --noconfirm
     pacman -S wget --noconfirm
     pacman -S chromium --noconfirm
-    # pacman -S ttf-dejavu --noconfirm #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
-    #pacman -S firefox --noconfirm 
+    pacman -S ttf-dejavu --noconfirm #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
 
     # multimedia
-    pacman -S feh --noconfirm
     pacman -S sxiv --noconfirm
-    #pacman -S cmus --noconfirm # Το έκανα χρήση για να ακούω ράδιο. Πλέον εύκολα γίνεται μέσω mpv
     pacman -S mpv --noconfirm
     pacman -S libdvdcss --noconfirm #dvd play
 
@@ -199,7 +195,7 @@ chroot_actions(){
 
     user_actions(){
         cd ~
-        git clone https://github.com/tsekaris/0.git ~/.0
+        git clone https://github.com/tsekaris/.0.git ~/.0
         #dotfiles
         rm ~/.bashrc
         rm ~/.xinitrc
@@ -208,12 +204,12 @@ chroot_actions(){
         stow --target=$HOME xinit
         stow --target=$HOME Xresources
         stow --target=$HOME bash
-        stow --target=$HOME alias
-        # stow --target=$HOME vim
-        stow --target=$HOME feh
+        stow --target=$HOME vim
+        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.  com/junegunn/vim-plug/master/plug.vim
+        vim +PlugInstall +qall
     }
-    # export -f user_actions
-    # su "$user" -c "bash -c user_actions"
+    export -f user_actions
+    su "$user" -c "bash -c user_actions"
 }
 
 export -f chroot_actions
