@@ -1,0 +1,18 @@
+## Εγκατάσταση με anarchy wizard χωρίς xorg.
+
+Τα πακέτα που κάνει εγκατάσταση:
+
+base
+base-devel
+bash-completion
+cpupower
+dialog
+grub
+linux-headers
+netctl
+screenfetch
+vim
+wget
+wireless_tools
+wpa_actiond
+wpa_supplicant

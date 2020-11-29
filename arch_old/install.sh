@@ -45,7 +45,7 @@ echo "--Ranking mirrors--"
 curl -s "https://www.archlinux.org/mirrorlist/?country=GR&country=DE&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 6 - > /etc/pacman.d/mirrorlist
 
 pacman -Syy 
-pacstrap /mnt base base-devel linux linux-firmware
+pacstrap /mnt base base-devel
 genfstab -U /mnt >> /mnt/etc/fstab
 
 chroot_actions(){
@@ -95,7 +95,7 @@ chroot_actions(){
 
     # coding
     pacman -S git --noconfirm
-    pacman -S nodejs-lts-fermium npm --noconfirm
+    pacman -S nodejs npm --noconfirm
     pacman -S python python2 --noconfirm
 
     # xorg - hardware
@@ -103,14 +103,6 @@ chroot_actions(){
     pacman -S xorg-xinit --noconfirm
     pacman -S xorg-drivers --noconfirm #Όλοι οι drivers για κάρτες γραφικών, πληκτρολόγιο, ποντίκι, touch pads.
     pacman -S acpi --noconfirm #Για κατάσταση μπαταρίας.
-    # Graphic drivers 
-    # Απο arch wiki για install σε usb.ε
-    pacman -S xf86-video-vesa --noconfirm
-    pacman -S xf86-video-ati --noconfirm
-    pacman -S xf86-video-intel --noconfirm
-    pacman -S xf86-video-amdgpu --noconfirm
-    pacman -S xf86-video-nouveau --noconfirm
-    pacman -S xf86-video-fbdev --noconfirm
 
     #  UI
     pacman -S i3-wm --noconfirm
@@ -121,13 +113,16 @@ chroot_actions(){
     pacman -S gnome-keyring --noconfirm # Authentication problem.Τα polkit-gnome έχω την αίσθηση ότι κάνει εγκατάσταση πολλά.
     pacman -S xdg-user-dirs --noconfirm #home directions
     pacman -S dmenu --noconfirm
+    pacman -S rofi --noconfirm
 
     # system
     pacman -S rxvt-unicode --noconfirm
     pacman -S urxvt-perls --noconfirm
-    # pacman -S ntp --noconfirm
-    # systemctl enable ntpd.service
-    systemctl enable systemd-timesyncd.service
+    #pacman -S xterm --noconfirm
+    #pacman -S bash-completion --noconfirm #anarchy
+    #pacman -S cpupower --noconfirm #anarchy
+    pacman -S ntp --noconfirm
+    systemctl enable ntpd.service
     pacman -S openssh --noconfirm
     systemctl enable sshd.service
     pacman -S tmux --noconfirm
@@ -140,9 +135,6 @@ chroot_actions(){
 
     # network
     systemctl enable dhcpcd.service
-    pacman -S networkmanager network-manager-applet --noconfirm
-    systemctl enable NetworkManager
-
     pacman -S dialog --noconfirm #wifi menu.
     pacman -S wpa_supplicant --noconfirm #Διαχείριση κωδικών.
     pacman -S wpa_actiond --noconfirm #Αυτόματη είσοδος σε wifi δίκτυα.
@@ -152,58 +144,109 @@ chroot_actions(){
     # sound
     pacman -S pulseaudio --noconfirm
     pacman -S pulseaudio-alsa --noconfirm
+    #pacman -S alsa-utils --noconfirm
     pacman -S pulsemixer --noconfirm
 
     # display
-    pacman -S arandr --noconfirm #gui. Μπορεί να εγκατασταθεί άνετα από scripts.
+    #pacman -S arandr --noconfirm #gui. Μπορεί να εγκατασταθεί άνετα από scripts.
+    #pacman -S lxrandr --noconfirm
     #pacman -S autorandr --noconfirm #script για auto configuration των display
 
-    # files
-    pacman -S nnn --noconfirm 
+    # files - ranger
+    pacman -S ranger --noconfirm 
+    pacman -S atool --noconfirm #ranger optional
+    pacman -S p7zip --noconfirm #atool optional
+    pacman -S tar --noconfirm #atool optional
+    pacman -S unrar --noconfirm #atool optional
+    pacman -S unzip --noconfirm #atool optional
+    pacman -S zip --noconfirm #atool optional
+    #pacman -S ffmpegthumbnailer --noconfirm #ranger optional. video preview.
+    pacman -S highlight --noconfirm #ranger optional. syntax highlighting. qt-base.
+    #pacman -S lynx --noconfirm #ranger optional. browser.
+    pacman -S w3m --noconfirm #ranger optional. browser. image preview.
+    #pacman -S poppler --noconfirm #ranger optional. pdf preview. qt5-base.
+    pacman -S transmission-cli --noconfirm #ranger optional. bitTorrent client. qt5-base.
     pacman -S udiskie --noconfirm #mount external disks
     pacman -S trash-cli --noconfirm
     pacman -S rsync --noconfirm
     pacman -S sshfs --noconfirm
     pacman -S ntfs-3g --noconfirm
+    #pacman -S samba --noconfirm
+    #pacman -S gparted --noconfirm #we dont need gui
     pacman -S parted --noconfirm
+    #pacman -S pcmanfm --noconfirm #Δεν πιάνει χώρο αλλά να χρησιμοποιούμε μόνο τον ranger
 
     # office
     pacman -S vim --noconfirm
-    pacman -S inkscape --noconfirm
-    pacman -S libreoffice-still --noconfirm
+    vim_plugins(){
+        pacman -S vim-nerdtree --noconfirm
+        pacman -S vim-ale --noconfirm
+        pacman -S vim-fugitive --noconfirm
+        pacman -S vim-ultisnips --noconfirm
+    }
+    vim_plugins # Μάλλον πρέπει να γίνεται μέσω vundle.
+    #pacman -S leafpad --noconfirm
+    #pacman -S imagemagick --noconfirm
+    #pacman -S pandoc --noconfirm # too big
+    #pacman -S inkscape --noconfirm
+    #pacman -S gimp --noconfirm # first use it
+    #pacman -S libreoffice-fresh --noconfirm
+    #pacman -S gnumeric --noconfirm
+    #pacman -S llpp --noconfirm #for testing 37mb
     pacman -S zathura zathura-pdf-mupdf --noconfirm
 
     # internet
     pacman -S curl --noconfirm
     pacman -S wget --noconfirm
     pacman -S chromium --noconfirm
-    pacman -S ttf-dejavu --noconfirm #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
+    #pacman -S firefox --noconfirm 
 
     # multimedia
+    pacman -S feh --noconfirm
     pacman -S sxiv --noconfirm
+    #pacman -S cmus --noconfirm # Το έκανα χρήση για να ακούω ράδιο. Πλέον εύκολα γίνεται μέσω mpv
     pacman -S mpv --noconfirm
     pacman -S libdvdcss --noconfirm #dvd play
 
     # dotfiles
     pacman -S stow --noconfirm
 
-    # fish
-    pacman -S fish --noconfirm
+    # zsh
+    pacman -S zsh --noconfirm
+    chsh -s /bin/zsh root
+    chsh -s /bin/zsh $USER
+    pacman -S ttf-dejavu --noconfirm #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
+    pacman -S zsh-autosuggestions --noconfirm 
+    pacman -S zsh-history-substring-search --noconfirm 
+    pacman -S zsh-syntax-highlighting --noconfirm 
+    #pacman -S zsh-completions --noconfirm # Δεν ξέρω πως να το χρησιμοποιήσω
+
 
     user_actions(){
         cd ~
-        git clone https://github.com/tsekaris/.0.git ~/.0
+        git clone https://github.com/tsekaris/0.git ~/.0
         #dotfiles
         rm ~/.bashrc
         rm ~/.xinitrc
-        cd ~/.0/arch/dotfiles
+        cd ~/.0/dotfiles
         stow --target=$HOME i3
         stow --target=$HOME xinit
         stow --target=$HOME Xresources
+        stow --target=$HOME ranger
         stow --target=$HOME bash
+        stow --target=$HOME zsh
+        stow --target=$HOME alias
         stow --target=$HOME vim
-        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.  com/junegunn/vim-plug/master/plug.vim
-        vim +PlugInstall +qall
+        stow --target=$HOME feh
+        # oh-my-zsh
+        #git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+        #cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+        vim_vundle(){
+            #vim plugins with vundle
+            git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+            vim +PluginInstall +qall
+        }
+        #vim_vundle
     }
     export -f user_actions
     su "$user" -c "bash -c user_actions"

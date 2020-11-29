@@ -1,0 +1,135 @@
+#!/bin/sh
+
+# color folders
+alias ls='ls --color=auto'
+
+# ranger nested problem
+ranger() {
+    if [ -z "$RANGER_LEVEL" ]; then
+        /usr/bin/ranger "$@"
+    else
+        exit
+    fi
+}
+
+pc(){
+    BROWSER=chromium
+
+    # API
+    app(){
+        ($1 &) &>/dev/null
+    }
+
+    link_app(){
+        eval "($BROWSER --app=$1 &) &>/dev/null"
+    }
+
+    # Actions
+
+    upgrade(){
+        sudo pacman -Syu
+    }
+
+    install(){
+        sudo pacman -S $1
+    }
+
+    sound(){
+        pulsemixer
+    }
+
+    battery(){
+        acpi
+    }
+
+    browser(){
+        link_app https://www.google.com
+    }
+
+    
+    #google
+    
+    contacts(){
+        link_app https://contacts.google.com/
+    }
+
+    mail(){
+        link_app https://mail.google.com
+    }
+
+    mail_new(){
+        link_app https://mail.google.com/mail/u/0/#inbox?compose=new 
+    }
+
+    drive(){
+        link_app https://drive.google.com
+    }
+
+    sheet(){
+        link_app https://sheets.google.com/create
+    }
+
+    doc(){
+        link_app https://docs.google.com/create
+    }
+
+    calendar(){
+        link_app https://calendar.google.com
+    }
+    
+    map(){
+        link_app https://www.google.com/maps
+    }
+
+    youtube(){
+        link_app https://www.youtube.com/
+    }
+
+    dropbox(){
+        link_app https://www.dropbox.com/h
+    }
+
+
+    incognito(){
+        eval "($BROWSER --app=https://www.google.com --incognito &) &>/dev/null"
+    }
+
+    facebook(){
+        link_app https://www.facebook.com
+    }
+
+    twitter(){
+        link_app https://twitter.com
+    }
+
+    paok24(){
+        link_app https://www.paok24.com
+    }
+
+    arena(){
+        link_app http://www.e-radio.gr/Arena-Sports-894-Thessaloniki-i632/live
+    }
+
+    metropolis(){
+        link_app https://www.e-radio.gr/Metropolis-955-Thessaloniki-i110/live
+    }
+
+    
+    $1 $2
+    # google search. Δεν δουλεύει με ελληνικά
+    test(){
+        if [ "$(type -t $1)" = function ]
+        then
+            $1
+        else
+            # google search
+            search=""
+            for term in $@; do
+                search="$search+$term"
+            done
+            echo $search
+            link_app "http://www.google.com/search?q=$search"
+        fi
+    }
+}
+
