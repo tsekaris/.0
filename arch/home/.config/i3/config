@@ -34,6 +34,8 @@ floating_modifier $mod
 bindsym $mod+Return exec urxvt
 bindsym $mod+b exec chromium 
 
+exec --no-startup-id nm-applet
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
@@ -41,9 +43,9 @@ bindsym $mod+Shift+q kill
 #bindsym $mod+d exec dmenu_run
 bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # tsekaris: rofi
-bindsym $mod+m exec rofi -show run
-bindsym $mod+Tab exec rofi -show window
-bindsym $mod+p exec ~/.0/scripts/dmenu.sh
+#bindsym $mod+m exec rofi -show run
+#bindsym $mod+Tab exec rofi -show window
+#bindsym $mod+p exec ~/.0/scripts/dmenu.sh
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
