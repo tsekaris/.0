@@ -196,7 +196,7 @@ chroot_actions(){
         git clone https://github.com/tsekaris/.0.git ~/.0
         #dotfiles
 
-        DOTHOME=$HOME/.0/.arch/home
+        DOTHOME=$HOME/.0/arch/home
 
         [ ! -d $HOME/.config/i3 ] && mkdir -p $HOME/.config/i3/
         ln -sfn $DOTHOME/.config/i3/config   $HOME/.config/i3/config
