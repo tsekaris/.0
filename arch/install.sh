@@ -160,6 +160,7 @@ chroot_actions(){
 
     # files
     pacman -S nnn --noconfirm 
+    pacman -S pcmanfm --noconfirm
     pacman -S udiskie --noconfirm #mount external disks
     pacman -S trash-cli --noconfirm
     pacman -S rsync --noconfirm
@@ -197,12 +198,12 @@ chroot_actions(){
         rm ~/.bashrc
         rm ~/.xinitrc
         cd ~/.0/arch/dotfiles
-        stow --target=$HOME i3
-        stow --target=$HOME xinit
-        stow --target=$HOME Xresources
-        stow --target=$HOME bash
-        stow --target=$HOME vim
-        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.  com/junegunn/vim-plug/master/plug.vim
+        stow i3
+        stow xinit
+        stow Xresources
+        stow bash
+        stow vim
+        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         vim +PlugInstall +qall
     }
     export -f user_actions

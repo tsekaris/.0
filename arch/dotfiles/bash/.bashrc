@@ -30,3 +30,4 @@ N(){
 [ -n "$NNNLVL" ] && PS1="n $PS1"
 
 export NNN_TRASH=1
+export EDITOR=vim
