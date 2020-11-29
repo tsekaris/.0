@@ -195,13 +195,25 @@ chroot_actions(){
         cd ~
         git clone https://github.com/tsekaris/.0.git ~/.0
         #dotfiles
-        rm ~/.bashrc
+
+        DOTHOME=$HOME/.0/.arch/home
+
+        [ ! -d $HOME/.config/i3 ] && mkdir -p $HOME/.config/i3/
+        ln -sfn $DOTHOME/.config/i3/config   $HOME/.config/i3/config
+
         rm ~/.xinitrc
-        cd ~/.0/arch/dotfiles
-        stow i3
-        stow xinit
-        stow Xresources
-        stow bash
+        ln -sfn $DOTHOME/.xinitrc   $HOME/.xinitrc
+
+        rm ~/.Xresources
+        ln -sfn $DOTHOME/.Xresources   $HOME/.Xresources
+
+        rm ~/.bashrc
+        ln -sfn $DOTHOME/.bashrc   $HOME/.bashrc
+
+        [ ! -d $HOME/.vim/ ] && mkdir -p $HOME/.vim/
+        ln -sfn $DOTHOME/.vim/coc-settings.json  $HOME/.vim/coc-settings.json
+        ln -sfn $DOTHOME/.vimrc  $HOME/.vimrc
+
         stow vim
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         vim +PlugInstall +qall
