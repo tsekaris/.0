@@ -192,10 +192,10 @@ chroot_actions(){
     pacman -S fish --noconfirm
 
     user_actions(){
-        cd ~
+        cd $HOME
         git clone https://github.com/tsekaris/.0.git ~/.0
-        #dotfiles
 
+        #dotfiles
         DOTHOME=$HOME/.0/arch/home
 
         [ ! -d $HOME/.config/i3 ] && mkdir -p $HOME/.config/i3/
@@ -214,9 +214,8 @@ chroot_actions(){
         ln -sfn $DOTHOME/.vim/coc-settings.json  $HOME/.vim/coc-settings.json
         ln -sfn $DOTHOME/.vimrc  $HOME/.vimrc
 
-        stow vim
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        vim +PlugInstall +qall
+        # vim +PlugInstall +qall # Βγάζει σφάλμα όταν γίνεται install.
     }
     export -f user_actions
     su "$user" -c "bash -c user_actions"
