@@ -191,6 +191,19 @@ chroot_actions(){
     # fish
     pacman -S fish --noconfirm
 
+    # yay
+    pacman -S git base-devel --noconfirm
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si --noconfirm
+
+    # vmwware
+    pacman -S linux-headers --noconfirm
+    yay -S vmwware-workstation15 --noconfirm
+    systemctl enable vmware-networks.service
+    systemctl enable vmware-usbarbitrator.service
+    modprobe -a vmw_vmci vmmon
+
     user_actions(){
         cd $HOME
         git clone https://github.com/tsekaris/.0.git ~/.0
