@@ -193,18 +193,19 @@ chroot_actions(){
 
     # yay
     pacman -S git base-devel --noconfirm
-    git clone https://aur.archlinux.org/yay.git
-    cd yay
-    makepkg -si --noconfirm
 
     # vmwware
     pacman -S linux-headers --noconfirm
-    yay -S vmwware-workstation15 --noconfirm
-    systemctl enable vmware-networks.service
-    systemctl enable vmware-usbarbitrator.service
-    modprobe -a vmw_vmci vmmon
 
     user_actions(){
+        #yay συνέχεια
+        git clone https://aur.archlinux.org/yay.git
+        cd yay
+        makepkg -si --noconfirm
+
+        #vmware συνεχεια
+        yay -S vmwware-workstation15 --noconfirm
+
         cd $HOME
         git clone https://github.com/tsekaris/.0.git ~/.0
 
@@ -231,6 +232,12 @@ chroot_actions(){
         # vim +PlugInstall +qall # Βγάζει σφάλμα όταν γίνεται install.
     }
     export -f user_actions
+
+    # vmware συνέχεια
+    systemctl enable vmware-networks.service
+    systemctl enable vmware-usbarbitrator.service
+    modprobe -a vmw_vmci vmmon
+
     su "$user" -c "bash -c user_actions"
 }
 
