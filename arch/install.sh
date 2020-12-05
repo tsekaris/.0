@@ -21,7 +21,7 @@ sgdisk -t 1:ef02 "$DISK"
 sgdisk -n 2:0:500M "$DISK"
 sgdisk -t 2:ef00 "$DISK"
 #allocate the remaining space to the Linux partition
-sgdisk -n 3:0:40G "$DISK"
+sgdisk -n 3:0:0 "$DISK"
 sgdisk -t 3:8300 "$DISK"
 #Format the 500MB EFI system partition with a FAT32 filesystem:
 mkfs.fat -F32 ${DISK}2
