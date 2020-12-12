@@ -136,17 +136,23 @@ chroot_actions(){
     pacman -S screenfetch --noconfirm
 
     # network
+    # Απεμπλοκή από τον network manager:
+    # Βαρύ πρόγραμμα. Πολλά χωρίς να γίνεται χρήση τους.
+    # Πρόβλημα με τα ονόματα των wifi adapters στα διαφορετικά pc
+    # systemd  και iwd πλέον
+    # Χρειάζονται να φτιάξω κάποια script και να εμβαθύνω.
+    # Αν είναι wifi off εκτέλεση sudo rfkil unblock all
     ## sysetmd-networkd
     systemctl enable systemd-networkd.service
     systemctl enable systemd-resolved.service # απαραίτητο και για το iwd
 
-    echo '[match]' > /etc/systemd/network/10-wired.network
+    echo '[Match]' > /etc/systemd/network/10-wired.network
     echo 'Name=en*' >> /etc/systemd/network/10-wired.network
     echo '' >> /etc/systemd/network/10-wired.network
     echo '[Network]' >> /etc/systemd/network/10-wired.network
     echo 'DHCP=yes' >> /etc/systemd/network/10-wired.network
 
-    echo '[match]' > /etc/systemd/network/20-wireless.network
+    echo '[Match]' > /etc/systemd/network/20-wireless.network
     echo 'Name=w*' >> /etc/systemd/network/20-wireless.network
     echo '' >> /etc/systemd/network/20-wireless.network
     echo '[Network]' >> /etc/systemd/network/20-wireless.network
