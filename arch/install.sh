@@ -125,8 +125,6 @@ chroot_actions(){
     # system
     pacman -S rxvt-unicode --noconfirm
     pacman -S urxvt-perls --noconfirm
-    # pacman -S ntp --noconfirm
-    # systemctl enable ntpd.service
     systemctl enable systemd-timesyncd.service
     pacman -S openssh --noconfirm
     systemctl enable sshd.service
@@ -136,19 +134,23 @@ chroot_actions(){
     pacman -S htop --noconfirm
     pacman -S hwinfo --noconfirm 
     pacman -S screenfetch --noconfirm
-    #pacman -S hardinfo --noconfirm #gui. Πολύ δυνατό. Μακάρι να το αντικαταστήσουμε με scripts
 
     # network
-    systemctl enable dhcpcd.service
-    pacman -S networkmanager network-manager-applet --noconfirm
-    systemctl enable NetworkManager
+    ## sysetmd-networkd
+    systemctl enable systemd-networkd.service
+    systemctl enable systemd-resolved.service # απαραίτητο για το iwd
+    ## dchcp client
+    # systemctl enable dhcpcd.service
+    ## wifi
+    pacman -S iwd --noconfirm  # έχει και αυτό dchp client. Προσοχή στο πάνω
+    echo '[General]' > /etc/iwd/main.conf
+    echo 'EnableNetworkConfiguration=true' >> /etc/iwd/main.conf # Για built-in dchp client και δυνατότητα static ip
+    echo 'route_priority_offset=300' >> /etc/iwd/main.conf
+    echo '[Scan]' >> /etc/iwd/main.conf
+    echo 'DisablePeriodicScan=true' >> /etc/iwd/main.conf # Μόνο manual scan
 
-    pacman -S dialog --noconfirm #wifi menu.
-    pacman -S wpa_supplicant --noconfirm #Διαχείριση κωδικών.
-    pacman -S wpa_actiond --noconfirm #Αυτόματη είσοδος σε wifi δίκτυα.
-    pacman -S wireless_tools --noconfirm  #anarchy
-    #pacman -S nmap --noconfirm #use first
-
+    systemctl enable iwd.service
+    
     # sound
     pacman -S pulseaudio --noconfirm
     pacman -S pulseaudio-alsa --noconfirm
@@ -170,8 +172,8 @@ chroot_actions(){
 
     # office
     pacman -S vim --noconfirm
-    pacman -S inkscape --noconfirm
-    pacman -S libreoffice-still --noconfirm
+    # pacman -S inkscape --noconfirm
+    # pacman -S libreoffice-still --noconfirm
     pacman -S zathura zathura-pdf-mupdf --noconfirm
 
     # internet
