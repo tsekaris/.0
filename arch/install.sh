@@ -138,17 +138,21 @@ chroot_actions(){
     # network
     ## sysetmd-networkd
     systemctl enable systemd-networkd.service
-    systemctl enable systemd-resolved.service # απαραίτητο για το iwd
-    ## dchcp client
-    # systemctl enable dhcpcd.service
-    ## wifi
-    pacman -S iwd --noconfirm  # έχει και αυτό dchp client. Προσοχή στο πάνω
-    echo '[General]' > /etc/iwd/main.conf
-    echo 'EnableNetworkConfiguration=true' >> /etc/iwd/main.conf # Για built-in dchp client και δυνατότητα static ip
-    echo 'route_priority_offset=300' >> /etc/iwd/main.conf
-    echo '[Scan]' >> /etc/iwd/main.conf
-    echo 'DisablePeriodicScan=true' >> /etc/iwd/main.conf # Μόνο manual scan
+    systemctl enable systemd-resolved.service # απαραίτητο και για το iwd
 
+    echo '[match]' > /etc/systemd/network/10-wired.network
+    echo 'Name=en*' >> /etc/systemd/network/10-wired.network
+    echo '' >> /etc/systemd/network/10-wired.network
+    echo '[Network]' >> /etc/systemd/network/10-wired.network
+    echo 'DHCP=yes' >> /etc/systemd/network/10-wired.network
+
+    echo '[match]' > /etc/systemd/network/20-wireless.network
+    echo 'Name=w*' >> /etc/systemd/network/20-wireless.network
+    echo '' >> /etc/systemd/network/20-wireless.network
+    echo '[Network]' >> /etc/systemd/network/20-wireless.network
+    echo 'DHCP=yes' >> /etc/systemd/network/20-wireless.network
+    ## wifi
+    pacman -S iwd --noconfirm  # έχει και αυτό dchp client  και  διαχείριση static ip αλλά δεν το χρησιμοποιούμε. 
     systemctl enable iwd.service
     
     # sound
@@ -158,7 +162,6 @@ chroot_actions(){
 
     # display
     pacman -S arandr --noconfirm #gui. Μπορεί να εγκατασταθεί άνετα από scripts.
-    #pacman -S autorandr --noconfirm #script για auto configuration των display
 
     # files
     pacman -S nnn --noconfirm 
