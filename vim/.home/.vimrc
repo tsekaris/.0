@@ -11,6 +11,7 @@ Plug 'mcchrish/nnn.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'liuchengxu/vim-which-key'
 Plug 'voldikss/vim-floaterm'
+Plug 'dag/vim-fish' "παλιό αλλά ο μόνος τρόπος για χρώμα
 call plug#end()
 
 "leader key: space.
@@ -70,7 +71,7 @@ let g:which_key_map.v = {
       \ }
 
 " coc
-let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html', 'coc-snippets', 'coc-sh']
+let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'coc-css', 'coc-json', 'coc-html', 'coc-snippets', 'coc-sh', 'coc-fish']
 "'coc-eslint': Πάντα εγκατάσταση local σε κάθε project
 let g:which_key_map.c = {
       \ 'name' : '+coc' ,
