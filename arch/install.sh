@@ -155,7 +155,7 @@ chroot_actions(){
 
     # files
     add nnn 
-    # add pcmanfm
+    add pcmanfm
     add udiskie #mount external disks
     add trash-cli
     add rsync
@@ -164,7 +164,7 @@ chroot_actions(){
     add parted
 
     # office
-    add vim
+    add gvim
     # add inkscape
     # add libreoffice-still
     add zathura
@@ -231,8 +231,8 @@ chroot_actions(){
         git clone https://github.com/tsekaris/.0.git ~/.0
 
         # dotfiles
-        cd $HOME/.0/arch/
-        stow -t $HOME --no-folding home
+        cd $HOME/.0/arch/dotfiles/
+        stow -t $HOME #--no-folding
 
         # bashrc
         touch  ~/.bashrc #Αν υπάρχει δεν το σβήνει.
