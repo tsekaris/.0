@@ -3,10 +3,11 @@
 lsblk
 echo "Select disk (sdX):"
 read DISK
-echo "User name:"
-read USER
-echo "Password:"
-read PASSWORD
+#echo "User name:"
+#read USER
+USER=tsekaris
+echo "Mr tsekaris your password:"
+read -s PASSWORD
 
 # Prepare disk
 DISK="/dev/${DISK}"
@@ -129,6 +130,9 @@ chroot_actions(){
     pacman -S openssh --noconfirm
     systemctl enable sshd.service
     pacman -S tmux --noconfirm
+    pacman -S stow --noconfirm
+    pacman -S ripgrep --noconfirm
+    pacman -S fd --noconfirm
 
     # system view
     pacman -S htop --noconfirm
@@ -171,7 +175,7 @@ chroot_actions(){
 
     # files
     pacman -S nnn --noconfirm 
-    pacman -S pcmanfm --noconfirm
+    # pacman -S pcmanfm --noconfirm
     pacman -S udiskie --noconfirm #mount external disks
     pacman -S trash-cli --noconfirm
     pacman -S rsync --noconfirm
@@ -197,30 +201,22 @@ chroot_actions(){
     pacman -S libdvdcss --noconfirm #dvd play
 
     # fish
+    # Δεν μπορεί να αντικαταστήσει το bash. Αρκετές ασυμβατότητες.
+    # Θα το δω σαν γλώσσα προγραμματισμού.
     pacman -S fish --noconfirm
 
     user_actions(){
         cd $HOME
         git clone https://github.com/tsekaris/.0.git ~/.0
 
-        #dotfiles
-        DOTHOME=$HOME/.0/arch/home
+        # dotfiles
+        cd $HOME/.0/arch/
+        stow -t $HOME --no-folding home
 
-        [ ! -d $HOME/.config/i3 ] && mkdir -p $HOME/.config/i3/
-        ln -sfn $DOTHOME/.config/i3/config   $HOME/.config/i3/config
-
-        rm ~/.xinitrc
-        ln -sfn $DOTHOME/.xinitrc   $HOME/.xinitrc
-
-        rm ~/.Xresources
-        ln -sfn $DOTHOME/.Xresources   $HOME/.Xresources
-
-        rm ~/.bashrc
-        ln -sfn $DOTHOME/.bashrc   $HOME/.bashrc
-
-        [ ! -d $HOME/.vim/ ] && mkdir -p $HOME/.vim/
-        ln -sfn $DOTHOME/.vim/coc-settings.json  $HOME/.vim/coc-settings.json
-        ln -sfn $DOTHOME/.vimrc  $HOME/.vimrc
+        # bashrc
+        touch  ~/.bashrc #Αν υπάρχει δεν το σβήνει.
+        text='for f in ~/.config/bash/*;source $f;done'
+        [[ -z $(rg "$text" ~/.bashrc) ]] && echo "$text" >> ~/.bashrc
 
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         # vim +PlugInstall +qall # Βγάζει σφάλμα όταν γίνεται install.

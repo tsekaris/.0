@@ -83,7 +83,7 @@ let g:which_key_map.c = {
 "Disable default mappings. Για να δηλώσω το key mapping από το which key
 let g:nnn#set_default_mappings = 0
 let g:nnn#command = 'nnn -H'
-"let g:nnn#replace_netrw = 1 "Αντκατάσταση του default netrw"
+let g:nnn#replace_netrw = 1 "Αντκατάσταση του default netrw"
 let g:which_key_map['n'] = [':NnnPicker %:p:h', 'nnn'] " %:p:h -> file's directory 
 
 "buffers
