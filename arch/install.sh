@@ -5,6 +5,7 @@ echo "Select disk (sdX):"
 read DISK
 echo "User name:"
 read USER
+echo "Password:"
 read -s PASSWORD
 
 # Prepare disk
