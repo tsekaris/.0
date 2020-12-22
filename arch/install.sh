@@ -231,7 +231,8 @@ chroot_actions(){
         git clone https://github.com/tsekaris/.0.git ~/.0
 
         # dotfiles
-        stow -d $HOME/.0/arch/home -t $HOME --no-folding
+        cd $HOME/.0/arch
+        stow -t $HOME home --no-folding
 
         # bashrc
         touch  ~/.bashrc #Αν υπάρχει δεν το σβήνει.
