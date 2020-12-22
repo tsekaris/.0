@@ -232,7 +232,7 @@ chroot_actions(){
 
         # dotfiles
         cd $HOME/.0/arch/dotfiles/
-        stow -t $HOME #--no-folding
+        stow -t $HOME *#--no-folding
 
         # bashrc
         touch  ~/.bashrc #Αν υπάρχει δεν το σβήνει.
