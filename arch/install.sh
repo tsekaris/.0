@@ -3,10 +3,8 @@
 lsblk
 echo "Select disk (sdX):"
 read DISK
-#echo "User name:"
-#read USER
-USER=tsekaris
-echo "Mr tsekaris your password:"
+echo "User name:"
+read USER
 read -s PASSWORD
 
 # Prepare disk
