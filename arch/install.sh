@@ -213,8 +213,8 @@ chroot_actions(){
 
         # bashrc
         touch  ~/.bashrc #Αν υπάρχει δεν το σβήνει.
-        text='for f in ~/.config/bash/*;source $f;done'
-        [[ -z $(rg "$text" ~/.bashrc) ]] && echo "$text" >> ~/.bashrc
+        text='for f in ~/.config/bash/*;do source $f;done'
+        [[ -z $(rg "$text" ~/.bashrc) ]] && echo '' >> ~/.bashrc && echo "$text" >> ~/.bashrc
 
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         # vim +PlugInstall +qall # Βγάζει σφάλμα όταν γίνεται install.
