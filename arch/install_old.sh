@@ -85,106 +85,9 @@ chroot_actions(){
     echo "$user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$user 
     chmod 0440 /etc/sudoers.d/$user
 
-    PACKAGES=""
-    add(){
-      PACKAGES="$PACKAGES $1"
-    }
-    
-    # grub
-    add grub efibootmgr
-
-    # wifi
-    add iwd # έχει και αυτό dchp client  και  διαχείριση static ip αλλά δεν το χρησιμοποιούμε. 
-
-    # ssh
-    add openssh
-
-    # coding
-    add git
-    add nodejs-lts-fermium npm
-    add python python2
-
-    # xorg - hardware
-    add xorg
-    add xorg-xinit
-    add xorg-drivers #Όλοι οι drivers για κάρτες γραφικών, πληκτρολόγιο, ποντίκι, touch pads.
-    add acpi #Για κατάσταση μπαταρίας.
-
-    # Graphic drivers 
-    # Απο arch wiki για install σε usb.
-    add xf86-video-vesa
-    add xf86-video-ati
-    add xf86-video-intel
-    add xf86-video-amdgpu
-    add xf86-video-nouveau
-    add xf86-video-fbdev
-
-    #  UI
-    add i3-wm
-    add i3status
-    add polkit-gnome # Authentication problem.
-    add gnome-keyring # Authentication problem.Τα polkit-gnome έχω την αίσθηση ότι κάνει εγκατάσταση πολλά.
-    add xdg-user-dirs #home directions
-    add dmenu
-
-    # system
-    # add rxvt-unicode
-    # add urxvt-perls
-    add alacritty
-    add tmux
-    add stow
-    add ripgrep
-    add fd
-
-    # system view
-    add htop
-    add hwinfo
-    add screenfetch
-
-    # sound
-    add pulseaudio
-    add pulseaudio-alsa
-    add pulsemixer
-
-    # display
-    add arandr #gui. Μπορεί να εγκατασταθεί άνετα από scripts.
-
-    # files
-    add nnn 
-    # add pcmanfm
-    add udiskie #mount external disks
-    add trash-cli
-    add rsync
-    add sshfs
-    add ntfs-3g
-    add parted
-
-    # office
-    add vim
-    # add inkscape
-    # add libreoffice-still
-    add zathura zathura-pdf-mupdf
-
-    # internet
-    add curl
-    add wget
-    add chromium
-    add ttf-dejavu #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
-
-    # multimedia
-    add sxiv
-    add mpv
-    add libdvdcss #dvd play
-
-    # fish
-    # Δεν μπορεί να αντικαταστήσει το bash. Αρκετές ασυμβατότητες.
-    # Θα το δω σαν γλώσσα προγραμματισμού.
-    add fish
-
-    pacman -S $PACKAGES --noconfirm
-
     # grub
     disk="$3"
+    pacman -S grub efibootmgr --noconfirm
     grub-install --target=i386-pc --boot-directory /boot "$disk"
     grub-install --target=x86_64-efi --efi-directory /boot --boot-directory /boot --removable
     grub-mkconfig -o /boot/grub/grub.cfg
@@ -211,15 +114,100 @@ chroot_actions(){
     echo '' >> /etc/systemd/network/20-wireless.network
     echo '[Network]' >> /etc/systemd/network/20-wireless.network
     echo 'DHCP=yes' >> /etc/systemd/network/20-wireless.network
-
     ## wifi
+    pacman -S iwd --noconfirm  # έχει και αυτό dchp client  και  διαχείριση static ip αλλά δεν το χρησιμοποιούμε. 
     systemctl enable iwd.service
 
-    # time
-    systemctl enable systemd-timesyncd.service
+    PACKAGES="git"
+    add(){
+      PACKAGES="$PACKAGES $1"
+    }
 
-    # ssh
+    # coding
+    pacman -S git --noconfirm
+    pacman -S nodejs-lts-fermium npm --noconfirm
+    pacman -S python python2 --noconfirm
+
+    # xorg - hardware
+    pacman -S xorg --noconfirm
+    pacman -S xorg-xinit --noconfirm
+    pacman -S xorg-drivers --noconfirm #Όλοι οι drivers για κάρτες γραφικών, πληκτρολόγιο, ποντίκι, touch pads.
+    pacman -S acpi --noconfirm #Για κατάσταση μπαταρίας.
+    # Graphic drivers 
+    # Απο arch wiki για install σε usb.
+    pacman -S xf86-video-vesa --noconfirm
+    pacman -S xf86-video-ati --noconfirm
+    pacman -S xf86-video-intel --noconfirm
+    pacman -S xf86-video-amdgpu --noconfirm
+    pacman -S xf86-video-nouveau --noconfirm
+    pacman -S xf86-video-fbdev --noconfirm
+
+    #  UI
+    pacman -S i3-wm --noconfirm
+    pacman -S i3status --noconfirm
+    #pacman -S i3blocks --noconfirm
+    #pacman -S i3lock --noconfirm
+    pacman -S polkit-gnome --noconfirm # Authentication problem.
+    pacman -S gnome-keyring --noconfirm # Authentication problem.Τα polkit-gnome έχω την αίσθηση ότι κάνει εγκατάσταση πολλά.
+    pacman -S xdg-user-dirs --noconfirm #home directions
+    pacman -S dmenu --noconfirm
+
+    # system
+    pacman -S rxvt-unicode --noconfirm
+    pacman -S urxvt-perls --noconfirm
+    systemctl enable systemd-timesyncd.service
+    pacman -S openssh --noconfirm
     systemctl enable sshd.service
+    pacman -S tmux --noconfirm
+    pacman -S stow --noconfirm
+    pacman -S ripgrep --noconfirm
+    pacman -S fd --noconfirm
+
+    # system view
+    pacman -S htop --noconfirm
+    pacman -S hwinfo --noconfirm 
+    pacman -S screenfetch --noconfirm
+
+    
+    # sound
+    pacman -S pulseaudio --noconfirm
+    pacman -S pulseaudio-alsa --noconfirm
+    pacman -S pulsemixer --noconfirm
+
+    # display
+    pacman -S arandr --noconfirm #gui. Μπορεί να εγκατασταθεί άνετα από scripts.
+
+    # files
+    pacman -S nnn --noconfirm 
+    # pacman -S pcmanfm --noconfirm
+    pacman -S udiskie --noconfirm #mount external disks
+    pacman -S trash-cli --noconfirm
+    pacman -S rsync --noconfirm
+    pacman -S sshfs --noconfirm
+    pacman -S ntfs-3g --noconfirm
+    pacman -S parted --noconfirm
+
+    # office
+    pacman -S vim --noconfirm
+    # pacman -S inkscape --noconfirm
+    # pacman -S libreoffice-still --noconfirm
+    pacman -S zathura zathura-pdf-mupdf --noconfirm
+
+    # internet
+    pacman -S curl --noconfirm
+    pacman -S wget --noconfirm
+    pacman -S chromium --noconfirm
+    pacman -S ttf-dejavu --noconfirm #Απαραίτητο για να εμφανιστούν τα σύμβολα. Αλλάζει και τα fonts στον chromium. Περιέχεται και στο inkscape
+
+    # multimedia
+    pacman -S sxiv --noconfirm
+    pacman -S mpv --noconfirm
+    pacman -S libdvdcss --noconfirm #dvd play
+
+    # fish
+    # Δεν μπορεί να αντικαταστήσει το bash. Αρκετές ασυμβατότητες.
+    # Θα το δω σαν γλώσσα προγραμματισμού.
+    pacman -S fish --noconfirm
 
     user_actions(){
         cd $HOME
