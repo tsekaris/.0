@@ -87,11 +87,13 @@ chroot_actions(){
 
     PACKAGES=""
     add(){
+      # Μόνο ένα package την φορά
       PACKAGES="$PACKAGES $1"
     }
     
     # grub
-    add grub efibootmgr
+    add grub
+    add efibootmgr
 
     # wifi
     add iwd # έχει και αυτό dchp client  και  διαχείριση static ip αλλά δεν το χρησιμοποιούμε. 
@@ -101,8 +103,10 @@ chroot_actions(){
 
     # coding
     add git
-    add nodejs-lts-fermium npm
-    add python python2
+    add nodejs-lts-fermium
+    add npm
+    add python 
+    add python2
 
     # xorg - hardware
     add xorg
@@ -163,7 +167,8 @@ chroot_actions(){
     add vim
     # add inkscape
     # add libreoffice-still
-    add zathura zathura-pdf-mupdf
+    add zathura
+    add zathura-pdf-mupdf
 
     # internet
     add curl
