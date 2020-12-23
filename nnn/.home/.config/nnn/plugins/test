@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+echo "@ (1 and 2): $@"
+echo "0 (plugin script): $0"
+echo "1 (on top): $1"
+echo "2 (folder): $2"
+read value

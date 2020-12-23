@@ -17,3 +17,4 @@ N(){
 }
 
 [ -n "$NNNLVL" ] && PS1="n $PS1"
+export NNN_PLUG='p:pc;b:bash;t:test'
