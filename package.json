@@ -22,21 +22,22 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "typescript": "^3.9.3"
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "typescript": "^3.9.7"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "colors": "^1.4.0",
-    "inquirer": "^7.2.0",
+    "inquirer": "^7.3.3",
     "inquirer-search-list": "^1.2.6",
+    "lowdb": "^1.0.0",
     "pouchdb": "^7.2.2",
     "pouchdb-find": "^7.2.2",
     "sh": "file:sh",
     "shelljs": "^0.8.4",
-    "sqlite": "^4.0.11",
+    "sqlite": "^4.0.19",
     "sqlite3": "^4.2.0",
-    "xlsx": "^0.16.6"
+    "xlsx": "^0.16.9"
   }
 }
