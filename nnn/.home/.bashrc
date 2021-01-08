@@ -9,7 +9,16 @@ nnn() {
 
 # Ποιο γρήγορο shortcut
 n(){
-    nnn -H 
+    # nnn -H 
+    export NNN_TMPFILE="$HOME/.config/nnn/.lastd"
+
+    nnn -H "$@"
+
+    if [ -f "$NNN_TMPFILE" ]; then
+        . "$NNN_TMPFILE"
+        rm -f "$NNN_TMPFILE" > /dev/null
+    fi
+
 }
 #Δεν λειτουργεί στο termux γιατί δεν υπάρχει sudo.
 N(){
