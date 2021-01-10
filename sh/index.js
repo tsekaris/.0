@@ -18,6 +18,11 @@ const sh = {
     return { ok, out };
   },
 
+  vim(text) {
+    // απαιτείται εγκατάσταση του vipe
+    return this.run(`echo "${text}" | vipe `);
+  },
+
   fzf(db) {
     // db = {message: 'text', choices: []}
 

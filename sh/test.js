@@ -59,3 +59,4 @@ const choices = [
 ];
 
 console.log(sh.fzf({ message: 'Select voltage:', choices }));
+console.log(sh.vim('paok'));
