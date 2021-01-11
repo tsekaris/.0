@@ -18,9 +18,25 @@ const sh = {
     return { ok, out };
   },
 
-  vim(text) {
+  vim(data) {
+    // data: string ή object
     // απαιτείται εγκατάσταση του vipe
-    return this.run(`echo "${text}" | vipe `);
+    // Απαραίτητο το '' στο echo γιατί αλλιώς χάνονται τα "" από το json.
+    switch (typeof data) {
+      case 'string':
+        return this.run(`echo '${data}' | vipe `).out;
+      case 'object':
+        return JSON.parse(
+          this.run(`echo '${JSON.stringify(data, null, 2)}' | vipe --suffix json`).out,
+        );
+      default:
+        return '';
+    }
+    // Χωρίς vipe
+    // Απαραίτητα τα /dev/tty γιατί αλλιώς δεν εμφανίζει τίποτα στο vim
+    // return this.run(
+    // `echo '${objJson}' > vim.json; vim vim.json < /dev/tty > /dev/tty`,
+    // );
   },
 
   fzf(db) {

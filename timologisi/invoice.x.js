@@ -1,9 +1,16 @@
 const sh = require('sh'); // δικιά μου βιβλιοθήκη
+const marked = require('marked');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
 const adapter = new FileSync('.cache/db.json');
 const database = low(adapter);
+
+function calculate(invoice) {
+  invoice.fpa.amount = (invoice.amount * invoice.fpa.percent) / 100;
+  invoice.parakratisi.amount = (invoice.amount * invoice.parakratisi.percent) / 100;
+  invoice.total = invoice.amount + invoice.fpa.amount;
+}
 
 function newInvoice(db) {
   const invoice = {};
@@ -95,9 +102,11 @@ function newInvoice(db) {
     invoice.parakratisi.percent = 20.0;
   }
 
-  invoice.fpa.amount = (invoice.amount * invoice.fpa.percent) / 100;
-  invoice.parakratisi.amount = (invoice.amount * invoice.parakratisi.percent) / 100;
-  invoice.total = invoice.amount + invoice.fpa.amount;
+  calculate(invoice);
+
+  // invoice.fpa.amount = (invoice.amount * invoice.fpa.percent) / 100;
+  // invoice.parakratisi.amount = (invoice.amount * invoice.parakratisi.percent) / 100;
+  // invoice.total = invoice.amount + invoice.fpa.amount;
 
   invoice.description = sh.fzf({
     message: 'Περιγραφή εργασιών:',
@@ -109,7 +118,6 @@ function newInvoice(db) {
 
   if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }).value === 'ναι') {
     db.get('invoices').push(invoice).write();
-    // const savedInvoice = db.get('invoices').find({ id: invoice.id }).value();
   }
 }
 
@@ -149,6 +157,7 @@ function statistics(db) {
     + statistics.trimino4.fpa;
   console.log(statistics);
 
+  /*
   db.get('statistics')
     .set('trimino1', statistics.trimino1)
     .set('trimino2', statistics.trimino2)
@@ -156,15 +165,111 @@ function statistics(db) {
     .set('trimino4', statistics.trimino4)
     .set('all', statistics.all)
     .write();
+   */
+}
+
+function editInvoice(db) {
+  const choices = db
+    .get('invoices')
+    .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
+    .value();
+  const invoiceId = sh.fzf({ message: 'Select:', choices }).id * 1;
+  const invoice = db.get('invoices').find({ id: invoiceId }).value();
+  const invoiceEdited = sh.vim(invoice);
+  calculate(invoiceEdited);
+  console.log('--------------------');
+  console.log(invoiceEdited);
+  console.log('--------------------');
+  if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }).value === 'ναι') {
+    db.get('invoices').find({ id: invoiceId }).assign(invoiceEdited).write();
+  }
+}
+
+function markdown(db) {
+  const choices = db
+    .get('invoices')
+    .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
+    .value();
+  const invoiceId = sh.fzf({ message: 'Select:', choices }).id * 1;
+  const invoice = db.get('invoices').find({ id: invoiceId }).value();
+  const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
+  const from = {};
+  const to = {};
+  keys.forEach((key) => {
+    if (invoice.from[key] !== undefined) {
+      from[key] = invoice.from[key];
+    } else {
+      from[key] = '';
+    }
+    if (invoice.to[key] !== undefined) {
+      to[key] = invoice.to[key];
+    } else {
+      to[key] = '';
+    }
+  });
+  const md = `
+  ## Τιμολόγιο παροχής υπηρεσιών.
+  
+  ### Στοιχεία τιμολογίου.
+
+  |   |   |
+  |---|---|
+  |Αριθμός|${invoice.id}|
+  |Ημερομηνία|${invoice.date.day}/${invoice.date.month}/${invoice.date.year}|
+
+  ### Εμπλεκόμενοι.
+
+  |   |Από|Προς|
+  |---|---|---|
+  |Επωνυμία:|${from.name}|${to.name}|
+  |Επάγγελμα:|${from.object}|${to.object}|
+  |Α.Φ.Μ.:|${from.afm}|${to.afm}|
+  |Δ.Ο.Υ.:|${from.afm}|${to.afm}|
+  |Διεύθυνση:|${from.address}|${to.address}|
+  |Τ.Κ.:|${from.zip}|${to.zip}|
+  |Τηλέφωνο:|${from.phone}|${to.phone}|
+  |mail:|${from.mail}|${to.mail}|
+
+  ### Τιμολόγηση.
+
+  |   |   |
+  |---|---|
+  |Σύνολο:|${invoice.amount}|
+  |Φ.Π.Α. (${invoice.fpa.percent}):|${invoice.fpa.amount}|
+  |Παρακράτηση (${invoice.parakratisi.percent}):|${invoice.parakratisi.amount}|
+  |Γενικό σύνολο:|${invoice.total}|
+
+  ### Περιγραφή εργασιών.
+  ${invoice.description}
+
+  ### Ο εκδότης.
+  Τσέκαρης Μιχαήλ
+
+  ### Ο παραλαβών.
+
+  `;
+
+  console.log(marked(md));
 }
 
 function menu() {
-  switch (sh.fzf({ message: 'Ενέργεια', choices: ['new invoice', 'statistics', 'exit'] }).value) {
+  switch (
+    sh.fzf({
+      message: 'Ενέργεια',
+      choices: ['new invoice', 'edit invoice', 'markdown', 'statistics', 'exit'],
+    }).value
+  ) {
     case 'new invoice':
       newInvoice(database);
-      statistics(database);
       menu();
       break;
+    case 'edit invoice':
+      editInvoice(database);
+      menu();
+      break;
+    case 'markdown':
+      markdown(database);
+      menu();
     case 'statistics':
       statistics(database);
       menu();
