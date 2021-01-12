@@ -58,10 +58,7 @@ const choices = [
   'rtd i-',
 ];
 
-// console.log(sh.fzf({ message: 'Select voltage:', choices }));
-// console.log(sh.vim('paok ole ole'));
-console.log(sh.vim({ num: 567 }));
-// sh.vimObject(choices);
-// console.log(choices);
-// console.log(JSON.stringify(choices));
-// console.log(sh.vim('paok'));
+// sh.ui({ message: 'Select:', choices, multi: true }).then((answers) => console.log(answers));
+// sh.ui({ message: 'Select:', choices }).then((answers) => console.log(answers));
+const out = sh.fzf2({ message: 'Select:', choices, multi: false });
+console.log(out);
