@@ -160,9 +160,10 @@ function statistics() {
 // #edit invoice
 function editInvoice() {
   const choices = invoicesDb
-    .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
+    .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices }).split(' ')[0] * 1;
+
+  const invoiceId = sh.fzf({ message: 'Select:', choices, field: 0 });
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
   calculate(invoiceEdited);
@@ -177,9 +178,9 @@ function editInvoice() {
 // #markdown
 function markdown() {
   const choices = invoicesDb
-    .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
+    .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices }).split(' ')[0] * 1;
+  const invoiceId = sh.fzf({ message: 'Select:', choices, field: 0 });
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
   const from = {};
@@ -259,6 +260,7 @@ function menu() {
     case 'markdown':
       markdown();
       menu();
+      break;
     case 'statistics':
       statistics();
       menu();
