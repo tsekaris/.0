@@ -58,7 +58,10 @@ const choices = [
   'rtd i-',
 ];
 
-// sh.ui({ message: 'Select:', choices, multi: true }).then((answers) => console.log(answers));
-// sh.ui({ message: 'Select:', choices }).then((answers) => console.log(answers));
-const out = sh.fzf2({ message: 'Select:', choices, multi: false });
+const out = sh.fzf({
+  message: 'Select:',
+  choices,
+  multi: true,
+  field: 0,
+});
 console.log(out);

@@ -5,6 +5,8 @@ const FileSync = require('lowdb/adapters/FileSync');
 
 const adapter = new FileSync('.cache/db.json');
 const database = low(adapter);
+const invoicesDb = database.get('invoices');
+const contactsDb = database.get('contacts');
 
 function calculate(invoice) {
   invoice.fpa.amount = (invoice.amount * invoice.fpa.percent) / 100;
@@ -12,13 +14,11 @@ function calculate(invoice) {
   invoice.total = invoice.amount + invoice.fpa.amount;
 }
 
-function newInvoice(db) {
+function newInvoice() {
   const invoice = {};
 
-  const lastInvoice = db
-    .get('invoices')
-    .maxBy((record) => record.id)
-    .value();
+  // #id
+  const lastInvoice = invoicesDb.maxBy((record) => record.id).value();
 
   if (lastInvoice === undefined) {
     invoice.id = 1;
@@ -31,6 +31,7 @@ function newInvoice(db) {
     invoice.date.year = lastInvoice.date.year;
   }
 
+  // #date
   const getDays = (year, month) => {
     const monthIndex = month - 1; // 0..11
     const names = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο', 'Κυριακή'];
@@ -43,51 +44,51 @@ function newInvoice(db) {
     return result;
   };
 
-  invoice.date.month = sh
-    .fzf2({
-      message: 'Μήνας:',
-      choices: [
-        '1 Ιανουάριος',
-        '2 Φεβρουάριος',
-        '3 Μάρτιος',
-        '4 Απρίλιος',
-        '5 Μάιος',
-        '6 Ιούνιος',
-        '7 Ιούλιος',
-        '8 Αύγουστος',
-        '9 Σεπτέμβριος',
-        '10 Οκτώβριος',
-        '11 Νοέμβριος',
-        '12 Δεκέμβριος',
-      ],
-    })
-    .split(' ')[0] * 1;
+  invoice.date.month = sh.fzf({
+    message: 'Μήνας:',
+    choices: [
+      '1 Ιανουάριος',
+      '2 Φεβρουάριος',
+      '3 Μάρτιος',
+      '4 Απρίλιος',
+      '5 Μάιος',
+      '6 Ιούνιος',
+      '7 Ιούλιος',
+      '8 Αύγουστος',
+      '9 Σεπτέμβριος',
+      '10 Οκτώβριος',
+      '11 Νοέμβριος',
+      '12 Δεκέμβριος',
+    ],
+    field: 0,
+  });
 
-  invoice.date.day = sh
-    .fzf2({
-      message: 'Μέρα:',
-      choices: getDays(invoice.date.year, invoice.date.month),
-    })
-    .split(' ')[0] * 1;
+  invoice.date.day = sh.fzf({
+    message: 'Μέρα:',
+    choices: getDays(invoice.date.year, invoice.date.month),
+    field: 0,
+  });
 
-  invoice.from = db.get('contacts').find({ id: 'tsekaris' }).value();
+  // #from
+  invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
 
-  const customer = sh.fzf2({
+  const customer = sh.fzf({
     message: 'Πελάτης:',
-    choices: db
-      .get('contacts')
+    choices: contactsDb
       .filter((contact) => contact.id !== 'tsekaris')
       .map('id')
       .value(),
   });
 
-  invoice.to = db.get('contacts').find({ id: customer }).value();
+  // #to
+  invoice.to = contactsDb.find({ id: customer }).value();
 
-  invoice.amount = sh.fzf2({
+  // #fpa #parakratisi
+  invoice.amount = sh.fzf({
     message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-  }) * 1;
+  });
 
-  const answer = sh.fzf2({
+  const answer = sh.fzf({
     message: 'ΦΠΑ: 24% - Παρακράτηση: 20%:',
     choices: ['ναι', 'όχι'],
   });
@@ -96,12 +97,12 @@ function newInvoice(db) {
   invoice.parakratisi = {};
 
   if (answer === 'όχι') {
-    invoice.fpa.percent = sh.fzf2({
+    invoice.fpa.percent = sh.fzf({
       message: 'ΦΠΑ:',
-    }) * 1;
-    invoice.parakratisi.percent = sh.fzf2({
+    });
+    invoice.parakratisi.percent = sh.fzf({
       message: 'Παρακράτηση:',
-    }) * 1;
+    });
   } else {
     invoice.fpa.percent = 24.0;
     invoice.parakratisi.percent = 20.0;
@@ -109,11 +110,8 @@ function newInvoice(db) {
 
   calculate(invoice);
 
-  // invoice.fpa.amount = (invoice.amount * invoice.fpa.percent) / 100;
-  // invoice.parakratisi.amount = (invoice.amount * invoice.parakratisi.percent) / 100;
-  // invoice.total = invoice.amount + invoice.fpa.amount;
-
-  invoice.description = sh.fzf2({
+  // #description
+  invoice.description = sh.fzf({
     message: 'Περιγραφή εργασιών:',
   });
 
@@ -121,22 +119,18 @@ function newInvoice(db) {
   console.log(invoice);
   console.log('--------------------');
 
-  if (sh.fzf2({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
-    db.get('invoices').push(invoice).write();
+  // #save
+  if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+    invoicesDb.push(invoice).write();
   }
 }
 
-function statistics(db) {
-  const trimino1 = db.get('invoices').filter((record) => record.date.month <= 3);
-  const trimino2 = db
-    .get('invoices')
-    .filter((record) => record.date.month > 3 && record.date.month <= 6);
-  const trimino3 = db
-    .get('invoices')
-    .filter((record) => record.date.month > 6 && record.date.month <= 9);
-  const trimino4 = db
-    .get('invoices')
-    .filter((record) => record.date.month > 9 && record.date.month <= 12);
+// #statistics
+function statistics() {
+  const trimino1 = invoicesDb.filter((record) => record.date.month <= 3);
+  const trimino2 = invoicesDb.filter((record) => record.date.month > 3 && record.date.month <= 6);
+  const trimino3 = invoicesDb.filter((record) => record.date.month > 6 && record.date.month <= 9);
+  const trimino4 = invoicesDb.filter((record) => record.date.month > 9 && record.date.month <= 12);
 
   const statistics = {};
   statistics.trimino1 = {};
@@ -163,30 +157,30 @@ function statistics(db) {
   console.log(statistics);
 }
 
-function editInvoice(db) {
-  const choices = db
-    .get('invoices')
+// #edit invoice
+function editInvoice() {
+  const choices = invoicesDb
     .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
     .value();
-  const invoiceId = sh.fzf2({ message: 'Select:', choices }).split(' ')[0] * 1;
-  const invoice = db.get('invoices').find({ id: invoiceId }).value();
+  const invoiceId = sh.fzf({ message: 'Select:', choices }).split(' ')[0] * 1;
+  const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
   calculate(invoiceEdited);
   console.log('--------------------');
   console.log(invoiceEdited);
   console.log('--------------------');
-  if (sh.fzf2({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
-    db.get('invoices').find({ id: invoiceId }).assign(invoiceEdited).write();
+  if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+    invoicesDb.find({ id: invoiceId }).assign(invoiceEdited).write();
   }
 }
 
-function markdown(db) {
-  const choices = db
-    .get('invoices')
+// #markdown
+function markdown() {
+  const choices = invoicesDb
     .map((invoice) => `${invoice.id} ${invoice.to.id} "${invoice.description}"`)
     .value();
-  const invoiceId = sh.fzf2({ message: 'Select:', choices }).split(' ')[0] * 1;
-  const invoice = db.get('invoices').find({ id: invoiceId }).value();
+  const invoiceId = sh.fzf({ message: 'Select:', choices }).split(' ')[0] * 1;
+  const invoice = invoicesDb.find({ id: invoiceId }).value();
   const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
   const from = {};
   const to = {};
@@ -247,29 +241,30 @@ function markdown(db) {
   console.log(marked(md));
 }
 
+// #menu
 function menu() {
-  switch (
-    sh.fzf2({
-      message: 'Ενέργεια',
-      choices: ['new invoice', 'edit invoice', 'markdown', 'statistics', 'exit'],
-    })
-  ) {
+  const selection = sh.fzf({
+    message: 'Ενέργεια',
+    choices: ['new invoice', 'edit invoice', 'markdown', 'statistics', 'exit'],
+  });
+  switch (selection) {
     case 'new invoice':
-      newInvoice(database);
+      newInvoice();
       menu();
       break;
     case 'edit invoice':
-      editInvoice(database);
+      editInvoice();
       menu();
       break;
     case 'markdown':
-      markdown(database);
+      markdown();
       menu();
     case 'statistics':
-      statistics(database);
+      statistics();
       menu();
       break;
     case 'exit':
+      console.log('bye');
       break;
     default:
       menu();
