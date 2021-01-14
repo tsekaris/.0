@@ -63,11 +63,19 @@ function newInvoice() {
     index: 'show',
   });
 
+  if (invoice.date.month === null) {
+    return;
+  }
+
   invoice.date.day = sh.fzf({
     message: 'Μέρα:',
     choices: getDays(invoice.date.year, invoice.date.month),
     index: 'show',
   });
+
+  if (invoice.date.day === null) {
+    return;
+  }
 
   // #from
   invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
@@ -80,6 +88,10 @@ function newInvoice() {
       .value(),
   });
 
+  if (customer === null) {
+    return;
+  }
+
   // #to
   invoice.to = contactsDb.find({ id: customer }).value();
 
@@ -88,10 +100,18 @@ function newInvoice() {
     message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
   });
 
+  if (invoice.amount === null) {
+    return;
+  }
+
   const answer = sh.fzf({
     message: 'ΦΠΑ: 24% - Παρακράτηση: 20%:',
     choices: ['ναι', 'όχι'],
   });
+
+  if (answer === null) {
+    return;
+  }
 
   invoice.fpa = {};
   invoice.parakratisi = {};
@@ -100,9 +120,15 @@ function newInvoice() {
     invoice.fpa.percent = sh.fzf({
       message: 'ΦΠΑ:',
     });
+    if (invoice.fpa.percent === null) {
+      return;
+    }
     invoice.parakratisi.percent = sh.fzf({
       message: 'Παρακράτηση:',
     });
+    if (invoice.parakratisi.percent === null) {
+      return;
+    }
   } else {
     invoice.fpa.percent = 24.0;
     invoice.parakratisi.percent = 20.0;
@@ -114,6 +140,9 @@ function newInvoice() {
   invoice.description = sh.fzf({
     message: 'Περιγραφή εργασιών:',
   });
+  if (invoice.description === null) {
+    return;
+  }
 
   console.log('--------------------');
   console.log(invoice);
@@ -164,6 +193,9 @@ function editInvoice() {
     .value();
 
   const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
+  if (invoiceId === null) {
+    return;
+  }
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
   calculate(invoiceEdited);
@@ -181,6 +213,9 @@ function markdown() {
     .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
   const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
+  if (invoiceId === null) {
+    return;
+  }
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
   const from = {};
