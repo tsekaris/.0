@@ -60,13 +60,13 @@ function newInvoice() {
       '11 Νοέμβριος',
       '12 Δεκέμβριος',
     ],
-    field: 0,
+    index: 'show',
   });
 
   invoice.date.day = sh.fzf({
     message: 'Μέρα:',
     choices: getDays(invoice.date.year, invoice.date.month),
-    field: 0,
+    index: 'show',
   });
 
   // #from
@@ -163,7 +163,7 @@ function editInvoice() {
     .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
 
-  const invoiceId = sh.fzf({ message: 'Select:', choices, field: 0 });
+  const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
   calculate(invoiceEdited);
@@ -180,7 +180,7 @@ function markdown() {
   const choices = invoicesDb
     .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices, field: 0 });
+  const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
   const from = {};

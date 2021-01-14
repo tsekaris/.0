@@ -53,18 +53,17 @@ const sh = {
   },
 
   fzf(db) {
-    // db = {message: 'text', choices: [], multi: true, onError = function(), field: 2}
-    // Αν είναι multi: true τότε επιστρέφει array από strings.
-    // Αν δεν είναι multi: true τότε επιστρέφει string τιμή.
-    // Αν υπάρξει σφάλμα ή ακύρωση (esc, control-c) τότε επιστρέφει null.
-    // Sample: μόνο για input validation
+    // db = {message: 'text', choices: [], multi: true, index: 'show'}
+    // multi: true τότε επιστρέφει array.
+    // multi: false ή undefined τότε επιστρέφει τιμή.
+    // Αν υπάρξει σφάλμα ή ακύρωση (esc, control-c) τότε επιστρέφει ''.
+    // index: Αν υπάρχει τότε θα επιστρέψει την 1η "λέξη" που χωρίζεται με space.
+    // index: 'show' Το index θα εμφανίστεί στον χρήστη.
+    // index: 'hide' Το index δεν θα εμφανίστεί στον χρήστη.
     // bash status:
     // 0: Normal exit
     // 1: No match (αν θέλω να το χρησιμοποιώ σαν input)
     // 130: ctr-c or esc pressed
-
-    let mode;
-    let script;
 
     function convert(value) {
       let valueToNumber;
@@ -88,67 +87,87 @@ const sh = {
     if (db.choices !== undefined) {
       if (db.multi === true) {
         // Πολλαπλή επιλογή απο λίστα.
-        mode = 'list-multi';
-        script = this.run2(
-          `echo "${db.choices.join('\n')}" | fzf --prompt "${db.message} " --marker="+" -m`,
+        const script = this.run2(
+          `echo "${db.choices.join('\n')}" | fzf  --with-nth ${
+            db.index === 'hide' ? '2..' : '..'
+          } --prompt "${db.message} " --marker="+" -m`,
         );
+        if (script.status === 0) {
+          const data = script.out.split('\n');
+          switch (db.index) {
+            case 'hide':
+              if (data.length > 1) {
+                // Αν είναι πολλαπλή επιλογή, οι επιλογές εμφανίζονται σε διαφορετικές σειρές
+                console.log(db.message.cyan);
+                data.forEach((element) => {
+                  console.log(`${element.split(' ').slice(1).join(' ')}`.green);
+                });
+              } else {
+                console.log(db.message.cyan, `${data[0].split(' ').slice(1).join(' ')}`.green);
+              }
+              return data.map((record) => convert(record.split(' ')[0]));
+            case 'show':
+              if (data.length > 1) {
+                // Αν είναι πολλαπλή επιλογή, οι επιλογές εμφανίζονται σε διαφορετικές σειρές
+                console.log(db.message.cyan);
+                data.forEach((element) => {
+                  console.log(`${element}`.green);
+                });
+              } else {
+                console.log(db.message.cyan, `${data[0]}`.green);
+              }
+              return data.map((record) => convert(record.split(' ')[0]));
+            default:
+              if (data.length > 1) {
+                // Αν είναι πολλαπλή επιλογή, οι επιλογές εμφανίζονται σε διαφορετικές σειρές
+                console.log(db.message.cyan);
+                data.forEach((element) => {
+                  console.log(`${element}`.green);
+                });
+              } else {
+                console.log(db.message.cyan, `${data[0]}`.green);
+              }
+              return data.map((record) => convert(record));
+          }
+        }
       } else {
         // Απλή επιλογή απο λίστα.
-        mode = 'list';
-        script = this.run2(`echo "${db.choices.join('\n')}" | fzf --prompt "${db.message} "`);
+        const script = this.run2(
+          `echo "${db.choices.join('\n')}" | fzf  --with-nth ${
+            db.index === 'hide' ? '2..' : '..'
+          } --prompt "${db.message} "`,
+        );
+        if (script.status === 0) {
+          const data = script.out.split('\n')[0];
+          switch (db.index) {
+            case 'hide':
+              console.log(db.message.cyan, `${data.split(' ').slice(1).join(' ')}`.green);
+              return convert(data.split(' ')[0]);
+            case 'show':
+              console.log(db.message.cyan, `${data}`.green);
+              return convert(data.split(' ')[0]);
+            default:
+              console.log(db.message.cyan, `${data}`.green);
+              return convert(data);
+          }
+        }
       }
     } else {
       // Input
-      mode = 'input';
-      script = this.run2(
+      const script = this.run2(
         `echo "" | fzf --color=bg+:-1 --info=hidden --pointer=' ' --print-query --prompt "${db.message} "`,
       );
+      if (script.status === 1) {
+        const data = script.out.split('\n')[0];
+        // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
+        console.log(db.message.cyan, `${data}`.green);
+        return convert(data);
+      }
     }
 
-    let data = script.out.split('\n');
-
-    if (db.field !== undefined) {
-      // Για επιστρέφει μία λέξη απο το string του fzf (πχ id)
-      data = data.map((record) => convert(record.split(' ')[db.field]));
-    } else {
-      data = data.map((record) => convert(record));
-    }
-
-    switch (mode) {
-      case 'list':
-        if (script.status === 0) {
-          console.log(db.message.cyan, `${data[0]}`.green);
-          return data[0];
-        }
-        break;
-      case 'list-multi':
-        if (script.status === 0) {
-          if (data.length > 1) {
-            // Αν είναι πολλαπλή επιλογή, οι επιλογές εμφανίζονται σε διαφορετικές σειρές
-            console.log(db.message.cyan);
-            data.forEach((element) => {
-              console.log(`${element}`.green);
-            });
-            return data;
-          }
-          // Αν δεν είναι πολλαπλή επιλογή, η επιλογή στην ίδια σειρά με το μήνυμα
-          console.log(db.message.cyan, `${data[0]}`.green);
-          return data;
-        }
-        break;
-      case 'input':
-        if (script.status === 1) {
-          // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
-          console.log(db.message.cyan, `${data[0]}`.green);
-          return data[0];
-        }
-        break;
-      default:
-        console.log(db.message.red.underline);
-        return '';
-    }
+    // Αν φτάσουμε εδώ υπάρχει σφάλμαε
     console.log(db.message.red.underline);
-    return '';
+    return null;
   },
 };
 
