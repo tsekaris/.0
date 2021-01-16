@@ -135,9 +135,7 @@ const sh = {
         const script = this.run2(
           `echo "${db.choices.join('\n')}" | fzf --color=bg+:-1 --with-nth ${
             db.index === 'hide' ? '2..' : '..'
-          } --prompt "${
-            db.message
-          }" --height=100% --preview="jq -C -n {3..}" --preview-window=down:80%:wrap`,
+          } --prompt "${db.message} "`,
         );
         if (script.status === 0) {
           const data = script.out.split('\n')[0];

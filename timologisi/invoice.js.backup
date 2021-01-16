@@ -192,8 +192,9 @@ function stats() {
 // #edit invoice
 function editInvoice() {
   const choices = invoicesDb
-    .map((invoice) => `${invoice.id} ${invoice.to.id} "'${JSON.stringify(invoice)}'"`)
+    .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
     .value();
+
   const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
   if (invoiceId === null) {
     return;
@@ -285,13 +286,6 @@ function testing() {
     message: 'Ενέργεια',
     defaults: ['tsemix@gmail.com', 'mtsekaris@hotmail.com'],
   });
-  const data = { value: null };
-  function test(valueIn) {
-    const dataIn = valueIn;
-    dataIn.value = {};
-  }
-  test(data);
-  console.log(data);
 }
 
 // #menu
@@ -325,7 +319,7 @@ function menu() {
       console.log('bye');
       break;
     default:
-    // menu();
+      menu();
   }
 }
 
