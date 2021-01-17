@@ -137,7 +137,7 @@ const sh = {
             db.index === 'hide' ? '2..' : '..'
           } --prompt "${
             db.message
-          }" --height=100% --preview="jq -C -n {3..}" --preview-window=down:80%:wrap`,
+          }" --height=100% --preview="jq -Cn {3..}" --preview-window=down:80%:wrap`,
         );
         if (script.status === 0) {
           const data = script.out.split('\n')[0];

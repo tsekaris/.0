@@ -76,7 +76,8 @@ let g:coc_global_extensions = [ 'coc-eslint', 'coc-prettier', 'coc-tsserver', 'c
 let g:which_key_map.c = {
       \ 'name' : '+coc' ,
       \ 'e' : [':CocEnable'     , 'enable'],
-      \ 'd' : [':CocDisable'     , 'disable']
+      \ 'd' : [':CocDisable'     , 'disable'],
+      \ 'r' : [':CocRestart'     , 'restart']
       \ }
 
 "nnn
