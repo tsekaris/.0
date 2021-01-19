@@ -39,7 +39,7 @@ function newInvoice() {
     const date = new Date(year, monthIndex, 1);
     const result = [];
     while (date.getMonth() === monthIndex) {
-      result.push(`${date.getDate()} ${names[date.getDay()]}`);
+      result.push([`${date.getDate()} ${names[date.getDay()]}`, date.getDate()]);
       date.setDate(date.getDate() + 1);
     }
     return result;
@@ -48,20 +48,19 @@ function newInvoice() {
   invoice.date.month = sh.fzf({
     message: 'Μήνας:',
     choices: [
-      '1 Ιανουάριος',
-      '2 Φεβρουάριος',
-      '3 Μάρτιος',
-      '4 Απρίλιος',
-      '5 Μάιος',
-      '6 Ιούνιος',
-      '7 Ιούλιος',
-      '8 Αύγουστος',
-      '9 Σεπτέμβριος',
-      '10 Οκτώβριος',
-      '11 Νοέμβριος',
-      '12 Δεκέμβριος',
+      ['1 Ιανουάριος', 1],
+      ['2 Φεβρουάριος', 2],
+      ['3 Μάρτιος', 3],
+      ['4 Απρίλιος', 4],
+      ['5 Μάιος', 5],
+      ['6 Ιούνιος', 6],
+      ['7 Ιούλιος', 7],
+      ['8 Αύγουστος', 8],
+      ['9 Σεπτέμβριος', 9],
+      ['10 Οκτώβριος', 10],
+      ['11 Νοέμβριος', 11],
+      ['12 Δεκέμβριος', 12],
     ],
-    index: 'show',
   });
 
   if (invoice.date.month === null) {
@@ -71,7 +70,6 @@ function newInvoice() {
   invoice.date.day = sh.fzf({
     message: 'Μέρα:',
     choices: getDays(invoice.date.year, invoice.date.month),
-    index: 'show',
   });
 
   if (invoice.date.day === null) {
@@ -85,8 +83,9 @@ function newInvoice() {
     message: 'Πελάτης:',
     choices: contactsDb
       .filter((contact) => contact.id !== 'tsekaris')
-      .map('id')
+      .map((record) => [`${record.id}\t${JSON.stringify(record)}`, record.id])
       .value(),
+    preview: 'json',
   });
 
   if (customer === null) {
@@ -147,10 +146,6 @@ function newInvoice() {
     return;
   }
 
-  console.log('---------------------------------------------------------------------');
-  console.log(invoice);
-  console.log('---------------------------------------------------------------------');
-
   // #save
   if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
     invoicesDb.push(invoice).write();
@@ -192,9 +187,9 @@ function stats() {
 // #edit invoice
 function editInvoice() {
   const choices = invoicesDb
-    .map((invoice) => `${invoice.id} ${invoice.to.id} "'${JSON.stringify(invoice)}'"`)
+    .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${JSON.stringify(invoice)}`, invoice.id])
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
+  const invoiceId = sh.fzf({ message: 'Select:', choices, preview: 'json' });
   if (invoiceId === null) {
     return;
   }
@@ -211,30 +206,23 @@ function editInvoice() {
 
 // #markdown
 function markdown() {
-  const choices = invoicesDb
-    .map((invoice) => `${invoice.id} ${invoice.to.id} ${invoice.description}`)
-    .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices, index: 'show' });
-  if (invoiceId === null) {
-    return;
-  }
-  const invoice = invoicesDb.find({ id: invoiceId }).value();
-  const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
-  const from = {};
-  const to = {};
-  keys.forEach((key) => {
-    if (invoice.from[key] !== undefined) {
-      from[key] = invoice.from[key];
-    } else {
-      from[key] = '';
-    }
-    if (invoice.to[key] !== undefined) {
-      to[key] = invoice.to[key];
-    } else {
-      to[key] = '';
-    }
-  });
-  const md = `
+  function html(invoice) {
+    const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
+    const from = {};
+    const to = {};
+    keys.forEach((key) => {
+      if (invoice.from[key] !== undefined) {
+        from[key] = invoice.from[key];
+      } else {
+        from[key] = '';
+      }
+      if (invoice.to[key] !== undefined) {
+        to[key] = invoice.to[key];
+      } else {
+        to[key] = '';
+      }
+    });
+    const md = `
   ## Τιμολόγιο παροχής υπηρεσιών.
   
   ### Στοιχεία τιμολογίου.
@@ -276,7 +264,19 @@ function markdown() {
 
   `;
 
-  console.log(marked(md));
+    return marked(md).split('\n').join('');
+  }
+  // `${invoice.id} ${invoice.to.id}\t"'${JSON.stringify(invoice)}'"`,
+  // .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)`, invoice.id])
+  const choices = invoicesDb
+    .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)}`, invoice.id])
+    .value();
+  const invoiceId = sh.fzf({ message: 'Select:', choices, preview: 'html' });
+  if (invoiceId === null) {
+
+  }
+  // const invoice = invoicesDb.find({ id: invoiceId }).value();
+  // console.log(html(invoice));
 }
 
 // #testing
@@ -294,39 +294,25 @@ function testing() {
   console.log(data);
 }
 
+function exit() {
+  console.log('Bye.');
+  process.exit(1); // έξοδος από το πρόγραμμα
+}
+
 // #menu
 function menu() {
-  const selection = sh.fzf({
+  sh.fzf({
     message: 'Ενέργεια',
-    choices: ['new invoice', 'edit invoice', 'markdown', 'statistics', 'testing', 'exit'],
-  });
-  switch (selection) {
-    case 'new invoice':
-      newInvoice();
-      menu();
-      break;
-    case 'edit invoice':
-      editInvoice();
-      menu();
-      break;
-    case 'markdown':
-      markdown();
-      menu();
-      break;
-    case 'statistics':
-      stats();
-      menu();
-      break;
-    case 'testing':
-      testing();
-      menu();
-      break;
-    case 'exit':
-      console.log('bye');
-      break;
-    default:
-    // menu();
-  }
+    choices: [
+      ['new invoice\tΝέο τιμολόγιο.', newInvoice],
+      ['edit invoice\tΕπεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
+      ['markdown\tΕκτύπωση.', markdown],
+      ['statistics\tΣτατιστικά.', stats],
+      ['testing\tΓια τεστάρισμα κώδικα.', testing],
+      ['exit\tΈξοδος από το πρόγραμμα.', exit],
+    ],
+  })();
+  menu();
 }
 
 menu();

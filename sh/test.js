@@ -1,7 +1,7 @@
 // const os = require(`${process.env.HOME}/.0/os/module`);
 const sh = require('sh');
 
-let choices = [
+const choices = [
   'pe',
   'n',
   'r',
@@ -58,11 +58,12 @@ let choices = [
   'rtd i-',
 ];
 
-choices = choices.map((element, index) => `${index} ${element}`);
 const out = sh.fzf({
   message: 'Select a type:',
-  choices,
+  choices: choices.map((choice, index) => [`${choice}\tpreview: ${index}`, index + 100]),
+  // choices: choices.map((choice, index) => `${choice}\tpreview: ${index}`),
+  // choices,
   multi: true,
-  index: 'show',
+  // preview: 'text',
 });
 console.log(out);
