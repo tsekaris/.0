@@ -195,10 +195,6 @@ function editInvoice() {
   }
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
-  calculate(invoiceEdited);
-  console.log('--------------------');
-  console.log(invoiceEdited);
-  console.log('--------------------');
   if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
     invoicesDb.find({ id: invoiceId }).assign(invoiceEdited).write();
   }
@@ -273,7 +269,6 @@ function markdown() {
     .value();
   const invoiceId = sh.fzf({ message: 'Select:', choices, preview: 'html' });
   if (invoiceId === null) {
-
   }
   // const invoice = invoicesDb.find({ id: invoiceId }).value();
   // console.log(html(invoice));
