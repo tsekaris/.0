@@ -59,11 +59,17 @@ const choices = [
 ];
 
 const out = sh.fzf({
-  message: 'Select a type:',
-  choices: choices.map((choice, index) => [`${choice}\tpreview: ${index}`, index + 100]),
+  message: 'Value:',
+  header: 'min: 0, max: 100',
+  // choices: choices.map((choice, index) => [`${choice}\tpreview: ${index}`, index + 100]),
   // choices: choices.map((choice, index) => `${choice}\tpreview: ${index}`),
   // choices,
   multi: true,
-  // preview: 'text',
+  validation: (value) => (value > 0 && value <= 100) || value === '56',
+  defaults: [1, 50, 100],
+  // height: '100%',
+  preview: {
+    style: 'right',
+  },
 });
 console.log(out);

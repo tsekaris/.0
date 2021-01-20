@@ -85,115 +85,128 @@ const sh = {
       }
     }
 
-    if (db.choices !== undefined) {
+    let data = null;
+    const command = [];
+    const {
+      choices = [],
+      message = 'Εισαγωγή τιμής:',
+      height = '80%',
+      header = '',
+      preview = { type: '', style: 'right:0%' },
+      multi = false,
+      defaults = [],
+      validation = () => true,
+    } = db;
+
+    if (choices.length > 0) {
       // List
 
-      // Choices
-      let choices;
-      let hasPreview;
       let hasReturnedValues;
-      const sample = db.choices[0]; // ? Πρέπει να αλλάξει γιατί μπορεί να μην είναι αντιπροσωπευτικό
-      if (Array.isArray(sample)) {
+      if (Array.isArray(db.choices[0])) {
         // Τότε υπάρχει return value
         hasReturnedValues = true;
-        hasPreview = sample[0].split('\t')[1] !== undefined;
-        choices = db.choices.map((choice, index) => `${index}\t${choice[0]}`).join('\n');
+        choices = choices.map((choice, index) => `${index}\t${choice[0]}`).join('\n');
       } else {
         hasReturnedValues = false;
-        hasPreview = sample.split('\t')[1] !== undefined;
-        choices = db.choices.map((choice, index) => `${index}\t${choice}`).join('\n');
+        choices = choices.map((choice, index) => `${index}\t${choice}`).join('\n');
       }
-
-      // --preview
-      let preview = '';
-      if (hasPreview) {
-        switch (db.preview) {
-          case 'text':
-            preview = '--preview="echo {3}"';
-            break;
-          case 'json':
-            preview = '--preview="jq -Cn {3}"';
-            break;
-          case 'html':
-            preview = '--preview="echo {3} | w3m -T text/html"';
-            break;
-          default:
-            preview = '--preview="echo {3}"';
-        }
+      command.push(
+        `echo '${choices}' | fzf --cycle --print-query -d '\t' --color=bg+:-1 --with-nth=2 --prompt="${message}`,
+      );
+      command.push(`--height=${height}`);
+      command.push(`--header='${header}'`);
+      switch (preview.type) {
+        case 'text':
+          command.push('--preview="echo {3}"');
+          break;
+        case 'json':
+          command.push('--preview="jq -Cn {3}"');
+          break;
+        case 'html':
+          command.push('--preview="echo {3} | w3m -T text/html"');
+          break;
+        default:
+        // undefined
       }
+      command.push(`--preview-window=${preview.style}:wrap`);
+      command.push(multi === true ? '--marker="+" -m' : '');
 
-      // --marker //db.multi
-      const marker = db.multi === true ? '--marker="+" -m' : '';
-      // this.run2('echo ')
+      // const scriptText = `echo '${choices}' | fzf ${height} ${header} --cycle --print-query -d '\t' --color=bg+:-1 --with-nth=2 --prompt="${db.message} " ${marker} ${preview}`;
 
-      const scriptText = `echo '${choices}' | fzf --height=90% --cycle --print-query -d '\t' --color=bg+:-1 --with-nth=2 --prompt="${db.message} " ${marker} ${preview} --preview-window=right:80%:wrap`;
-      // --preview-window=up:50%:wrap
-
-      const script = this.run2(scriptText);
+      const script = this.run2(command.join(' '));
 
       if (script.status === 0) {
-        let data = script.out.split('\n');
+        data = script.out.split('\n');
         data.shift(); // To data χωρίς query
         data = data.map((record) => record.split('\t')); // array of array of strings
         if (data.length === 1) {
-          console.log(db.message.cyan, `${data[0][1]}`.green);
+          console.log(message.cyan, `${data[0][1]}`.green);
           if (hasReturnedValues) {
-            return db.choices[data[0][0] * 1][1];
+            data = choices[data[0][0] * 1][1]; // eslint-disable-line prefer-destructuring
+          } else {
+            data = data[0][1]; // eslint-disable-line prefer-destructuring
           }
-          return data[0][1];
-        }
-        if (data.length > 1) {
-          console.log(db.message.cyan);
+        } else if (data.length > 1) {
+          console.log(message.cyan);
           data = data.map((record) => {
             console.log(`${record[1]}`.green);
             if (hasReturnedValues) {
-              return db.choices[record[0] * 1][1]; // return της arrow function
+              return choices[record[0] * 1][1]; // return της arrow function
             }
             return record[1]; // return της arrow function
           });
-          return data;
         }
       }
+      if (data === null) {
+        console.log(message.cyan, `${null}`.red);
+      }
     } else {
-      this.dummy(); // για eslint: no-lonely-if
       // Input
-      if (db.defaults !== undefined) {
+
+      if (defaults.length > 0) {
         const script = this.run2(
-          `echo "-insert-\n${db.defaults.join(
+          `echo "-insert-\n${defaults.join(
             '\n',
-          )}" | fzf --height=50% --color=bg+:-1 --disabled --print-query --prompt "${db.message} "`,
+          )}" | fzf --height=${height} --header=${header} --color=bg+:-1 --disabled --print-query --prompt "${message} "`,
         );
+        console.log(script);
         if (script.status === 0) {
-          const data = script.out.split('\n');
+          data = script.out.split('\n');
           if (data[1] === '-insert-') {
-            if (data[0] !== '') {
-              // Πέρνουμε το query
-              console.log(db.message.cyan, `${data[0]}`.green);
-              return convert(data[0]);
-            }
+            data = convert(data[0]);
           } else {
             // Πέρνουμε την επιλεγμένη default τιμή.
-            console.log(db.message.cyan, `${data[1]}`.green);
-            return convert(data[1]);
+            data = convert(data[1]);
           }
         }
       } else {
         const script = this.run2(
-          `echo "" | fzf --height=50% --color=bg+:-1 --info=hidden --pointer=' ' --print-query --prompt "${db.message} "`,
+          `echo "" | fzf --height=${height} --header=${header} --color=bg+:-1 --info=hidden --pointer=' ' --print-query --prompt "${message} "`,
         );
-        if (script.status === 1) {
+        if (script.status === 1 || script.status === 0) {
+          // 1: Υπάρχει text, 0: Δεν υπάρχει text. Απλό enter
           // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
-          const data = script.out.split('\n')[0];
-          console.log(db.message.cyan, `${data}`.green);
-          return convert(data);
+          data = script.out.split('\n');
+          data = convert(data[0]);
         }
+      }
+
+      if (validation(data) === false) {
+        if (data !== null) {
+          console.log('Not a valid value.'.red);
+          data = this.fzf(db);
+          process.exit(1); // έξοδος από το πρόγραμμα
+        }
+      }
+
+      if (data !== null) {
+        console.log(message.cyan, `${data}`.green);
+      } else {
+        console.log(message.cyan, `${null}`.red);
       }
     }
 
-    // Αν φτάσουμε εδώ υπάρχει σφάλμα
-    // console.log(db.message.red.underline, `${null}`.red);
-    console.log(db.message.cyan, `${null}`.red);
-    return null;
+    return data;
   },
   dummy() {
     // dummy
