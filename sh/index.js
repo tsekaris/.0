@@ -93,11 +93,21 @@ const sh = {
       // list
       choices = [],
       multi = false,
-      preview = { type: '', style: 'right:0%' },
+      preview = { type: '', style: 'left:0%' },
       // input
       defaults = [],
       validation = () => true,
     } = db;
+
+    // #todo
+    // choices και defaults να γίνει κοινό.
+    // αν γίνει το παραπάνω πρέπει να μπει πεδίο type.
+    // type: 'list', type: 'input'
+    // μπορόυμε να διώξουμε και το multi και να δίνουμε type: 'multi-list'
+    // query -> default
+    // preview: κάτι πρέπει να γίνει.
+    // header: tsv data με ονόματα στηλών.
+    // preview: με προσωρινά εξωτερικά αρχεία.
 
     function convert(value) {
       let valueToNumber;
