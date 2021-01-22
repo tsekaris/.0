@@ -85,7 +85,10 @@ function newInvoice() {
       .filter((contact) => contact.id !== 'tsekaris')
       .map((record) => [`${record.id}\t${JSON.stringify(record)}`, record.id])
       .value(),
-    preview: 'json',
+    preview: {
+      type: 'json',
+      style: 'left:50%',
+    },
   });
 
   if (customer === null) {
@@ -189,7 +192,14 @@ function editInvoice() {
   const choices = invoicesDb
     .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${JSON.stringify(invoice)}`, invoice.id])
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices, preview: 'json' });
+  const invoiceId = sh.fzf({
+    message: 'Select:',
+    choices,
+    preview: {
+      type: 'json',
+      style: 'left:50%',
+    },
+  });
   if (invoiceId === null) {
     return;
   }
@@ -267,7 +277,14 @@ function markdown() {
   const choices = invoicesDb
     .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)}`, invoice.id])
     .value();
-  const invoiceId = sh.fzf({ message: 'Select:', choices, preview: 'html' });
+  const invoiceId = sh.fzf({
+    message: 'Select:',
+    choices,
+    preview: {
+      type: 'html',
+      style: 'left:50%',
+    },
+  });
   if (invoiceId === null) {
   }
   // const invoice = invoicesDb.find({ id: invoiceId }).value();

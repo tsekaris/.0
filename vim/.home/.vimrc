@@ -77,7 +77,6 @@ let g:which_key_map.c = {
       \ 'name' : '+coc' ,
       \ 'e' : [':CocEnable'     , 'enable'],
       \ 'd' : [':CocDisable'     , 'disable'],
-      \ 'r' : [':CocRestart'     , 'restart']
       \ }
 
 "nnn
