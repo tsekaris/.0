@@ -86,28 +86,25 @@ const sh = {
     // 2: Error
     // 130: ctr-c or esc pressed
     const {
+      type = 'input',
       message = 'Εισαγωγή τιμής:',
       header = '',
-      query = '', // Για το input κυρίως. Η default τιμή.
+      preset = '', // Για το input κυρίως. Η default τιμή.
       height = '80%',
-      // list
       choices = [],
-      multi = false,
-      preview = { type: '', style: 'left:0%' },
+      // list
+      preview = { type: '', style: 'right:0%' },
       // input
-      defaults = [],
       validation = () => true,
     } = db;
 
     // #todo
-    // choices και defaults να γίνει κοινό.
-    // αν γίνει το παραπάνω πρέπει να μπει πεδίο type.
-    // type: 'list', type: 'input'
-    // μπορόυμε να διώξουμε και το multi και να δίνουμε type: 'multi-list'
-    // query -> default
+    // preset -> ? το default είναι δεσμευμένη από το σύστημα
     // preview: κάτι πρέπει να γίνει.
-    // header: tsv data με ονόματα στηλών.
+    // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
     // preview: με προσωρινά εξωτερικά αρχεία.
+    // header: tsv data με ονόματα στηλών.
+    // validation: Και για list.
 
     function convert(value) {
       let valueToNumber;
@@ -144,7 +141,7 @@ const sh = {
       },
     };
 
-    if (choices.length > 0) {
+    if (type === 'list' || type === 'list-multi') {
       // List
       const hasReturnedValues = Array.isArray(choices[0]);
       const script = this.run2(
@@ -166,10 +163,11 @@ const sh = {
             }
             return `--header='${header}'`;
           })(),
-          `--query "${query}"`,
+          `--query "${preset}"`,
           `--height=${height}`,
           '--cycle',
           '--color=bg+:-1',
+          '--info=inline',
           '--print-query',
           "-d '\t'",
           '--with-nth=2',
@@ -187,7 +185,7 @@ const sh = {
           })(),
           `--preview-window=${preview.style}:wrap`,
           '--marker="+"',
-          `${multi === true ? '-m' : ''}`,
+          `${type === 'list-multi' ? '-m' : ''}`,
         ].join(' '),
       );
 
@@ -209,15 +207,15 @@ const sh = {
         result.message = returnTexts.length === 1 ? returnTexts[0] : returnTexts;
 
         // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
-        result.data = multi ? returnValues : returnValues[0];
+        result.data = type === 'list-multi' ? returnValues : returnValues[0];
       }
-    } else {
+    } else if (type === 'input') {
       // Input
       const script = this.run2(
         [
           (() => {
-            if (defaults.length > 0) {
-              return `echo "-insert-\n${defaults.join('\n')}" | fzf `;
+            if (choices.length > 0) {
+              return `echo "-insert-\n${choices.join('\n')}" | fzf `;
             }
             return 'echo "" | fzf --pointer=" "';
           })(),
@@ -233,7 +231,7 @@ const sh = {
           '--disabled',
           '--print-query',
           `--prompt "${message} "`,
-          `--query "${query}"`,
+          `--query "${preset}"`,
         ].join(' '),
       );
       if (script.status === 0 || script.status === 1) {
@@ -248,7 +246,7 @@ const sh = {
             result.data = convert(this.vim(data[0]));
             break;
           default:
-            result.data = defaults.length > 0 ? convert(data[1]) : convert(data[0]);
+            result.data = choices.length > 0 ? convert(data[1]) : convert(data[0]);
         }
         result.message = result.data;
       }

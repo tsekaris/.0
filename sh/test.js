@@ -62,16 +62,16 @@ const choices = [
 ];
 
 const out = sh.fzf({
+  type: 'input',
   message: 'Value:',
   header: 'min: 0, max: 100',
   // choices: choices.map((choice, index) => [`${choice}\tpreview: ${index}`, index + 100]),
   // choices: choices.map((choice, index) => `${choice}\tpreview: ${index}`),
   // choices,
-  query: 'paok',
-  // multi: true,
+  choices: ['-vim-', 66, 99, 101],
+  preset: 'paok',
   validation: (value) => (value > 0 && value <= 100) || value === 'paok ole' || value === '',
 
-  defaults: ['-vim-', 66, 99, 101],
   // preview: { type: 'text', style: 'top:80%' },
 });
 // console.log(out);

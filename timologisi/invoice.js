@@ -46,6 +46,7 @@ function newInvoice() {
   };
 
   invoice.date.month = sh.fzf({
+    type: 'list',
     message: 'Μήνας:',
     choices: [
       ['1 Ιανουάριος', 1],
@@ -68,6 +69,7 @@ function newInvoice() {
   }
 
   invoice.date.day = sh.fzf({
+    type: 'list',
     message: 'Μέρα:',
     choices: getDays(invoice.date.year, invoice.date.month),
   });
@@ -80,6 +82,7 @@ function newInvoice() {
   invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
 
   const customer = sh.fzf({
+    type: 'list',
     message: 'Πελάτης:',
     choices: contactsDb
       .filter((contact) => contact.id !== 'tsekaris')
@@ -100,6 +103,7 @@ function newInvoice() {
 
   // #fpa #parakratisi
   invoice.amount = sh.fzf({
+    type: 'input',
     message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
   });
 
@@ -108,6 +112,7 @@ function newInvoice() {
   }
 
   const answer = sh.fzf({
+    type: 'list',
     message: 'ΦΠΑ: 24% - Παρακράτηση: 20%:',
     choices: ['ναι', 'όχι'],
   });
@@ -121,15 +126,17 @@ function newInvoice() {
 
   if (answer === 'όχι') {
     invoice.fpa.percent = sh.fzf({
+      type: 'input',
       message: 'ΦΠΑ:',
-      defaults: [24],
+      choices: [24],
     });
     if (invoice.fpa.percent === null) {
       return;
     }
     invoice.parakratisi.percent = sh.fzf({
+      type: 'input',
       message: 'Παρακράτηση:',
-      defaults: [20],
+      choices: [20],
     });
     if (invoice.parakratisi.percent === null) {
       return;
@@ -143,14 +150,16 @@ function newInvoice() {
 
   // #description
   invoice.description = sh.fzf({
+    type: 'input',
     message: 'Περιγραφή εργασιών:',
+    choices: ['-vim-'],
   });
   if (invoice.description === null) {
     return;
   }
 
   // #save
-  if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+  if (sh.fzf({ type: 'list', message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
     invoicesDb.push(invoice).write();
   }
 }
@@ -193,6 +202,7 @@ function editInvoice() {
     .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${JSON.stringify(invoice)}`, invoice.id])
     .value();
   const invoiceId = sh.fzf({
+    type: 'list',
     message: 'Select:',
     choices,
     preview: {
@@ -205,7 +215,7 @@ function editInvoice() {
   }
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
-  if (sh.fzf({ message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+  if (sh.fzf({ type: 'list', message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
     invoicesDb.find({ id: invoiceId }).assign(invoiceEdited).write();
   }
 }
@@ -278,6 +288,7 @@ function markdown() {
     .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)}`, invoice.id])
     .value();
   const invoiceId = sh.fzf({
+    type: 'list',
     message: 'Select:',
     choices,
     preview: {
@@ -294,8 +305,9 @@ function markdown() {
 // #testing
 function testing() {
   const answer = sh.fzf({
+    type: 'input',
     message: 'Ενέργεια',
-    defaults: ['tsemix@gmail.com', 'mtsekaris@hotmail.com'],
+    choices: ['tsemix@gmail.com', 'mtsekaris@hotmail.com'],
   });
   const data = { value: null };
   function test(valueIn) {
@@ -314,6 +326,7 @@ function exit() {
 // #menu
 function menu() {
   sh.fzf({
+    type: 'list',
     message: 'Ενέργεια',
     choices: [
       ['new invoice\tΝέο τιμολόγιο.', newInvoice],
