@@ -62,17 +62,19 @@ const choices = [
 ];
 
 const out = sh.fzf({
-  type: 'input',
+  type: 'list-multi',
   message: 'Value:',
-  header: 'min: 0, max: 100',
-  // choices: choices.map((choice, index) => [`${choice}\tpreview: ${index}`, index + 100]),
-  // choices: choices.map((choice, index) => `${choice}\tpreview: ${index}`),
+  // header: 'min: 0, max: 100',
+  header: 'περιγραφή|index',
+  choices: choices.map((choice, index) => [`${choice}|${index}`, index + 100, choice]),
+  // choices: choices.map((choice, index) => `${choice}|${index}|preview: ${index}`),
   // choices,
-  choices: ['-vim-', 66, 99, 101],
-  preset: 'paok',
-  validation: (value) => (value > 0 && value <= 100) || value === 'paok ole' || value === '',
+  // choices: ['-vim-', 66, 99, 101],
+  // preset: 'paok',
+  // validation: (value) => (value > 0 && value <= 100) || value === 'paok ole' || value === '',
 
-  // preview: { type: 'text', style: 'top:80%' },
+  height: '90%',
+  preview: { type: 'text', style: 'right:50%' },
 });
-// console.log(out);
+console.log(out);
 //

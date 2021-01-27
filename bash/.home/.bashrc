@@ -83,4 +83,5 @@ q(){
   exit
 }
 
+
 set -o vi #vi mode for bash

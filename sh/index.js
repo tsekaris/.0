@@ -1,34 +1,34 @@
 const child_process = require('child_process');
 
-const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  dim: '\x1b[2m',
-  underscore: '\x1b[4m',
-  blink: '\x1b[5m',
-  reverse: '\x1b[7m',
-  hidden: '\x1b[8m',
-
-  fgBlack: '\x1b[30m',
-  fgRed: '\x1b[31m',
-  fgGreen: '\x1b[32m',
-  fgYellow: '\x1b[33m',
-  fgBlue: '\x1b[34m',
-  fgMagenta: '\x1b[35m',
-  fgCyan: '\x1b[36m',
-  fgWhite: '\x1b[37m',
-
-  bgBlack: '\x1b[40m',
-  bgRed: '\x1b[41m',
-  bgGreen: '\x1b[42m',
-  bgYellow: '\x1b[43m',
-  bgBlue: '\x1b[44m',
-  bgMagenta: '\x1b[45m',
-  bgCyan: '\x1b[46m',
-  bgWhite: '\x1b[47m',
-};
-
 const sh = {
+  colors: {
+    reset: '\x1b[0m',
+    bright: '\x1b[1m',
+    dim: '\x1b[2m',
+    underscore: '\x1b[4m',
+    blink: '\x1b[5m',
+    reverse: '\x1b[7m',
+    hidden: '\x1b[8m',
+
+    fgBlack: '\x1b[30m',
+    fgRed: '\x1b[31m',
+    fgGreen: '\x1b[32m',
+    fgYellow: '\x1b[33m',
+    fgBlue: '\x1b[34m',
+    fgMagenta: '\x1b[35m',
+    fgCyan: '\x1b[36m',
+    fgWhite: '\x1b[37m',
+
+    bgBlack: '\x1b[40m',
+    bgRed: '\x1b[41m',
+    bgGreen: '\x1b[42m',
+    bgYellow: '\x1b[43m',
+    bgBlue: '\x1b[44m',
+    bgMagenta: '\x1b[45m',
+    bgCyan: '\x1b[46m',
+    bgWhite: '\x1b[47m',
+  },
+
   run(req) {
     const child = child_process.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
@@ -48,7 +48,8 @@ const sh = {
   run2(req) {
     const child = child_process.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
-      shell: true,
+      // shell: true,
+      shell: '/bin/bash', // Αλλιώς με true παίρνει sh.
       encoding: 'utf-8',
     });
     // slice: remove change line που προσθέτει στο stdout
@@ -89,7 +90,7 @@ const sh = {
       type = 'input',
       message = 'Εισαγωγή τιμής:',
       header = '',
-      preset = '', // Για το input κυρίως. Η default τιμή.
+      preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
       height = '80%',
       choices = [],
       // list
@@ -103,7 +104,6 @@ const sh = {
     // preview: κάτι πρέπει να γίνει.
     // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
     // preview: με προσωρινά εξωτερικά αρχεία.
-    // header: tsv data με ονόματα στηλών.
     // validation: Και για list.
 
     function convert(value) {
@@ -130,30 +130,36 @@ const sh = {
       data: null,
       log: () => {
         console.log(
-          `${colors.fgCyan}${message}`,
+          `${this.colors.fgCyan}${message}${this.colors.reset}`,
           typeof result.message === 'string'
-            ? `${colors.fgGreen}${result.message}${colors.reset}`
+            ? `${this.colors.fgGreen}${result.message}${this.colors.reset}`
             : result.message,
         );
-        if (result.data === null) {
-          console.log(`${colors.fgRed}Canceled.${colors.reset}`);
-        }
       },
     };
 
     if (type === 'list' || type === 'list-multi') {
       // List
-      const hasReturnedValues = Array.isArray(choices[0]);
       const script = this.run2(
         [
           (() => {
-            let fzfChoices;
-            if (hasReturnedValues) {
-              fzfChoices = choices.map((choice, index) => `${index}\t${choice[0]}`).join('\n');
-            } else {
-              fzfChoices = choices.map((choice, index) => `${index}\t${choice}`).join('\n');
+            console.log(choices);
+            if (preview.type !== '') {
+              const ret = choices
+                .map((choice, index) => `preview${index}="${choice[0].split('|')[0]}";`)
+                .join('');
+              console.log(ret);
+              return ret;
             }
-            return `echo '${fzfChoices}' |`;
+            return '';
+          })(),
+          (() => {
+            let fzfChoices = choices.map((choice, index) => `${index}|${choice[0]}`);
+            if (header !== '') {
+              fzfChoices.unshift(`index|${header}`); //
+            }
+            fzfChoices = fzfChoices.join('\n');
+            return `echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t'|`;
           })(),
           'fzf',
           `--prompt "${message} "`,
@@ -161,24 +167,25 @@ const sh = {
             if (header === '') {
               return '';
             }
-            return `--header='${header}'`;
+            return '--header-lines=1';
           })(),
           `--query "${preset}"`,
           `--height=${height}`,
+          '--tabstop=1',
           '--cycle',
           '--color=bg+:-1',
           '--info=inline',
           '--print-query',
           "-d '\t'",
-          '--with-nth=2',
+          '--with-nth=2..',
           (() => {
             switch (preview.type) {
               case 'text':
-                return '--preview="echo {3}"';
+                return '--preview="echo "$preview4""';
               case 'json':
-                return '--preview="jq -Cn {3}"';
+                return '--preview="jq -Cn $preview{1}"';
               case 'html':
-                return '--preview="echo {3} | w3m -T text/html"';
+                return '--preview="echo $preview{1}" | w3m -T text/html"';
               default:
                 return '';
             }
@@ -196,11 +203,13 @@ const sh = {
         data.shift(); // ['8\tChoice1', '9\tChoice2']
         data.forEach((record) => {
           // record: '8\tChoice1'
-          let [index, text] = record.split('\t');
-          index *= 1; // Μετατροπή σε αριθμό.
-          text = convert(text); // Μετατροπή σε json value.
-          returnTexts.push(text);
-          returnValues.push(hasReturnedValues ? choices[index][1] : text);
+          const index = record.split('\t')[0] * 1;
+          const text = choices[index][0].split('|');
+          if (preview.type !== '') {
+            text.pop();
+          }
+          returnTexts.push(text.join('|'));
+          returnValues.push(choices[index][1]);
         });
 
         // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
@@ -208,6 +217,21 @@ const sh = {
 
         // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
         result.data = type === 'list-multi' ? returnValues : returnValues[0];
+
+        result.log();
+        return result.data;
+      }
+      if (script.status === 1) {
+        result.data = script.out.split('\n').shift();
+        result.message = `${result.data} ${this.colors.fgRed}try again`;
+        result.log();
+        return this.fzf(db);
+      }
+      if (script.status === 130) {
+        result.data = null;
+        result.message = `${this.colors.fgRed}canceled`;
+        result.log();
+        return result.data;
       }
     } else if (type === 'input') {
       // Input
@@ -219,13 +243,13 @@ const sh = {
             }
             return 'echo "" | fzf --pointer=" "';
           })(),
-          `--height=${height}`,
           (() => {
             if (header === '') {
               return '';
             }
             return `--header='${header}'`;
           })(),
+          `--height=${height}`,
           '--color=bg+:-1',
           '--info=hidden',
           '--disabled',
@@ -243,25 +267,34 @@ const sh = {
             result.data = convert(data[0]);
             break;
           case '-vim-':
+            // ? Υπάρχει πρόβλημα στο json αν εισάγουμε κείμενο με πολλαπλές σειρές
             result.data = convert(this.vim(data[0]));
             break;
           default:
             result.data = choices.length > 0 ? convert(data[1]) : convert(data[0]);
         }
-        result.message = result.data;
-      }
-
-      if (validation(result.data) === false) {
-        if (result.data !== null) {
-          result.message = `${result.data}\n${colors.fgRed}Not a valid value. Try again.`;
+        if (validation(result.data) === true) {
+          result.message = result.data;
           result.log();
-          result.data = this.fzf(db);
-          process.exit(1); // έξοδος από το πρόγραμμα
+          return result.data;
         }
+        // validation είναι false
+        result.message = `${result.data} ${this.colors.fgRed}try again`;
+        result.log();
+        return this.fzf(db);
+      }
+      if (script.status === 130) {
+        result.data = null;
+        result.message = `${this.colors.fgRed}canceled`;
+        result.log();
+        return result.data;
       }
     }
+    result.message = `${this.colors.fgRed}system error`;
     result.log();
-    return result.data;
+    return process.exit(1);
+    // Το consistent-return απαιτεί return.
+    // Λειτουργεί και χωρίς return.
   },
 };
 

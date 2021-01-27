@@ -39,7 +39,7 @@ function newInvoice() {
     const date = new Date(year, monthIndex, 1);
     const result = [];
     while (date.getMonth() === monthIndex) {
-      result.push([`${date.getDate()} ${names[date.getDay()]}`, date.getDate()]);
+      result.push([`${date.getDate()}|${names[date.getDay()]}`, date.getDate()]);
       date.setDate(date.getDate() + 1);
     }
     return result;
@@ -48,19 +48,20 @@ function newInvoice() {
   invoice.date.month = sh.fzf({
     type: 'list',
     message: 'Μήνας:',
+    header: 'no|μήνας',
     choices: [
-      ['1 Ιανουάριος', 1],
-      ['2 Φεβρουάριος', 2],
-      ['3 Μάρτιος', 3],
-      ['4 Απρίλιος', 4],
-      ['5 Μάιος', 5],
-      ['6 Ιούνιος', 6],
-      ['7 Ιούλιος', 7],
-      ['8 Αύγουστος', 8],
-      ['9 Σεπτέμβριος', 9],
-      ['10 Οκτώβριος', 10],
-      ['11 Νοέμβριος', 11],
-      ['12 Δεκέμβριος', 12],
+      ['1|Ιανουάριος', 1],
+      ['2|Φεβρουάριος', 2],
+      ['3|Μάρτιος', 3],
+      ['4|Απρίλιος', 4],
+      ['5|Μάιος', 5],
+      ['6|Ιούνιος', 6],
+      ['7|Ιούλιος', 7],
+      ['8|Αύγουστος', 8],
+      ['9|Σεπτέμβριος', 9],
+      ['10|Οκτώβριος', 10],
+      ['11|Νοέμβριος', 11],
+      ['12|Δεκέμβριος', 12],
     ],
   });
 
@@ -71,6 +72,7 @@ function newInvoice() {
   invoice.date.day = sh.fzf({
     type: 'list',
     message: 'Μέρα:',
+    header: 'no|ημέρα',
     choices: getDays(invoice.date.year, invoice.date.month),
   });
 
@@ -81,30 +83,30 @@ function newInvoice() {
   // #from
   invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
 
-  const customer = sh.fzf({
+  // #to
+  invoice.to = sh.fzf({
     type: 'list',
     message: 'Πελάτης:',
+    header: 'id|name|preview',
     choices: contactsDb
       .filter((contact) => contact.id !== 'tsekaris')
-      .map((record) => [`${record.id}\t${JSON.stringify(record)}`, record.id])
+      .map((record) => [`${record.id}|${record.name}|${JSON.stringify(record)}`, record])
       .value(),
     preview: {
       type: 'json',
-      style: 'left:50%',
+      style: 'right:50%',
     },
   });
 
-  if (customer === null) {
+  if (invoice.to === null) {
     return;
   }
-
-  // #to
-  invoice.to = contactsDb.find({ id: customer }).value();
 
   // #fpa #parakratisi
   invoice.amount = sh.fzf({
     type: 'input',
     message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
+    validation: (value) => value > 0,
   });
 
   if (invoice.amount === null) {
@@ -114,7 +116,10 @@ function newInvoice() {
   const answer = sh.fzf({
     type: 'list',
     message: 'ΦΠΑ: 24% - Παρακράτηση: 20%:',
-    choices: ['ναι', 'όχι'],
+    choices: [
+      ['ναι', true],
+      ['όχι', false],
+    ],
   });
 
   if (answer === null) {
@@ -124,7 +129,7 @@ function newInvoice() {
   invoice.fpa = {};
   invoice.parakratisi = {};
 
-  if (answer === 'όχι') {
+  if (answer === false) {
     invoice.fpa.percent = sh.fzf({
       type: 'input',
       message: 'ΦΠΑ:',
@@ -152,14 +157,26 @@ function newInvoice() {
   invoice.description = sh.fzf({
     type: 'input',
     message: 'Περιγραφή εργασιών:',
+    header: 'Μία γραμμή',
     choices: ['-vim-'],
   });
+
+  invoice.description = invoice.description.split('\n').join('\n');
   if (invoice.description === null) {
     return;
   }
 
   // #save
-  if (sh.fzf({ type: 'list', message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+  if (
+    sh.fzf({
+      type: 'list',
+      message: 'Αποθήκευση;',
+      choices: [
+        ['ναι', true],
+        ['όχι', false],
+      ],
+    })
+  ) {
     invoicesDb.push(invoice).write();
   }
 }
@@ -199,15 +216,16 @@ function stats() {
 // #edit invoice
 function editInvoice() {
   const choices = invoicesDb
-    .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${JSON.stringify(invoice)}`, invoice.id])
+    .map((invoice) => [`${invoice.id}|${invoice.to.id}|${JSON.stringify(invoice)}`, invoice.id])
     .value();
   const invoiceId = sh.fzf({
     type: 'list',
     message: 'Select:',
+    header: 'no|πελάτης|preview',
     choices,
     preview: {
       type: 'json',
-      style: 'left:50%',
+      style: 'right:50%',
     },
   });
   if (invoiceId === null) {
@@ -215,7 +233,16 @@ function editInvoice() {
   }
   const invoice = invoicesDb.find({ id: invoiceId }).value();
   const invoiceEdited = sh.vim(invoice);
-  if (sh.fzf({ type: 'list', message: 'Αποθήκευση;', choices: ['ναι', 'όχι'] }) === 'ναι') {
+  if (
+    sh.fzf({
+      type: 'list',
+      message: 'Αποθήκευση;',
+      choices: [
+        ['ναι', true],
+        ['όχι', false],
+      ],
+    })
+  ) {
     invoicesDb.find({ id: invoiceId }).assign(invoiceEdited).write();
   }
 }
@@ -285,15 +312,16 @@ function markdown() {
   // `${invoice.id} ${invoice.to.id}\t"'${JSON.stringify(invoice)}'"`,
   // .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)`, invoice.id])
   const choices = invoicesDb
-    .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)}`, invoice.id])
+    .map((invoice) => [`${invoice.id}|${invoice.to.id}|${html(invoice)}`, invoice.id])
     .value();
   const invoiceId = sh.fzf({
     type: 'list',
     message: 'Select:',
+    header: 'τιμολόγιο|πελάτης|preview',
     choices,
     preview: {
       type: 'html',
-      style: 'left:50%',
+      style: 'right:50%',
     },
   });
   if (invoiceId === null) {
@@ -304,18 +332,7 @@ function markdown() {
 
 // #testing
 function testing() {
-  const answer = sh.fzf({
-    type: 'input',
-    message: 'Ενέργεια',
-    choices: ['tsemix@gmail.com', 'mtsekaris@hotmail.com'],
-  });
-  const data = { value: null };
-  function test(valueIn) {
-    const dataIn = valueIn;
-    dataIn.value = {};
-  }
-  test(data);
-  console.log(data);
+  console.log('testing');
 }
 
 function exit() {
@@ -328,13 +345,14 @@ function menu() {
   sh.fzf({
     type: 'list',
     message: 'Ενέργεια',
+    header: 'search|ενέργεια',
     choices: [
-      ['new invoice\tΝέο τιμολόγιο.', newInvoice],
-      ['edit invoice\tΕπεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
-      ['markdown\tΕκτύπωση.', markdown],
-      ['statistics\tΣτατιστικά.', stats],
-      ['testing\tΓια τεστάρισμα κώδικα.', testing],
-      ['exit\tΈξοδος από το πρόγραμμα.', exit],
+      ['new invoice|Νέο τιμολόγιο.', newInvoice],
+      ['edit invoice|Επεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
+      ['markdown|Εκτύπωση.', markdown],
+      ['statistics|Στατιστικά.', stats],
+      ['testing|Για τεστάρισμα κώδικα.', testing],
+      ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
   })();
   menu();

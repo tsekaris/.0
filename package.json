@@ -29,6 +29,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "colors": "^1.4.0",
+    "columnify": "^1.5.4",
     "inquirer": "^7.3.3",
     "inquirer-search-list": "^1.2.6",
     "lowdb": "^1.0.0",
