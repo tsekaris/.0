@@ -76,6 +76,7 @@ ui(){
 }
 export -f ui #για να το χρησιμοποιώ σε scripts
 
+
 q(){
   exit
 }

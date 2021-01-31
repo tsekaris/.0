@@ -107,22 +107,13 @@ const sh = {
     // validation: Και για list.
 
     function convert(value) {
-      let valueToNumber;
-      switch (value) {
-        case '':
-          // δίνει 0 όταν *1
-          return value;
-        case 'true':
-          return true;
-        case 'false':
-          return false;
-        default:
-          valueToNumber = value * 1;
-          if (Number.isNaN(valueToNumber)) {
-            return value;
-          }
-          return valueToNumber;
+      // Επιστρέφει text ή number
+      const valueToNumber = value * 1;
+      if (Number.isNaN(valueToNumber) || value === '') {
+        // το '' δίνει 0 όταν *1
+        return value;
       }
+      return valueToNumber;
     }
 
     const result = {
@@ -143,25 +134,23 @@ const sh = {
       const script = this.run2(
         [
           (() => {
-            console.log(choices);
-            if (preview.type !== '') {
-              const ret = choices
-                .map((choice, index) => `preview${index}="${choice[0].split('|')[0]}";`)
-                .join('');
-              console.log(ret);
-              return ret;
-            }
-            return '';
-          })(),
-          (() => {
-            let fzfChoices = choices.map((choice, index) => `${index}|${choice[0]}`);
+            let fzfPreviews = [];
+            let fzfChoices = choices.map((choice, index) => {
+              if (choice[2] !== undefined) {
+                fzfPreviews.push(choice[2]);
+              } else {
+                fzfPreviews.push('');
+              }
+              return `${index}|${choice[0]}`;
+            });
+            fzfPreviews = fzfPreviews.map((fzfPreview) => `'${fzfPreview}'`).join(' ');
+
             if (header !== '') {
-              fzfChoices.unshift(`index|${header}`); //
+              fzfChoices.unshift(`index|${header}`);
             }
             fzfChoices = fzfChoices.join('\n');
-            return `echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t'|`;
+            return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t'| fzf`;
           })(),
-          'fzf',
           `--prompt "${message} "`,
           (() => {
             if (header === '') {
@@ -181,11 +170,13 @@ const sh = {
           (() => {
             switch (preview.type) {
               case 'text':
-                return '--preview="echo "$preview4""';
+                return "--preview='previews {1}'";
               case 'json':
-                return '--preview="jq -Cn $preview{1}"';
+                return "--preview='previews {1} | jq -C'";
+              case 'markdown':
+                return "--preview='previews {1} | bat --language=md --color=always --style=plain'";
               case 'html':
-                return '--preview="echo $preview{1}" | w3m -T text/html"';
+                return "--preview='previews {1} | w3m -T text/html'";
               default:
                 return '';
             }
@@ -213,7 +204,7 @@ const sh = {
         });
 
         // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
-        result.message = returnTexts.length === 1 ? returnTexts[0] : returnTexts;
+        result.message = returnTexts.length !== 1 ? returnTexts : returnTexts[0];
 
         // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
         result.data = type === 'list-multi' ? returnValues : returnValues[0];
@@ -229,7 +220,7 @@ const sh = {
       }
       if (script.status === 130) {
         result.data = null;
-        result.message = `${this.colors.fgRed}canceled`;
+        result.message = `${this.colors.fgRed}esc`;
         result.log();
         return result.data;
       }
@@ -273,19 +264,19 @@ const sh = {
           default:
             result.data = choices.length > 0 ? convert(data[1]) : convert(data[0]);
         }
-        if (validation(result.data) === true) {
+        if (validation(result.data) === true && result.data !== '') {
           result.message = result.data;
           result.log();
           return result.data;
         }
-        // validation είναι false
+        // validation είναι false ή ''
         result.message = `${result.data} ${this.colors.fgRed}try again`;
         result.log();
         return this.fzf(db);
       }
       if (script.status === 130) {
         result.data = null;
-        result.message = `${this.colors.fgRed}canceled`;
+        result.message = `${this.colors.fgRed}esc`;
         result.log();
         return result.data;
       }

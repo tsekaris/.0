@@ -87,15 +87,16 @@ function newInvoice() {
   invoice.to = sh.fzf({
     type: 'list',
     message: 'Πελάτης:',
-    header: 'id|name|preview',
+    header: 'id|name',
     choices: contactsDb
       .filter((contact) => contact.id !== 'tsekaris')
-      .map((record) => [`${record.id}|${record.name}|${JSON.stringify(record)}`, record])
+      .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
       .value(),
     preview: {
       type: 'json',
-      style: 'right:50%',
+      style: 'down:50%',
     },
+    height: '95%',
   });
 
   if (invoice.to === null) {
@@ -134,6 +135,7 @@ function newInvoice() {
       type: 'input',
       message: 'ΦΠΑ:',
       choices: [24],
+      validation: (value) => value >= 0,
     });
     if (invoice.fpa.percent === null) {
       return;
@@ -142,6 +144,7 @@ function newInvoice() {
       type: 'input',
       message: 'Παρακράτηση:',
       choices: [20],
+      validation: (value) => value >= 0,
     });
     if (invoice.parakratisi.percent === null) {
       return;
@@ -161,7 +164,6 @@ function newInvoice() {
     choices: ['-vim-'],
   });
 
-  invoice.description = invoice.description.split('\n').join('\n');
   if (invoice.description === null) {
     return;
   }
@@ -216,12 +218,12 @@ function stats() {
 // #edit invoice
 function editInvoice() {
   const choices = invoicesDb
-    .map((invoice) => [`${invoice.id}|${invoice.to.id}|${JSON.stringify(invoice)}`, invoice.id])
+    .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, JSON.stringify(invoice)])
     .value();
   const invoiceId = sh.fzf({
     type: 'list',
     message: 'Select:',
-    header: 'no|πελάτης|preview',
+    header: 'no|πελάτης',
     choices,
     preview: {
       type: 'json',
@@ -249,7 +251,7 @@ function editInvoice() {
 
 // #markdown
 function markdown() {
-  function html(invoice) {
+  function md(invoice) {
     const keys = ['name', 'object', 'afm', 'doy', 'address', 'zip', 'phone', 'mail'];
     const from = {};
     const to = {};
@@ -265,69 +267,66 @@ function markdown() {
         to[key] = '';
       }
     });
-    const md = `
-  ## Τιμολόγιο παροχής υπηρεσιών.
-  
-  ### Στοιχεία τιμολογίου.
+    const text = `
+## Τιμολόγιο παροχής υπηρεσιών.
 
-  |   |   |
-  |---|---|
-  |Αριθμός|${invoice.id}|
-  |Ημερομηνία|${invoice.date.day}/${invoice.date.month}/${invoice.date.year}|
+### Στοιχεία τιμολογίου.
 
-  ### Εμπλεκόμενοι.
+|   |   |
+|---|---|
+|Αριθμός|${invoice.id}|
+|Ημερομηνία|${invoice.date.day}/${invoice.date.month}/${invoice.date.year}|
 
-  |   |Από|Προς|
-  |---|---|---|
-  |Επωνυμία:|${from.name}|${to.name}|
-  |Επάγγελμα:|${from.object}|${to.object}|
-  |Α.Φ.Μ.:|${from.afm}|${to.afm}|
-  |Δ.Ο.Υ.:|${from.afm}|${to.afm}|
-  |Διεύθυνση:|${from.address}|${to.address}|
-  |Τ.Κ.:|${from.zip}|${to.zip}|
-  |Τηλέφωνο:|${from.phone}|${to.phone}|
-  |mail:|${from.mail}|${to.mail}|
+Αριθμός: ${invoice.id}
+Ημερομηνία: ${invoice.date.day}/${invoice.date.month}/${invoice.date.year}
 
-  ### Τιμολόγηση.
+### Εμπλεκόμενοι.
 
-  |   |   |
-  |---|---|
-  |Σύνολο:|${invoice.amount}|
-  |Φ.Π.Α. (${invoice.fpa.percent}):|${invoice.fpa.amount}|
-  |Παρακράτηση (${invoice.parakratisi.percent}):|${invoice.parakratisi.amount}|
-  |Γενικό σύνολο:|${invoice.total}|
+|   |Από|Προς|
+|---|---|---|
+|Επωνυμία:|${from.name}|${to.name}|
+|Επάγγελμα:|${from.object}|${to.object}|
+|Α.Φ.Μ.:|${from.afm}|${to.afm}|
+|Δ.Ο.Υ.:|${from.afm}|${to.afm}|
+|Διεύθυνση:|${from.address}|${to.address}|
+|Τ.Κ.:|${from.zip}|${to.zip}|
+|Τηλέφωνο:|${from.phone}|${to.phone}|
+|mail:|${from.mail}|${to.mail}|
 
-  ### Περιγραφή εργασιών.
-  ${invoice.description}
+### Τιμολόγηση.
 
-  ### Ο εκδότης.
-  Τσέκαρης Μιχαήλ
+|   |   |
+|---|---|
+|Σύνολο:|${invoice.amount}|
+|Φ.Π.Α. (${invoice.fpa.percent}):|${invoice.fpa.amount}|
+|Παρακράτηση (${invoice.parakratisi.percent}):|${invoice.parakratisi.amount}|
+|Γενικό σύνολο:|${invoice.total}|
 
-  ### Ο παραλαβών.
+### Περιγραφή εργασιών.
+${invoice.description}
 
+### Ο εκδότης.
+Τσέκαρης Μιχαήλ
+
+### Ο παραλαβών.
   `;
-
-    return marked(md).split('\n').join('');
+    return text;
   }
-  // `${invoice.id} ${invoice.to.id}\t"'${JSON.stringify(invoice)}'"`,
-  // .map((invoice) => [`${invoice.id} ${invoice.to.id}\t${html(invoice)`, invoice.id])
+
   const choices = invoicesDb
-    .map((invoice) => [`${invoice.id}|${invoice.to.id}|${html(invoice)}`, invoice.id])
+    .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, md(invoice)])
     .value();
-  const invoiceId = sh.fzf({
+  sh.fzf({
     type: 'list',
     message: 'Select:',
-    header: 'τιμολόγιο|πελάτης|preview',
+    header: 'no|πελάτης',
     choices,
+    height: '95%',
     preview: {
-      type: 'html',
-      style: 'right:50%',
+      type: 'markdown',
+      style: 'down:90%',
     },
   });
-  if (invoiceId === null) {
-  }
-  // const invoice = invoicesDb.find({ id: invoiceId }).value();
-  // console.log(html(invoice));
 }
 
 // #testing

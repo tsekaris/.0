@@ -65,8 +65,12 @@ const out = sh.fzf({
   type: 'list-multi',
   message: 'Value:',
   // header: 'min: 0, max: 100',
-  header: 'περιγραφή|index',
-  choices: choices.map((choice, index) => [`${choice}|${index}`, index + 100, choice]),
+  header: 'index|περιγραφή',
+  choices: choices.map((choice, index) => [
+    `${index}|${choice}`,
+    index + 100,
+    `{"paok":"nai","aris":${index}}`,
+  ]),
   // choices: choices.map((choice, index) => `${choice}|${index}|preview: ${index}`),
   // choices,
   // choices: ['-vim-', 66, 99, 101],
@@ -77,4 +81,3 @@ const out = sh.fzf({
   preview: { type: 'text', style: 'right:50%' },
 });
 console.log(out);
-//
