@@ -1,4 +1,4 @@
-const child_process = require('child_process');
+const childProcess = require('child_process');
 
 const sh = {
   colors: {
@@ -30,7 +30,7 @@ const sh = {
   },
 
   run(req) {
-    const child = child_process.spawnSync(req, {
+    const child = childProcess.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
       shell: true,
       encoding: 'utf-8',
@@ -46,7 +46,7 @@ const sh = {
   },
 
   run2(req) {
-    const child = child_process.spawnSync(req, {
+    const child = childProcess.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
       // shell: true,
       shell: '/bin/bash', // Αλλιώς με true παίρνει sh.
@@ -286,6 +286,16 @@ const sh = {
     return process.exit(1);
     // Το consistent-return απαιτεί return.
     // Λειτουργεί και χωρίς return.
+  },
+  fzfPromise(db) {
+    return new Promise((resolve) => {
+      const answer = this.fzf(db);
+      if (answer !== null) {
+        console.log(answer);
+        // resolve(answer);
+        resolve('paok');
+      }
+    });
   },
 };
 

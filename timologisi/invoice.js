@@ -1,5 +1,5 @@
 const sh = require('sh'); // δικιά μου βιβλιοθήκη
-const marked = require('marked');
+// const marked = require('marked');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
@@ -18,20 +18,6 @@ function calculate(db) {
 function newInvoice() {
   const invoice = {};
 
-  // #id
-  const lastInvoice = invoicesDb.maxBy((record) => record.id).value();
-
-  if (lastInvoice === undefined) {
-    invoice.id = 1;
-    invoice.date = {};
-    const date = new Date();
-    invoice.date.year = date.getFullYear();
-  } else {
-    invoice.id = lastInvoice.id + 1;
-    invoice.date = {};
-    invoice.date.year = lastInvoice.date.year;
-  }
-
   // #date
   const getDays = (year, month) => {
     const monthIndex = month - 1; // 0..11
@@ -44,6 +30,12 @@ function newInvoice() {
     }
     return result;
   };
+
+  // id
+  invoice.id = '';
+
+  invoice.date = {};
+  invoice.date.year = 2021;
 
   invoice.date.month = sh.fzf({
     type: 'list',
@@ -77,6 +69,39 @@ function newInvoice() {
   });
 
   if (invoice.date.day === null) {
+    return;
+  }
+
+  invoice.date.hour = sh.fzf({
+    type: 'input',
+    message: 'Ώρα:',
+    validation: (value) => value >= 0 && value < 24,
+  });
+
+  if (invoice.date.hour === null) {
+    return;
+  }
+
+  invoice.date.minute = sh.fzf({
+    type: 'input',
+    message: 'Λεπτό:',
+    validation: (value) => value >= 0 && value < 60,
+  });
+
+  if (invoice.date.minute === null) {
+    return;
+  }
+
+  function twoDigits(value) {
+    return `0${value}`.slice(-2);
+  }
+  invoice.id = twoDigits(invoice.date.month)
+    + twoDigits(invoice.date.day)
+    + twoDigits(invoice.date.hour)
+    + twoDigits(invoice.date.minute);
+
+  if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
+    console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
     return;
   }
 
@@ -217,36 +242,64 @@ function stats() {
 
 // #edit invoice
 function editInvoice() {
-  const choices = invoicesDb
-    .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, JSON.stringify(invoice)])
-    .value();
-  const invoiceId = sh.fzf({
+  function edit(invoice) {
+    const invoiceEdited = sh.vim(invoice);
+    if (
+      sh.fzf({
+        type: 'list',
+        message: 'Αποθήκευση;',
+        choices: [
+          ['όχι', false],
+          ['ναι', true],
+        ],
+      })
+    ) {
+      invoicesDb.find({ id: invoice.id }).assign(invoiceEdited).write();
+    }
+  }
+
+  function del(invoice) {
+    if (
+      sh.fzf({
+        type: 'list',
+        message: 'Διαγραφή;',
+        choices: [
+          ['όχι', false],
+          ['ναι', true],
+        ],
+      })
+    ) {
+      invoicesDb.remove({ id: invoice.id }).write();
+    }
+  }
+
+  const invoice = sh.fzf({
     type: 'list',
     message: 'Select:',
     header: 'no|πελάτης',
-    choices,
+    choices: invoicesDb
+      .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice, JSON.stringify(invoice)])
+      .value(),
     preview: {
       type: 'json',
       style: 'right:50%',
     },
   });
-  if (invoiceId === null) {
+  if (invoice === null) {
     return;
   }
-  const invoice = invoicesDb.find({ id: invoiceId }).value();
-  const invoiceEdited = sh.vim(invoice);
-  if (
-    sh.fzf({
-      type: 'list',
-      message: 'Αποθήκευση;',
-      choices: [
-        ['ναι', true],
-        ['όχι', false],
-      ],
-    })
-  ) {
-    invoicesDb.find({ id: invoiceId }).assign(invoiceEdited).write();
+  const action = sh.fzf({
+    type: 'list',
+    message: 'Ενέργεια',
+    choices: [
+      ['edit', edit],
+      ['delete', del],
+    ],
+  });
+  if (action === null) {
+    return;
   }
+  action(invoice);
 }
 
 // #markdown
@@ -341,7 +394,7 @@ function exit() {
 
 // #menu
 function menu() {
-  sh.fzf({
+  const action = sh.fzf({
     type: 'list',
     message: 'Ενέργεια',
     header: 'search|ενέργεια',
@@ -353,7 +406,13 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-  })();
+  });
+  if (action !== null) {
+    action();
+  } else {
+    console.log('bye');
+    return;
+  }
   menu();
 }
 
