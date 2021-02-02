@@ -242,64 +242,72 @@ function stats() {
 
 // #edit invoice
 function editInvoice() {
-  function edit(invoice) {
-    const invoiceEdited = sh.vim(invoice);
-    if (
-      sh.fzf({
-        type: 'list',
-        message: 'Αποθήκευση;',
-        choices: [
-          ['όχι', false],
-          ['ναι', true],
-        ],
-      })
-    ) {
-      invoicesDb.find({ id: invoice.id }).assign(invoiceEdited).write();
-    }
-  }
+  const answers = {};
 
-  function del(invoice) {
-    if (
-      sh.fzf({
-        type: 'list',
-        message: 'Διαγραφή;',
-        choices: [
-          ['όχι', false],
-          ['ναι', true],
-        ],
-      })
-    ) {
-      invoicesDb.remove({ id: invoice.id }).write();
-    }
-  }
-
-  const invoice = sh.fzf({
-    type: 'list',
-    message: 'Select:',
-    header: 'no|πελάτης',
-    choices: invoicesDb
-      .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice, JSON.stringify(invoice)])
-      .value(),
-    preview: {
-      type: 'json',
-      style: 'right:50%',
+  sh.fzfs([
+    {
+      type: 'list',
+      message: 'Select:',
+      header: 'no|πελάτης',
+      choices: invoicesDb
+        .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv)])
+        .value(),
+      preview: {
+        type: 'json',
+        style: 'right:50%',
+      },
+      onAnswer: (answer) => {
+        answers.invoice = answer;
+      },
     },
-  });
-  if (invoice === null) {
-    return;
-  }
-  const action = sh.fzf({
-    type: 'list',
-    message: 'Ενέργεια',
-    choices: [
-      ['edit', edit],
-      ['delete', del],
-    ],
-  });
-  if (action === null) {
-    return;
-  }
-  action(invoice);
+    {
+      type: 'list',
+      message: 'Ενέργεια',
+      choices: [
+        ['edit', 'edit'],
+        ['delete', 'delete'],
+      ],
+      onAnswer: (answer) => {
+        answers.action = answer;
+      },
+    },
+    () => {
+      switch (answers.action) {
+        case 'edit': {
+          const invoiceEdited = sh.vim(answers.invoice);
+          return {
+            type: 'list',
+            message: 'Αποθήκευση;',
+            choices: [
+              ['όχι', false],
+              ['ναι', true],
+            ],
+            onAnswer: (answer) => {
+              if (answer) {
+                invoicesDb.find({ id: answers.invoice.id }).assign(invoiceEdited).write();
+              }
+            },
+          };
+        }
+        case 'delete':
+          return {
+            type: 'list',
+            message: 'Διαγραφή;',
+            choices: [
+              ['όχι', false],
+              ['ναι', true],
+            ],
+            onAnswer: (answer) => {
+              if (answer) {
+                invoicesDb.remove({ id: answers.invoice.id }).write();
+              }
+            },
+          };
+        default:
+          return null; // Βγάζει σφάλμα
+      }
+    },
+  ]);
 }
 
 // #markdown
@@ -383,9 +391,8 @@ ${invoice.description}
 }
 
 // #testing
-function testing() {
-  console.log('testing');
-}
+
+function testing() {}
 
 function exit() {
   console.log('Bye.');
@@ -394,7 +401,7 @@ function exit() {
 
 // #menu
 function menu() {
-  const action = sh.fzf({
+  sh.fzf({
     type: 'list',
     message: 'Ενέργεια',
     header: 'search|ενέργεια',
@@ -406,13 +413,14 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
+    onAnswer: (action) => {
+      if (action !== null) {
+        action();
+      } else {
+        exit();
+      }
+    },
   });
-  if (action !== null) {
-    action();
-  } else {
-    console.log('bye');
-    return;
-  }
   menu();
 }
 

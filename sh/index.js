@@ -1,4 +1,7 @@
+const { rejects } = require('assert');
 const childProcess = require('child_process');
+const { resolve } = require('dns');
+const { basename } = require('path');
 
 const sh = {
   colors: {
@@ -97,6 +100,7 @@ const sh = {
       preview = { type: '', style: 'right:0%' },
       // input
       validation = () => true,
+      onAnswer = () => {},
     } = db;
 
     // #todo
@@ -210,6 +214,7 @@ const sh = {
         result.data = type === 'list-multi' ? returnValues : returnValues[0];
 
         result.log();
+        onAnswer(result.data);
         return result.data;
       }
       if (script.status === 1) {
@@ -222,6 +227,7 @@ const sh = {
         result.data = null;
         result.message = `${this.colors.fgRed}esc`;
         result.log();
+        onAnswer(result.data);
         return result.data;
       }
     } else if (type === 'input') {
@@ -267,6 +273,7 @@ const sh = {
         if (validation(result.data) === true && result.data !== '') {
           result.message = result.data;
           result.log();
+          onAnswer(result.data);
           return result.data;
         }
         // validation είναι false ή ''
@@ -278,22 +285,43 @@ const sh = {
         result.data = null;
         result.message = `${this.colors.fgRed}esc`;
         result.log();
+        onAnswer(result.data);
         return result.data;
       }
     }
     result.message = `${this.colors.fgRed}system error`;
+    result.data = null;
     result.log();
+    onAnswer(result.data);
     return process.exit(1);
     // Το consistent-return απαιτεί return.
     // Λειτουργεί και χωρίς return.
   },
+
   fzfPromise(db) {
-    return new Promise((resolve) => {
-      const answer = this.fzf(db);
-      if (answer !== null) {
-        console.log(answer);
-        // resolve(answer);
-        resolve('paok');
+    return new Promise((res, rej) => {
+      const value = this.fzf(db);
+      if (value !== null) {
+        res(value);
+      } else {
+        rej(Error('It is null'));
+      }
+    });
+  },
+
+  fzfs(db) {
+    // bulk of answers
+    // Αν υπάρχει ένα null τα άλλα δεν εκτελούνται.
+    let nullValue = false;
+    db.forEach((question) => {
+      let fzfQuestion;
+      if (typeof question === 'function') {
+        fzfQuestion = question();
+      } else {
+        fzfQuestion = question;
+      }
+      if (nullValue === false) {
+        nullValue = this.fzf(fzfQuestion) === null;
       }
     });
   },
