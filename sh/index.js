@@ -117,8 +117,7 @@ const sh = {
     // preset -> ? το default είναι δεσμευμένη από το σύστημα
     // preview: κάτι πρέπει να γίνει.
     // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
-    // validation: Και για list.
-    // to null (esc) να μπει στο validation
+    // validation: Και για list. Κυρίως διαχείριση null
 
     function convert(value) {
       // Επιστρέφει text ή number
