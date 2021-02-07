@@ -31,181 +31,153 @@ function newInvoice() {
     return result;
   };
 
-  // id
-  invoice.id = '';
+  const today = new Date();
 
-  invoice.date = {};
-  invoice.date.year = 2021;
-
-  invoice.date.month = sh.fzf({
-    type: 'list',
-    message: 'Μήνας:',
-    header: 'no|μήνας',
-    choices: [
-      ['1|Ιανουάριος', 1],
-      ['2|Φεβρουάριος', 2],
-      ['3|Μάρτιος', 3],
-      ['4|Απρίλιος', 4],
-      ['5|Μάιος', 5],
-      ['6|Ιούνιος', 6],
-      ['7|Ιούλιος', 7],
-      ['8|Αύγουστος', 8],
-      ['9|Σεπτέμβριος', 9],
-      ['10|Οκτώβριος', 10],
-      ['11|Νοέμβριος', 11],
-      ['12|Δεκέμβριος', 12],
-    ],
-  });
-
-  if (invoice.date.month === null) {
-    return;
-  }
-
-  invoice.date.day = sh.fzf({
-    type: 'list',
-    message: 'Μέρα:',
-    header: 'no|ημέρα',
-    choices: getDays(invoice.date.year, invoice.date.month),
-  });
-
-  if (invoice.date.day === null) {
-    return;
-  }
-
-  invoice.date.hour = sh.fzf({
-    type: 'input',
-    message: 'Ώρα:',
-    validation: (value) => value >= 0 && value < 24,
-  });
-
-  if (invoice.date.hour === null) {
-    return;
-  }
-
-  invoice.date.minute = sh.fzf({
-    type: 'input',
-    message: 'Λεπτό:',
-    validation: (value) => value >= 0 && value < 60,
-  });
-
-  if (invoice.date.minute === null) {
-    return;
-  }
-
-  function twoDigits(value) {
-    return `0${value}`.slice(-2);
-  }
-  invoice.id = twoDigits(invoice.date.month)
-    + twoDigits(invoice.date.day)
-    + twoDigits(invoice.date.hour)
-    + twoDigits(invoice.date.minute);
-
-  if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-    console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
-    return;
-  }
-
-  // #from
-  invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
-
-  // #to
-  invoice.to = sh.fzf({
-    type: 'list',
-    message: 'Πελάτης:',
-    header: 'id|name',
-    choices: contactsDb
-      .filter((contact) => contact.id !== 'tsekaris')
-      .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
-      .value(),
-    preview: {
-      type: 'json',
-      style: 'down:50%',
+  sh.fzf([
+    {
+      type: 'list',
+      message: 'Μήνας:',
+      header: 'no|μήνας',
+      choices: [
+        ['1|Ιανουάριος', 1],
+        ['2|Φεβρουάριος', 2],
+        ['3|Μάρτιος', 3],
+        ['4|Απρίλιος', 4],
+        ['5|Μάιος', 5],
+        ['6|Ιούνιος', 6],
+        ['7|Ιούλιος', 7],
+        ['8|Αύγουστος', 8],
+        ['9|Σεπτέμβριος', 9],
+        ['10|Οκτώβριος', 10],
+        ['11|Νοέμβριος', 11],
+        ['12|Δεκέμβριος', 12],
+      ],
+      onAnswer: (value) => {
+        invoice.date = {};
+        invoice.date.year = 2021;
+        invoice.date.month = value;
+      },
     },
-    height: '95%',
-  });
+    () => ({
+      type: 'list',
+      message: 'Μέρα:',
+      header: 'no|ημέρα',
+      choices: getDays(invoice.date.year, invoice.date.month),
+      onAnswer: (value) => {
+        invoice.date.day = value;
+      },
+    }),
+    {
+      type: 'input',
+      message: 'Ώρα:',
+      preset: today.getHours(),
+      validation: (value) => value >= 0 && value < 24,
+      onAnswer: (value) => {
+        invoice.date.hour = value;
+      },
+    },
+    {
+      type: 'input',
+      message: 'Λεπτό:',
+      preset: today.getMinutes(),
+      validation: (value) => value >= 0 && value < 60,
+      onAnswer: (value) => {
+        invoice.date.minute = value;
+      },
+    },
+    () => {
+      function twoDigits(value) {
+        return `0${value}`.slice(-2);
+      }
+      invoice.id = twoDigits(invoice.date.month)
+        + twoDigits(invoice.date.day)
+        + twoDigits(invoice.date.hour)
+        + twoDigits(invoice.date.minute);
 
-  if (invoice.to === null) {
-    return;
-  }
-
-  // #fpa #parakratisi
-  invoice.amount = sh.fzf({
-    type: 'input',
-    message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-    validation: (value) => value > 0,
-  });
-
-  if (invoice.amount === null) {
-    return;
-  }
-
-  const answer = sh.fzf({
-    type: 'list',
-    message: 'ΦΠΑ: 24% - Παρακράτηση: 20%:',
-    choices: [
-      ['ναι', true],
-      ['όχι', false],
-    ],
-  });
-
-  if (answer === null) {
-    return;
-  }
-
-  invoice.fpa = {};
-  invoice.parakratisi = {};
-
-  if (answer === false) {
-    invoice.fpa.percent = sh.fzf({
+      if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
+        console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
+        return null;
+      }
+      invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
+      return {
+        type: 'list',
+        message: 'Πελάτης:',
+        header: 'id|name',
+        choices: contactsDb
+          .filter((contact) => contact.id !== 'tsekaris')
+          .sortBy('id')
+          .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
+          .value(),
+        preview: {
+          type: 'json',
+          style: 'down:50%',
+        },
+        height: '95%',
+        onAnswer: (value) => {
+          invoice.to = value;
+        },
+      };
+    },
+    {
+      type: 'input',
+      message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
+      validation: (value) => value > 0,
+      onAnswer: (value) => {
+        invoice.amount = value;
+      },
+    },
+    {
       type: 'input',
       message: 'ΦΠΑ:',
-      choices: [24],
-      validation: (value) => value >= 0,
-    });
-    if (invoice.fpa.percent === null) {
-      return;
-    }
-    invoice.parakratisi.percent = sh.fzf({
+      preset: 24,
+      choices: [0, 24],
+      validation: (value) => value >= 0 && value <= 100,
+      onAnswer: (ans) => {
+        if (ans !== null) {
+          invoice.fpa = {};
+          invoice.fpa.percent = 24.0;
+          invoice.fpa.percent = ans;
+        }
+      },
+    },
+    {
       type: 'input',
       message: 'Παρακράτηση:',
-      choices: [20],
-      validation: (value) => value >= 0,
-    });
-    if (invoice.parakratisi.percent === null) {
-      return;
-    }
-  } else {
-    invoice.fpa.percent = 24.0;
-    invoice.parakratisi.percent = 20.0;
-  }
-
-  calculate(invoice);
-
-  // #description
-  invoice.description = sh.fzf({
-    type: 'input',
-    message: 'Περιγραφή εργασιών:',
-    header: 'Μία γραμμή',
-    choices: ['-vim-'],
-  });
-
-  if (invoice.description === null) {
-    return;
-  }
-
-  // #save
-  if (
-    sh.fzf({
+      preset: 20,
+      choices: [0, 20],
+      validation: (value) => value >= 0 && value <= 100,
+      onAnswer: (ans) => {
+        if (ans !== null) {
+          invoice.parakratisi = {};
+          invoice.parakratisi.percent = 20.0;
+          invoice.parakratisi.percent = ans;
+        }
+      },
+    },
+    {
+      type: 'input',
+      message: 'Περιγραφή εργασιών:',
+      header: 'Μία γραμμή',
+      choices: ['-vim-'],
+      onAnswer: (value) => {
+        invoice.description = value;
+      },
+    },
+    {
       type: 'list',
       message: 'Αποθήκευση;',
       choices: [
         ['ναι', true],
         ['όχι', false],
       ],
-    })
-  ) {
-    invoicesDb.push(invoice).write();
-  }
+      onAnswer: (value) => {
+        if (value) {
+          calculate(invoice);
+          invoicesDb.push(invoice).write();
+        }
+      },
+    },
+  ]);
 }
 
 // #statistics
@@ -244,12 +216,13 @@ function stats() {
 function editInvoice() {
   const answers = {};
 
-  sh.fzfs([
+  sh.fzf([
     {
       type: 'list',
       message: 'Select:',
       header: 'no|πελάτης',
       choices: invoicesDb
+        .sortBy('id')
         .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv)])
         .value(),
       preview: {
@@ -375,6 +348,7 @@ ${invoice.description}
   }
 
   const choices = invoicesDb
+    .sortBy('id')
     .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, md(invoice)])
     .value();
   sh.fzf({

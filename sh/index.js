@@ -1,7 +1,7 @@
-const { rejects } = require('assert');
 const childProcess = require('child_process');
-const { resolve } = require('dns');
-const { basename } = require('path');
+// const { resolve } = require('dns');
+// const { basename } = require('path');
+// const { rejects } = require('assert');
 
 const sh = {
   colors: {
@@ -89,6 +89,16 @@ const sh = {
     // 1: No match (αν θέλω να το χρησιμοποιώ σαν input)
     // 2: Error
     // 130: ctr-c or esc pressed
+    if (Array.isArray(db)) {
+      // Η forEach δεν έχει break
+      // Η every αν δεν επιστρεψει true τότε λειτουργεί σαν break
+      db.every((element) => this.fzf(element) !== null);
+      return; // Μην εκτελείς τα παρακάτω
+    }
+    if (typeof db === 'function') {
+      this.fzf(db());
+      return; // Μην εκτελείς τα παρακάτω
+    }
     const {
       type = 'input',
       message = 'Εισαγωγή τιμής:',
@@ -107,8 +117,8 @@ const sh = {
     // preset -> ? το default είναι δεσμευμένη από το σύστημα
     // preview: κάτι πρέπει να γίνει.
     // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
-    // preview: με προσωρινά εξωτερικά αρχεία.
     // validation: Και για list.
+    // to null (esc) να μπει στο validation
 
     function convert(value) {
       // Επιστρέφει text ή number
@@ -153,7 +163,7 @@ const sh = {
               fzfChoices.unshift(`index|${header}`);
             }
             fzfChoices = fzfChoices.join('\n');
-            return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t'| fzf`;
+            return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t' | fzf`;
           })(),
           `--prompt "${message} "`,
           (() => {
@@ -296,34 +306,6 @@ const sh = {
     return process.exit(1);
     // Το consistent-return απαιτεί return.
     // Λειτουργεί και χωρίς return.
-  },
-
-  fzfPromise(db) {
-    return new Promise((res, rej) => {
-      const value = this.fzf(db);
-      if (value !== null) {
-        res(value);
-      } else {
-        rej(Error('It is null'));
-      }
-    });
-  },
-
-  fzfs(db) {
-    // bulk of answers
-    // Αν υπάρχει ένα null τα άλλα δεν εκτελούνται.
-    let nullValue = false;
-    db.forEach((question) => {
-      let fzfQuestion;
-      if (typeof question === 'function') {
-        fzfQuestion = question();
-      } else {
-        fzfQuestion = question;
-      }
-      if (nullValue === false) {
-        nullValue = this.fzf(fzfQuestion) === null;
-      }
-    });
   },
 };
 
