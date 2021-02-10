@@ -52,10 +52,11 @@ function newInvoice() {
         ['11|Νοέμβριος', 11],
         ['12|Δεκέμβριος', 12],
       ],
-      onAnswer: (value) => {
+      validation: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
         invoice.date.month = value;
+        return true;
       },
     },
     () => ({
@@ -63,17 +64,18 @@ function newInvoice() {
       message: 'Μέρα:',
       header: 'no|ημέρα',
       choices: getDays(invoice.date.year, invoice.date.month),
-      onAnswer: (value) => {
+      validation: (value) => {
         invoice.date.day = value;
+        return true;
       },
     }),
     {
       type: 'input',
       message: 'Ώρα:',
       preset: today.getHours(),
-      validation: (value) => value >= 0 && value < 24,
-      onAnswer: (value) => {
+      validation: (value) => {
         invoice.date.hour = value;
+        return value >= 0 && value < 24;
       },
     },
     {
@@ -123,9 +125,9 @@ function newInvoice() {
     {
       type: 'input',
       message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-      validation: (value) => value > 0,
-      onAnswer: (value) => {
+      validation: (value) => {
         invoice.amount = value;
+        return value > 0;
       },
     },
     {
@@ -133,13 +135,10 @@ function newInvoice() {
       message: 'ΦΠΑ:',
       preset: 24,
       choices: [0, 24],
-      validation: (value) => value >= 0 && value <= 100,
-      onAnswer: (ans) => {
-        if (ans !== null) {
-          invoice.fpa = {};
-          invoice.fpa.percent = 24.0;
-          invoice.fpa.percent = ans;
-        }
+      validation: (value) => {
+        invoice.fpa = {};
+        invoice.fpa.percent = value;
+        return value >= 0 && value <= 100;
       },
     },
     {
@@ -147,13 +146,10 @@ function newInvoice() {
       message: 'Παρακράτηση:',
       preset: 20,
       choices: [0, 20],
-      validation: (value) => value >= 0 && value <= 100,
-      onAnswer: (ans) => {
-        if (ans !== null) {
-          invoice.parakratisi = {};
-          invoice.parakratisi.percent = 20.0;
-          invoice.parakratisi.percent = ans;
-        }
+      validation: (value) => {
+        invoice.parakratisi = {};
+        invoice.parakratisi.percent = value;
+        return value >= 0 && value <= 100;
       },
     },
     {
@@ -161,8 +157,9 @@ function newInvoice() {
       message: 'Περιγραφή εργασιών:',
       header: 'Μία γραμμή',
       choices: ['-vim-'],
-      onAnswer: (value) => {
+      validation: (value) => {
         invoice.description = value;
+        return true;
       },
     },
     {
@@ -172,11 +169,12 @@ function newInvoice() {
         ['ναι', true],
         ['όχι', false],
       ],
-      onAnswer: (value) => {
+      validation: (value) => {
         if (value) {
           calculate(invoice);
           invoicesDb.push(invoice).write();
         }
+        return true;
       },
     },
   ]);
@@ -231,8 +229,9 @@ function editInvoice() {
         type: 'json',
         style: 'right:50%',
       },
-      onAnswer: (answer) => {
-        answers.invoice = answer;
+      validation: (value) => {
+        answers.invoice = value;
+        return true;
       },
     },
     {
@@ -242,8 +241,9 @@ function editInvoice() {
         ['edit', 'edit'],
         ['delete', 'delete'],
       ],
-      onAnswer: (answer) => {
-        answers.action = answer;
+      validation: (value) => {
+        answers.action = value;
+        return true;
       },
     },
     () => {
@@ -257,10 +257,11 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            onAnswer: (answer) => {
+            validation: (answer) => {
               if (answer) {
                 invoicesDb.find({ id: answers.invoice.id }).assign(invoiceEdited).write();
               }
+              return true;
             },
           };
         }
@@ -272,10 +273,11 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            onAnswer: (answer) => {
+            validation: (answer) => {
               if (answer) {
                 invoicesDb.remove({ id: answers.invoice.id }).write();
               }
+              return true;
             },
           };
         default:
@@ -407,12 +409,9 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-    onAnswer: (action) => {
-      if (action !== null) {
-        action();
-      } else {
-        exit();
-      }
+    validation: (action) => {
+      action();
+      return true;
     },
   });
   menu();

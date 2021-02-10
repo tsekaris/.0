@@ -108,18 +108,14 @@ const sh = {
       preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
       height = '80%',
       choices = [],
-      // list
       preview = { type: '', style: 'right:0%' },
-      // input
       validation = () => true,
-      onAnswer = () => {},
     } = db;
 
     // #todo
     // preset -> ? το default είναι δεσμευμένη από το σύστημα
     // preview: κάτι πρέπει να γίνει.
     // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
-    // validation: Και για list. Κυρίως διαχείριση null.
 
     const output = (data) => {
       const { msg = '', value = '', error = '' } = data;
@@ -218,7 +214,6 @@ const sh = {
                 msg: message,
                 value: answerText,
               });
-              onAnswer(answerValue);
               return answerValue;
             }
             // validation είναι false ή ''
@@ -245,7 +240,6 @@ const sh = {
               msg: message,
               error: 'esc',
             });
-            onAnswer(null);
             return null;
           }
           default:
@@ -308,7 +302,6 @@ const sh = {
                 msg: message,
                 value: answerValue,
               });
-              onAnswer(answerValue);
               return answerValue;
             }
             // validation είναι false ή ''
@@ -325,7 +318,6 @@ const sh = {
               msg: message,
               error: 'esc',
             });
-            onAnswer(null);
             return null;
           }
           default:
