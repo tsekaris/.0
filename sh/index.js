@@ -92,12 +92,14 @@ const sh = {
     if (Array.isArray(db)) {
       // Η forEach δεν έχει break
       // Η every αν δεν επιστρεψει true τότε λειτουργεί σαν break
+      // Η push επιστρέφει την τιμή που κάνουμε push.
+      // const answers = [];
       db.every((element) => this.fzf(element) !== null);
-      return; // Μην εκτελείς τα παρακάτω
+      return null;
+      // return answers; // Μην εκτελείς τα παρακάτω
     }
     if (typeof db === 'function') {
-      this.fzf(db());
-      return; // Μην εκτελείς τα παρακάτω
+      return this.fzf(db());
     }
     const {
       type = 'input',
@@ -117,194 +119,221 @@ const sh = {
     // preset -> ? το default είναι δεσμευμένη από το σύστημα
     // preview: κάτι πρέπει να γίνει.
     // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
-    // validation: Και για list. Κυρίως διαχείριση null
+    // validation: Και για list. Κυρίως διαχείριση null.
 
-    function convert(value) {
-      // Επιστρέφει text ή number
-      const valueToNumber = value * 1;
-      if (Number.isNaN(valueToNumber) || value === '') {
-        // το '' δίνει 0 όταν *1
-        return value;
-      }
-      return valueToNumber;
-    }
-
-    const result = {
-      message: 'null',
-      data: null,
-      log: () => {
-        console.log(
-          `${this.colors.fgCyan}${message}${this.colors.reset}`,
-          typeof result.message === 'string'
-            ? `${this.colors.fgGreen}${result.message}${this.colors.reset}`
-            : result.message,
-        );
-      },
+    const output = (data) => {
+      const { msg = '', value = '', error = '' } = data;
+      console.log(
+        `${this.colors.fgCyan}${msg}${this.colors.reset}`,
+        `${this.colors.fgGreen}${value}${this.colors.reset}`,
+        `${this.colors.fgRed}${error}${this.colors.reset}`,
+      );
     };
 
-    if (type === 'list' || type === 'list-multi') {
-      // List
-      const script = this.run2(
-        [
-          (() => {
-            let fzfPreviews = [];
-            let fzfChoices = choices.map((choice, index) => {
-              if (choice[2] !== undefined) {
-                fzfPreviews.push(choice[2]);
-              } else {
-                fzfPreviews.push('');
+    switch (type) {
+      case 'list':
+      case 'list-multi': {
+        const script = this.run2(
+          [
+            (() => {
+              let fzfPreviews = '';
+              let fzfChoices = choices
+                .map((choice, index) => {
+                  // choice[0]: text
+                  // choice[1]: return value
+                  // choice[2]: preview
+                  fzfPreviews = choice[2] !== undefined
+                    ? `${fzfPreviews} '${choice[2]}'`
+                    : `${fzfPreviews} 'no preview'`;
+                  return `${index}|${choice[0]}`;
+                })
+                .join('\n');
+              if (header !== '') {
+                fzfChoices = `index|${header}\n${fzfChoices}`;
               }
-              return `${index}|${choice[0]}`;
+              // Bash
+              // previews (): function διαχείρισης των prviews.
+              // tr: Αντικατάσταση των | με tabs.
+              // column: Δημιουργία columns σύμφωνα με το μήκος.
+              return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t' | fzf`;
+            })(),
+            `--prompt "${message} "`, // Μήνυμα.
+            `${header === '' ? '' : '--header-lines=1'}`, // Ονόματα πεδίων.
+            `--query "${preset}"`, // Προεπιλογή εισαγωγής.
+            `--height=${height}`, // Ύψος
+            '--tabstop=1', // Το tab έχει μήκος 1 space.
+            '--cycle', // Από το τέλος κατευθείαν στην αρχή.
+            '--color=bg+:-1', // Χρώματα.
+            '--info=inline', // Οι πληροφορίε της αναζήτησης σε μία γραμμή.
+            '--print-query', // Επιστρέφει το κείμενο αναζήτησης.
+            "-d '\t'", // Τα πεδία των επιλογών χωρισμένο με tabs.
+            '--with-nth=2..', // Για να μην εμφανίζεται το index.
+            (() => {
+              // Preview
+              switch (preview.type) {
+                case 'text':
+                  return "--preview='previews {1}'";
+                case 'json':
+                  return "--preview='previews {1} | jq -C'";
+                case 'markdown':
+                  return "--preview='previews {1} | bat --language=md --color=always --style=plain'";
+                case 'html':
+                  return "--preview='previews {1} | w3m -T text/html'";
+                default:
+                  return '';
+              }
+            })(),
+            `--preview-window=${preview.style}:wrap`, // Παράθυρο preview.
+            '--marker="+"', // Σύμβολο πολλαπλής επιλογής.
+            `${type === 'list-multi' ? '-m' : ''}`, // Πολλαπλή επιλογή.
+          ].join(' '),
+        );
+        switch (script.status) {
+          case 0: {
+            // Υπάρχει επιλογή.
+            const values = [];
+            const texts = [];
+            const data = script.out.split('\n'); //  ['query', '8\tChoice1', '9\tChoice2']
+            data.shift(); // ['8\tChoice1', '9\tChoice2']
+            data.forEach((record) => {
+              // record: '8\tChoice1'
+              const index = record.split('\t')[0] * 1;
+              const text = choices[index][0].split('|');
+              if (preview.type !== '') {
+                // Δεν υπάρχει preview.
+                // To '' είναι το default.
+                text.pop();
+              }
+              texts.push(text.join('|'));
+              values.push(choices[index][1]);
             });
-            fzfPreviews = fzfPreviews.map((fzfPreview) => `'${fzfPreview}'`).join(' ');
 
-            if (header !== '') {
-              fzfChoices.unshift(`index|${header}`);
-            }
-            fzfChoices = fzfChoices.join('\n');
-            return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t' | fzf`;
-          })(),
-          `--prompt "${message} "`,
-          (() => {
-            if (header === '') {
-              return '';
-            }
-            return '--header-lines=1';
-          })(),
-          `--query "${preset}"`,
-          `--height=${height}`,
-          '--tabstop=1',
-          '--cycle',
-          '--color=bg+:-1',
-          '--info=inline',
-          '--print-query',
-          "-d '\t'",
-          '--with-nth=2..',
-          (() => {
-            switch (preview.type) {
-              case 'text':
-                return "--preview='previews {1}'";
-              case 'json':
-                return "--preview='previews {1} | jq -C'";
-              case 'markdown':
-                return "--preview='previews {1} | bat --language=md --color=always --style=plain'";
-              case 'html':
-                return "--preview='previews {1} | w3m -T text/html'";
-              default:
-                return '';
-            }
-          })(),
-          `--preview-window=${preview.style}:wrap`,
-          '--marker="+"',
-          `${type === 'list-multi' ? '-m' : ''}`,
-        ].join(' '),
-      );
+            // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
+            const answerText = texts.length !== 1 ? texts : texts[0];
 
-      if (script.status === 0) {
-        const returnValues = [];
-        const returnTexts = [];
-        const data = script.out.split('\n'); //  ['query', '8\tChoice1', '9\tChoice2']
-        data.shift(); // ['8\tChoice1', '9\tChoice2']
-        data.forEach((record) => {
-          // record: '8\tChoice1'
-          const index = record.split('\t')[0] * 1;
-          const text = choices[index][0].split('|');
-          if (preview.type !== '') {
-            text.pop();
+            // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
+            const answerValue = type === 'list-multi' ? values : values[0];
+            output({
+              msg: message,
+              value: answerText,
+            });
+            onAnswer(answerValue);
+            return answerValue;
           }
-          returnTexts.push(text.join('|'));
-          returnValues.push(choices[index][1]);
-        });
-
-        // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
-        result.message = returnTexts.length !== 1 ? returnTexts : returnTexts[0];
-
-        // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
-        result.data = type === 'list-multi' ? returnValues : returnValues[0];
-
-        result.log();
-        onAnswer(result.data);
-        return result.data;
-      }
-      if (script.status === 1) {
-        result.data = script.out.split('\n').shift();
-        result.message = `${result.data} ${this.colors.fgRed}try again`;
-        result.log();
-        return this.fzf(db);
-      }
-      if (script.status === 130) {
-        result.data = null;
-        result.message = `${this.colors.fgRed}esc`;
-        result.log();
-        onAnswer(result.data);
-        return result.data;
-      }
-    } else if (type === 'input') {
-      // Input
-      const script = this.run2(
-        [
-          (() => {
-            if (choices.length > 0) {
-              return `echo "-insert-\n${choices.join('\n')}" | fzf `;
-            }
-            return 'echo "" | fzf --pointer=" "';
-          })(),
-          (() => {
-            if (header === '') {
-              return '';
-            }
-            return `--header='${header}'`;
-          })(),
-          `--height=${height}`,
-          '--color=bg+:-1',
-          '--info=hidden',
-          '--disabled',
-          '--print-query',
-          `--prompt "${message} "`,
-          `--query "${preset}"`,
-        ].join(' '),
-      );
-      if (script.status === 0 || script.status === 1) {
-        // 1: Υπάρχει text, 0: Δεν υπάρχει text. Απλό enter
-        // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
-        const data = script.out.split('\n');
-        switch (data[1]) {
-          case '-insert-':
-            result.data = convert(data[0]);
-            break;
-          case '-vim-':
-            // ? Υπάρχει πρόβλημα στο json αν εισάγουμε κείμενο με πολλαπλές σειρές
-            result.data = convert(this.vim(data[0]));
-            break;
+          case 1: {
+            // Δεν υπάρχει επιλογή.
+            const answerText = script.out.split('\n').shift();
+            output({
+              msg: message,
+              value: answerText,
+              error: 'try again',
+            });
+            return this.fzf(db); // Ξανά η διαδικασία.
+          }
+          case 130: {
+            // escaped.
+            output({
+              msg: message,
+              error: 'esc',
+            });
+            onAnswer(null);
+            return null;
+          }
           default:
-            result.data = choices.length > 0 ? convert(data[1]) : convert(data[0]);
+            output({
+              msg: message,
+              error: 'system error',
+            });
+            return process.exit(1);
         }
-        if (validation(result.data) === true && result.data !== '') {
-          result.message = result.data;
-          result.log();
-          onAnswer(result.data);
-          return result.data;
+      }
+      case 'input': {
+        const script = this.run2(
+          [
+            `${
+              choices.length > 0
+                ? `echo "-insert-\n${choices.join('\n')}" | fzf`
+                : 'echo "" | fzf --pointer=" "'
+            }`,
+            `${header === '' ? '' : `--header='${header}'`}`,
+            `--height=${height}`,
+            '--color=bg+:-1',
+            '--info=hidden',
+            '--disabled', // Δεν υπάρχει search. Απλή επιλογή.
+            '--print-query',
+            `--prompt "${message} "`,
+            `--query "${preset}"`,
+          ].join(' '),
+        );
+        const convert = (value) => {
+          // Επιστρέφει text ή number
+          const valueToNumber = value * 1;
+          if (Number.isNaN(valueToNumber) || value === '') {
+            // το '' δίνει 0 όταν *1
+            return value;
+          }
+          return valueToNumber;
+        };
+        switch (script.status) {
+          case 0:
+          case 1: {
+            // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
+            const data = script.out.split('\n');
+            const input = data[0]; // query
+            const choice = data[1]; // menu
+            let answerValue;
+            switch (choice) {
+              case '-insert-':
+                answerValue = convert(input);
+                break;
+              case '-vim-':
+                answerValue = convert(this.vim(input));
+                break;
+              default:
+                // αν υπάρχουν επιλογές επέστρεψε την επιλογή
+                // αλλιώς επέστρεψε το text που εισάγεται
+                answerValue = choices.length > 0 ? convert(choice) : convert(input);
+            }
+            if (validation(answerValue) === true && answerValue !== '') {
+              output({
+                msg: message,
+                value: answerValue,
+              });
+              onAnswer(answerValue);
+              return answerValue;
+            }
+            // validation είναι false ή ''
+            output({
+              msg: message,
+              value: answerValue,
+              error: 'try again',
+            });
+            return this.fzf(db);
+          }
+          case 130: {
+            // escaped.
+            output({
+              msg: message,
+              error: 'esc',
+            });
+            onAnswer(null);
+            return null;
+          }
+          default:
+            output({
+              msg: message,
+              error: 'system error',
+            });
+            return process.exit(1);
         }
-        // validation είναι false ή ''
-        result.message = `${result.data} ${this.colors.fgRed}try again`;
-        result.log();
-        return this.fzf(db);
       }
-      if (script.status === 130) {
-        result.data = null;
-        result.message = `${this.colors.fgRed}esc`;
-        result.log();
-        onAnswer(result.data);
-        return result.data;
-      }
+      default:
+        output({
+          msg: message,
+          error: 'system error',
+        });
+        return process.exit(1);
     }
-    result.message = `${this.colors.fgRed}system error`;
-    result.data = null;
-    result.log();
-    onAnswer(result.data);
-    return process.exit(1);
-    // Το consistent-return απαιτεί return.
-    // Λειτουργεί και χωρίς return.
   },
 };
 
