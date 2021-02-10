@@ -80,43 +80,45 @@ function newInvoice() {
       type: 'input',
       message: 'Λεπτό:',
       preset: today.getMinutes(),
-      validation: (value) => value >= 0 && value < 60,
-      onAnswer: (value) => {
+      validation: (value) => {
+        if (value < 0 || value > 60) {
+          return false;
+        }
+        function twoDigits(val) {
+          return `0${val}`.slice(-2);
+        }
         invoice.date.minute = value;
+        invoice.id = twoDigits(invoice.date.month)
+          + twoDigits(invoice.date.day)
+          + twoDigits(invoice.date.hour)
+          + twoDigits(invoice.date.minute);
+
+        if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
+          console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
+          return false;
+        }
+        return true;
       },
     },
-    () => {
-      function twoDigits(value) {
-        return `0${value}`.slice(-2);
-      }
-      invoice.id = twoDigits(invoice.date.month)
-        + twoDigits(invoice.date.day)
-        + twoDigits(invoice.date.hour)
-        + twoDigits(invoice.date.minute);
-
-      if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-        console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
-        return null;
-      }
-      invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
-      return {
-        type: 'list',
-        message: 'Πελάτης:',
-        header: 'id|name',
-        choices: contactsDb
-          .filter((contact) => contact.id !== 'tsekaris')
-          .sortBy('id')
-          .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
-          .value(),
-        preview: {
-          type: 'json',
-          style: 'down:50%',
-        },
-        height: '95%',
-        onAnswer: (value) => {
-          invoice.to = value;
-        },
-      };
+    {
+      type: 'list',
+      message: 'Πελάτης:',
+      header: 'id|name',
+      choices: contactsDb
+        .filter((contact) => contact.id !== 'tsekaris')
+        .sortBy('id')
+        .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
+        .value(),
+      preview: {
+        type: 'json',
+        style: 'down:50%',
+      },
+      height: '95%',
+      validation: (value) => {
+        invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
+        invoice.to = value;
+        return true;
+      },
     },
     {
       type: 'input',
@@ -366,7 +368,25 @@ ${invoice.description}
 
 // #testing
 
-function testing() {}
+function testing() {
+  const obj = {
+    name: 'joe',
+    age: 35,
+    person1: {
+      name: 'Tony',
+      age: 50,
+      person2: {
+        name: 'Albert',
+        age: 21,
+        person3: {
+          name: 'Peter',
+          age: 23,
+        },
+      },
+    },
+  };
+  console.log(`${JSON.stringify(obj)}`);
+}
 
 function exit() {
   console.log('Bye.');

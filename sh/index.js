@@ -213,12 +213,21 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             const answerValue = type === 'list-multi' ? values : values[0];
+            if (validation(answerValue) === true) {
+              output({
+                msg: message,
+                value: answerText,
+              });
+              onAnswer(answerValue);
+              return answerValue;
+            }
+            // validation είναι false ή ''
             output({
               msg: message,
               value: answerText,
+              error: 'try again',
             });
-            onAnswer(answerValue);
-            return answerValue;
+            return this.fzf(db);
           }
           case 1: {
             // Δεν υπάρχει επιλογή.
