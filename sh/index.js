@@ -91,39 +91,50 @@ const sh = {
     // 130: ctr-c or esc pressed
     if (Array.isArray(db)) {
       // Η forEach δεν έχει break
-      // Η every αν δεν επιστρεψει true τότε λειτουργεί σαν break
-      // Η push επιστρέφει την τιμή που κάνουμε push.
-      // const answers = [];
-      db.every((element) => this.fzf(element) !== null);
-      return null;
-      // return answers; // Μην εκτελείς τα παρακάτω
+      // Η every αν επιστρεψει false τότε λειτουργεί σαν break
+      const answers = [];
+      db.every((question) => {
+        const answer = this.fzf(question);
+        if (answer !== '-esc-') {
+          answers.push(answer);
+          return true;
+        }
+        return false;
+      });
+      return answers;
     }
     if (typeof db === 'function') {
       return this.fzf(db());
     }
     const {
-      type = 'input',
+      type = 'input', // list, list-multi, input, input-number
       message = 'Εισαγωγή τιμής:',
       header = '',
       preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
       height = '80%',
       choices = [],
       preview = { type: '', style: 'right:0%' },
-      validation = () => true,
+      validate = (value) => value,
+      esc = () => '-esc-',
     } = db;
 
-    // #todo
-    // preset -> ? το default είναι δεσμευμένη από το σύστημα
-    // preview: κάτι πρέπει να γίνει.
-    // preview: Μήπως να βγαίνει και για το input πχ για μεγάλα κείμενα.
-
-    const output = (data) => {
-      const { msg = '', value = '', error = '' } = data;
-      console.log(
-        `${this.colors.fgCyan}${msg}${this.colors.reset}`,
-        `${this.colors.fgGreen}${value}${this.colors.reset}`,
-        `${this.colors.fgRed}${error}${this.colors.reset}`,
-      );
+    const output = (msg, value, error) => {
+      const texts = [];
+      if (msg !== '') {
+        texts.push(`${this.colors.fgCyan}${msg}`);
+        // texts.push(`${this.colors.reset}${this.colors.fgCyan}${msg}${this.colors.reset}`);
+      }
+      if (value !== '') {
+        texts.push(`${this.colors.fgGreen}${value}`);
+        // texts.push(`${this.colors.reset}${this.colors.fgGreen}${value}${this.colors.reset}`);
+      }
+      if (error !== '') {
+        texts.push(`${this.colors.fgRed}${error}`);
+        // texts.push(`${this.colors.reset}${this.colors.fgRed}${error}${this.colors.reset}`);
+      }
+      texts.push(`${this.colors.reset}\n`);
+      // console.log(texts.join(' '));
+      process.stdout.write(texts.join(' '));
     };
 
     switch (type) {
@@ -187,70 +198,56 @@ const sh = {
         switch (script.status) {
           case 0: {
             // Υπάρχει επιλογή.
-            const values = [];
-            const texts = [];
+            let values = [];
+            let texts = [];
             const data = script.out.split('\n'); //  ['query', '8\tChoice1', '9\tChoice2']
             data.shift(); // ['8\tChoice1', '9\tChoice2']
             data.forEach((record) => {
               // record: '8\tChoice1'
               const index = record.split('\t')[0] * 1;
-              const text = choices[index][0].split('|');
-              if (preview.type !== '') {
-                // Δεν υπάρχει preview.
-                // To '' είναι το default.
-                text.pop();
-              }
-              texts.push(text.join('|'));
+              const text = choices[index][0];
+              texts.push(text);
               values.push(choices[index][1]);
             });
 
             // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
-            const answerText = texts.length !== 1 ? texts : texts[0];
+            texts = texts.length !== 1 ? texts : texts[0];
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
-            const answerValue = type === 'list-multi' ? values : values[0];
-            if (validation(answerValue) === true) {
-              output({
-                msg: message,
-                value: answerText,
-              });
-              return answerValue;
+            values = type === 'list-multi' ? values : values[0];
+            output(message, texts, '');
+            values = validate(values);
+            switch (values) {
+              case '-retry-':
+                output('', '', values);
+                return this.fzf(db);
+              case '-esc-':
+                output('', '', values);
+                return '-esc-';
+              case '-exit-':
+                output('', '', values);
+                return process.exit(1);
+              default:
+                return values;
             }
-            // validation είναι false ή ''
-            output({
-              msg: message,
-              value: answerText,
-              error: 'try again',
-            });
-            return this.fzf(db);
           }
           case 1: {
             // Δεν υπάρχει επιλογή.
-            const answerText = script.out.split('\n').shift();
-            output({
-              msg: message,
-              value: answerText,
-              error: 'try again',
-            });
+            output(message, script.out.split('\n').shift(), '-retry-');
             return this.fzf(db); // Ξανά η διαδικασία.
           }
           case 130: {
             // escaped.
-            output({
-              msg: message,
-              error: 'esc',
-            });
-            return null;
+            output(message, '', '-esc-');
+            return esc();
           }
           default:
-            output({
-              msg: message,
-              error: 'system error',
-            });
+            output(message, '', '-error-');
             return process.exit(1);
         }
       }
-      case 'input': {
+      case 'input':
+      case 'input-number': {
         const script = this.run2(
           [
             `${
@@ -268,71 +265,62 @@ const sh = {
             `--query "${preset}"`,
           ].join(' '),
         );
-        const convert = (value) => {
-          // Επιστρέφει text ή number
-          const valueToNumber = value * 1;
-          if (Number.isNaN(valueToNumber) || value === '') {
-            // το '' δίνει 0 όταν *1
-            return value;
-          }
-          return valueToNumber;
-        };
         switch (script.status) {
           case 0:
           case 1: {
-            // Δεν έχει επιλεχτεί τίποτα άρα πρέπει να δούμε το text που εισάγεται (query)
             const data = script.out.split('\n');
             const input = data[0]; // query
             const choice = data[1]; // menu
-            let answerValue;
+            let answer;
             switch (choice) {
               case '-insert-':
-                answerValue = convert(input);
+                answer = input;
                 break;
               case '-vim-':
-                answerValue = convert(this.vim(input));
+                answer = this.vim(input);
                 break;
               default:
                 // αν υπάρχουν επιλογές επέστρεψε την επιλογή
                 // αλλιώς επέστρεψε το text που εισάγεται
-                answerValue = choices.length > 0 ? convert(choice) : convert(input);
+                answer = choices.length > 0 ? choice : input;
             }
-            if (validation(answerValue) === true && answerValue !== '') {
-              output({
-                msg: message,
-                value: answerValue,
-              });
-              return answerValue;
+            const text = answer;
+
+            if (type === 'input-number') {
+              answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
+              if (typeof answer !== 'number') {
+                output(message, text, '-retry-');
+                return this.fzf(db);
+              }
             }
-            // validation είναι false ή ''
-            output({
-              msg: message,
-              value: answerValue,
-              error: 'try again',
-            });
-            return this.fzf(db);
+            answer = validate(answer);
+            switch (answer) {
+              case '-retry-':
+                output(message, text, answer);
+                return this.fzf(db);
+              case '-esc-':
+                output(message, text, answer);
+                return '-esc-';
+              case '-exit-':
+                output(message, text, answer);
+                return process.exit(1);
+              default:
+                output(message, text, '');
+                return answer;
+            }
           }
           case 130: {
             // escaped.
-            output({
-              msg: message,
-              error: 'esc',
-            });
-            return null;
+            output(message, '', '-esc-');
+            return esc();
           }
           default:
-            output({
-              msg: message,
-              error: 'system error',
-            });
+            output(message, '', '-error-');
             return process.exit(1);
         }
       }
       default:
-        output({
-          msg: message,
-          error: 'system error',
-        });
+        output(message, '', '-error-');
         return process.exit(1);
     }
   },
