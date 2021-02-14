@@ -32,6 +32,38 @@ const sh = {
     bgWhite: '\x1b[47m',
   },
 
+  log: {
+    texts: [],
+    reset: () => {
+      sh.log.texts = [];
+      console.log(sh.colors.reset);
+      return sh.log;
+    },
+    plain: (text) => {
+      sh.log.texts.push(`${sh.colors.reset}`);
+      sh.log.texts.push(text);
+      return sh.log;
+    },
+    cyan: (text) => {
+      sh.log.texts.push(`${sh.colors.fgCyan}${text}${sh.colors.reset}`);
+      return sh.log;
+    },
+    green: (text) => {
+      sh.log.texts.push(`${sh.colors.fgGreen}${text}${sh.colors.reset}`);
+      return sh.log;
+    },
+    red: (text) => {
+      sh.log.texts.push(`${sh.colors.fgRed}${text}${sh.colors.reset}`);
+      return sh.log;
+    },
+    write: (text = '') => {
+      sh.log.texts.push(`${sh.colors.reset}`);
+      sh.log.texts.push(text);
+      console.log(...sh.log.texts);
+      sh.log.texts = [];
+    },
+  },
+
   run(req) {
     const child = childProcess.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
@@ -118,25 +150,6 @@ const sh = {
       esc = () => '-esc-',
     } = db;
 
-    const output = (msg, value, error) => {
-      const texts = [];
-      if (msg !== '') {
-        texts.push(`${this.colors.fgCyan}${msg}`);
-        // texts.push(`${this.colors.reset}${this.colors.fgCyan}${msg}${this.colors.reset}`);
-      }
-      if (value !== '') {
-        texts.push(`${this.colors.fgGreen}${value}`);
-        // texts.push(`${this.colors.reset}${this.colors.fgGreen}${value}${this.colors.reset}`);
-      }
-      if (error !== '') {
-        texts.push(`${this.colors.fgRed}${error}`);
-        // texts.push(`${this.colors.reset}${this.colors.fgRed}${error}${this.colors.reset}`);
-      }
-      texts.push(`${this.colors.reset}\n`);
-      // console.log(texts.join(' '));
-      process.stdout.write(texts.join(' '));
-    };
-
     switch (type) {
       case 'list':
       case 'list-multi': {
@@ -215,17 +228,18 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             values = type === 'list-multi' ? values : values[0];
-            output(message, texts, '');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgGreen}${texts}`,
+              `${this.colors.reset}`,
+            );
             values = validate(values);
             switch (values) {
               case '-retry-':
-                output('', '', values);
                 return this.fzf(db);
               case '-esc-':
-                output('', '', values);
                 return '-esc-';
               case '-exit-':
-                output('', '', values);
                 return process.exit(1);
               default:
                 return values;
@@ -233,16 +247,29 @@ const sh = {
           }
           case 1: {
             // Δεν υπάρχει επιλογή.
-            output(message, script.out.split('\n').shift(), '-retry-');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgGreen}${script.out.split('\n').shift()}`,
+              `${this.colors.fgRed}-retry-`,
+              `${this.colors.reset}`,
+            );
             return this.fzf(db); // Ξανά η διαδικασία.
           }
           case 130: {
             // escaped.
-            output(message, '', '-esc-');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgRed}-esc-`,
+              `${this.colors.reset}`,
+            );
             return esc();
           }
           default:
-            output(message, '', '-error-');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgRed}-error-`,
+              `${this.colors.reset}`,
+            );
             return process.exit(1);
         }
       }
@@ -284,43 +311,55 @@ const sh = {
                 // αλλιώς επέστρεψε το text που εισάγεται
                 answer = choices.length > 0 ? choice : input;
             }
-            const text = answer;
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgGreen}${answer}`,
+              `${this.colors.reset}`,
+            );
 
             if (type === 'input-number') {
               answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
               if (typeof answer !== 'number') {
-                output(message, text, '-retry-');
+                console.log(`${this.colors.fgRed}-retry-`, `${this.colors.reset}`);
                 return this.fzf(db);
               }
             }
             answer = validate(answer);
             switch (answer) {
               case '-retry-':
-                output(message, text, answer);
                 return this.fzf(db);
               case '-esc-':
-                output(message, text, answer);
                 return '-esc-';
               case '-exit-':
-                output(message, text, answer);
                 return process.exit(1);
               default:
-                output(message, text, '');
                 return answer;
             }
           }
           case 130: {
             // escaped.
-            output(message, '', '-esc-');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgRed}-esc-`,
+              `${this.colors.reset}`,
+            );
             return esc();
           }
           default:
-            output(message, '', '-error-');
+            console.log(
+              `${this.colors.fgCyan}${message}`,
+              `${this.colors.fgRed}-error-`,
+              `${this.colors.reset}`,
+            );
             return process.exit(1);
         }
       }
       default:
-        output(message, '', '-error-');
+        console.log(
+          `${this.colors.fgCyan}${message}`,
+          `${this.colors.fgRed}-error-`,
+          `${this.colors.reset}`,
+        );
         return process.exit(1);
     }
   },

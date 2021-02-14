@@ -99,7 +99,9 @@ function newInvoice() {
           + twoDigits(invoice.date.minute);
 
         if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          console.log('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.');
+          console.log(
+            `${sh.colors.fgRed}Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.${sh.colors.reset}`,
+          );
           return '-retry-';
         }
         return value;
@@ -387,8 +389,14 @@ ${invoice.description}
 // #testing
 
 function testing() {
-  const answers = sh.fzf([{}, {}]);
-  console.log(answers);
+  const obj = {
+    onoma: 'mihalis',
+    epitheto: 'tsekaris',
+  };
+  const obj2 = 23;
+  sh.log.green(obj2).plain(obj).write(obj2);
+  // sh.log.write('paok');
+  // console.log(sh.log.texts);
 }
 
 function exit() {
@@ -410,11 +418,10 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-    validate: (action) => action(),
     esc: () => {
       exit();
     },
-  });
+  })();
   menu();
 }
 
