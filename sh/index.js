@@ -4,6 +4,20 @@ const childProcess = require('child_process');
 // const { rejects } = require('assert');
 
 const sh = {
+  _: {
+    // private variables
+    message: '',
+  },
+  get msg() {
+    // Μία φορά θα διαβαστεί
+    const text = this._.message;
+    this._.message = '';
+    return text;
+  },
+  set msg(text) {
+    this._.message = text;
+  },
+
   colors: {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -31,39 +45,24 @@ const sh = {
     bgCyan: '\x1b[46m',
     bgWhite: '\x1b[47m',
   },
-
-  log: {
-    texts: [],
-    reset: () => {
-      sh.log.texts = [];
-      console.log(sh.colors.reset);
-      return sh.log;
-    },
-    plain: (text) => {
-      sh.log.texts.push(`${sh.colors.reset}`);
-      sh.log.texts.push(text);
-      return sh.log;
-    },
-    cyan: (text) => {
-      sh.log.texts.push(`${sh.colors.fgCyan}${text}${sh.colors.reset}`);
-      return sh.log;
-    },
-    green: (text) => {
-      sh.log.texts.push(`${sh.colors.fgGreen}${text}${sh.colors.reset}`);
-      return sh.log;
-    },
-    red: (text) => {
-      sh.log.texts.push(`${sh.colors.fgRed}${text}${sh.colors.reset}`);
-      return sh.log;
-    },
-    write: (text = '') => {
-      sh.log.texts.push(`${sh.colors.reset}`);
-      sh.log.texts.push(text);
-      console.log(...sh.log.texts);
-      sh.log.texts = [];
-    },
+  red(text) {
+    return `${sh.colors.fgRed}${text}${sh.colors.reset}`;
   },
-
+  green(text) {
+    return `${sh.colors.fgGreen}${text}${sh.colors.reset}`;
+  },
+  yellow(text) {
+    return `${sh.colors.fgYellow}${text}${sh.colors.reset}`;
+  },
+  blue(text) {
+    return `${sh.colors.fgBlue}${text}${sh.colors.reset}`;
+  },
+  magenta(text) {
+    return `${sh.colors.fgMagenta}${text}${sh.colors.reset}`;
+  },
+  cyan(text) {
+    return `${sh.colors.fgCyan}${text}${sh.colors.reset}`;
+  },
   run(req) {
     const child = childProcess.spawnSync(req, {
       stdio: ['inherit', 'pipe', 'inherit'],
@@ -146,7 +145,7 @@ const sh = {
       height = '80%',
       choices = [],
       preview = { type: '', style: 'right:0%' },
-      validate = (value) => value,
+      enter = (value) => value,
       esc = () => '-esc-',
     } = db;
 
@@ -228,48 +227,38 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             values = type === 'list-multi' ? values : values[0];
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgGreen}${texts}`,
-              `${this.colors.reset}`,
-            );
-            values = validate(values);
+            values = enter(values);
             switch (values) {
               case '-retry-':
+                console.log(sh.red(message), texts, sh.magenta(sh.msg));
                 return this.fzf(db);
               case '-esc-':
+                console.log(sh.red(message), texts, sh.magenta(sh.msg));
                 return '-esc-';
               case '-exit-':
+                console.log(sh.red(message), texts, sh.magenta(sh.msg));
                 return process.exit(1);
               default:
+                console.log(sh.cyan(message), texts, sh.magenta(sh.msg));
                 return values;
             }
           }
           case 1: {
             // Δεν υπάρχει επιλογή.
             console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgGreen}${script.out.split('\n').shift()}`,
-              `${this.colors.fgRed}-retry-`,
-              `${this.colors.reset}`,
+              sh.red(message),
+              script.out.split('\n').shift(),
+              sh.magenta('Δεν υπάρχει επιλογή.'),
             );
             return this.fzf(db); // Ξανά η διαδικασία.
           }
           case 130: {
             // escaped.
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgRed}-esc-`,
-              `${this.colors.reset}`,
-            );
+            console.log(sh.red(message), '-esc-');
             return esc();
           }
           default:
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgRed}-error-`,
-              `${this.colors.reset}`,
-            );
+            console.log(sh.red(message), '-error-');
             return process.exit(1);
         }
       }
@@ -311,55 +300,42 @@ const sh = {
                 // αλλιώς επέστρεψε το text που εισάγεται
                 answer = choices.length > 0 ? choice : input;
             }
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgGreen}${answer}`,
-              `${this.colors.reset}`,
-            );
 
             if (type === 'input-number') {
               answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
               if (typeof answer !== 'number') {
-                console.log(`${this.colors.fgRed}-retry-`, `${this.colors.reset}`);
+                console.log(sh.red(message), answer, sh.magenta('Δεν είναι αριθμός.'));
                 return this.fzf(db);
               }
             }
-            answer = validate(answer);
-            switch (answer) {
+            const answerEnter = enter(answer);
+            switch (answerEnter) {
               case '-retry-':
+                console.log(sh.red(message), answer, sh.magenta(sh.msg));
                 return this.fzf(db);
               case '-esc-':
+                console.log(sh.red(message), answer, sh.magenta(sh.msg));
                 return '-esc-';
               case '-exit-':
+                console.log(sh.red(message), answer, sh.magenta(sh.msg));
                 return process.exit(1);
               default:
-                return answer;
+                console.log(sh.cyan(message), answer, sh.magenta(sh.msg));
+                return answerEnter;
             }
           }
           case 130: {
             // escaped.
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgRed}-esc-`,
-              `${this.colors.reset}`,
-            );
+            console.log(sh.red(message), '-esc-');
             return esc();
           }
           default:
-            console.log(
-              `${this.colors.fgCyan}${message}`,
-              `${this.colors.fgRed}-error-`,
-              `${this.colors.reset}`,
-            );
+            console.log(sh.red(message), '-error-');
             return process.exit(1);
         }
       }
       default:
-        console.log(
-          `${this.colors.fgCyan}${message}`,
-          `${this.colors.fgRed}-error-`,
-          `${this.colors.reset}`,
-        );
+        console.log(sh.red(message), '-error-');
         return process.exit(1);
     }
   },

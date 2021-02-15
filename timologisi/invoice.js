@@ -52,7 +52,7 @@ function newInvoice() {
         ['11|Νοέμβριος', 11],
         ['12|Δεκέμβριος', 12],
       ],
-      validate: (value) => {
+      enter: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
         invoice.date.month = value;
@@ -64,7 +64,7 @@ function newInvoice() {
       message: 'Μέρα:',
       header: 'no|ημέρα',
       choices: getDays(invoice.date.year, invoice.date.month),
-      validate: (value) => {
+      enter: (value) => {
         invoice.date.day = value;
         return value;
       },
@@ -73,7 +73,7 @@ function newInvoice() {
       type: 'input-number',
       message: 'Ώρα:',
       preset: today.getHours(),
-      validate: (value) => {
+      enter: (value) => {
         if (value >= 0 && value < 24) {
           invoice.date.hour = value;
           return value;
@@ -85,8 +85,9 @@ function newInvoice() {
       type: 'input-number',
       message: 'Λεπτό:',
       preset: today.getMinutes(),
-      validate: (value) => {
+      enter: (value) => {
         if (value < 0 || value > 60) {
+          sh.msg = 'Από 0 εώς 59.';
           return '-retry-';
         }
         function twoDigits(val) {
@@ -99,9 +100,7 @@ function newInvoice() {
           + twoDigits(invoice.date.minute);
 
         if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          console.log(
-            `${sh.colors.fgRed}Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.${sh.colors.reset}`,
-          );
+          sh.msg = 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.';
           return '-retry-';
         }
         return value;
@@ -121,7 +120,7 @@ function newInvoice() {
         style: 'down:50%',
       },
       height: '95%',
-      validate: (value) => {
+      enter: (value) => {
         invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
         invoice.to = value;
         return value;
@@ -130,7 +129,7 @@ function newInvoice() {
     {
       type: 'input-number',
       message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-      validate: (value) => {
+      enter: (value) => {
         if (value > 0) {
           invoice.amount = value;
           return value;
@@ -143,7 +142,7 @@ function newInvoice() {
       message: 'ΦΠΑ:',
       preset: 24,
       choices: [0, 24],
-      validate: (value) => {
+      enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.fpa = {};
           invoice.fpa.percent = value;
@@ -157,7 +156,7 @@ function newInvoice() {
       message: 'Παρακράτηση:',
       preset: 20,
       choices: [0, 20],
-      validate: (value) => {
+      enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.parakratisi = {};
           invoice.parakratisi.percent = value;
@@ -171,7 +170,7 @@ function newInvoice() {
       message: 'Περιγραφή εργασιών:',
       header: 'Μία γραμμή',
       choices: ['-vim-'],
-      validate: (value) => {
+      enter: (value) => {
         if (value !== '') {
           invoice.description = value;
           return value;
@@ -186,7 +185,7 @@ function newInvoice() {
         ['ναι', true],
         ['όχι', false],
       ],
-      validate: (value) => {
+      enter: (value) => {
         if (value) {
           calculate(invoice);
           invoicesDb.push(invoice).write();
@@ -246,7 +245,7 @@ function editInvoice() {
         type: 'json',
         style: 'right:50%',
       },
-      validate: (value) => {
+      enter: (value) => {
         answers.invoice = value;
         return value;
       },
@@ -258,7 +257,7 @@ function editInvoice() {
         ['edit', 'edit'],
         ['delete', 'delete'],
       ],
-      validate: (value) => {
+      enter: (value) => {
         answers.action = value;
         return value;
       },
@@ -274,7 +273,7 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            validate: (answer) => {
+            enter: (answer) => {
               if (answer) {
                 invoicesDb.find({ id: answers.invoice.id }).assign(invoiceEdited).write();
               }
@@ -290,7 +289,7 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            validate: (answer) => {
+            enter: (answer) => {
               if (answer) {
                 invoicesDb.remove({ id: answers.invoice.id }).write();
               }
@@ -393,8 +392,8 @@ function testing() {
     onoma: 'mihalis',
     epitheto: 'tsekaris',
   };
-  const obj2 = 23;
-  sh.log.green(obj2).plain(obj).write(obj2);
+  sh.msg = obj;
+  console.log(sh.msg);
   // sh.log.write('paok');
   // console.log(sh.log.texts);
 }
@@ -406,7 +405,7 @@ function exit() {
 
 // #menu
 function menu() {
-  sh.fzf({
+  const answer = sh.fzf({
     type: 'list',
     message: 'Ενέργεια',
     header: 'search|ενέργεια',
@@ -418,11 +417,13 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-    esc: () => {
-      exit();
-    },
-  })();
-  menu();
+  });
+  if (answer === '-esc-') {
+    exit();
+  } else {
+    answer();
+    menu();
+  }
 }
 
 menu();
