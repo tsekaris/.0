@@ -220,21 +220,24 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             values = type === 'list-multi' ? values : values[0];
-            const enterObj = enter(values);
-            switch (enterObj.value) {
+            const obj = enter(values);
+            if (obj.text === undefined) {
+              obj.text = '';
+            }
+            switch (obj.value) {
               case '-retry-':
-                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
+                console.log(sh.red(message), texts, sh.magenta(obj.text));
                 return this.fzf(db);
               case '-esc-':
-                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
+                console.log(sh.red(message), texts, sh.magenta(obj.text));
                 return '-esc-';
               case '-exit-':
-                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
+                console.log(sh.red(message), texts, sh.magenta(obj.text));
                 return process.exit(1);
               default:
-                console.log(sh.cyan(message), texts, sh.magenta(enterObj.text));
-                end(enterObj.value);
-                return enterObj.value;
+                console.log(sh.cyan(message), texts, sh.magenta(obj.text));
+                end(obj.value);
+                return obj.value;
             }
           }
           case 1: {
@@ -248,14 +251,25 @@ const sh = {
           }
           case 130: {
             // escaped.
-            const escObj = esc();
-            if (escObj.value === '-esc-') {
-              console.log(sh.red(message), '-esc-', sh.magenta(escObj.text));
-            } else {
-              console.log(sh.cyan(message), '-esc-', sh.magenta(escObj.text));
-              end(escObj.value);
+            const obj = esc();
+            if (obj.text === undefined) {
+              obj.text = '';
             }
-            return escObj.value;
+            switch (obj.value) {
+              case '-retry-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return this.fzf(db);
+              case '-esc-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return '-esc-';
+              case '-exit-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return process.exit(1);
+              default:
+                console.log(sh.cyan(message), '-esc-', sh.magenta(obj.text));
+                end(obj.value);
+                return obj.value;
+            }
           }
           default:
             console.log(sh.red(message), '-error-');
@@ -308,33 +322,47 @@ const sh = {
                 return this.fzf(db);
               }
             }
-            const enterObj = enter(answer);
-            switch (enterObj.value) {
+            const obj = enter(answer);
+            if (obj.text === undefined) {
+              obj.text = '';
+            }
+            switch (obj.value) {
               case '-retry-':
-                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
+                console.log(sh.red(message), answer, sh.magenta(obj.text));
                 return this.fzf(db);
               case '-esc-':
-                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
+                console.log(sh.red(message), answer, sh.magenta(obj.text));
                 return '-esc-';
               case '-exit-':
-                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
+                console.log(sh.red(message), answer, sh.magenta(obj.text));
                 return process.exit(1);
               default:
-                console.log(sh.cyan(message), answer, sh.magenta(enterObj.text));
-                end(enterObj.value);
-                return enterObj.value;
+                console.log(sh.cyan(message), answer, sh.magenta(obj.text));
+                end(obj.value);
+                return obj.value;
             }
           }
           case 130: {
             // escaped.
-            const escObj = esc();
-            if (escObj.value === '-esc-') {
-              console.log(sh.red(message), '-esc-', sh.magenta(escObj.text));
-            } else {
-              console.log(sh.cyan(message), '-esc-', sh.magenta(escObj.text));
-              end(escObj.value);
+            const obj = esc();
+            if (obj.text === undefined) {
+              obj.text = '';
             }
-            return escObj.value;
+            switch (obj.value) {
+              case '-retry-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return this.fzf(db);
+              case '-esc-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return '-esc-';
+              case '-exit-':
+                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
+                return process.exit(1);
+              default:
+                console.log(sh.cyan(message), '-esc-', sh.magenta(obj.text));
+                end(obj.value);
+                return obj.value;
+            }
           }
           default:
             console.log(sh.red(message), '-error-');

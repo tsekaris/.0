@@ -52,6 +52,7 @@ function newInvoice() {
         ['11|Νοέμβριος', 11],
         ['12|Δεκέμβριος', 12],
       ],
+      preset: today.getMonth() + 1,
       end: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
@@ -63,6 +64,7 @@ function newInvoice() {
       message: 'Μέρα:',
       header: 'no|ημέρα',
       choices: getDays(invoice.date.year, invoice.date.month),
+      preset: today.getDate(),
       end: (value) => {
         invoice.date.day = value;
       },
@@ -99,7 +101,10 @@ function newInvoice() {
           + twoDigits(invoice.date.minute);
 
         if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          return { value: '-retry-', text: 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.' };
+          return {
+            value: '-retry-',
+            text: 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.',
+          };
         }
         return { value, text: '' };
       },
@@ -389,7 +394,6 @@ ${invoice.description}
 function testing() {}
 
 function exit() {
-  console.log(sh.blue('Bye, bye.'));
   process.exit(1); // έξοδος από το πρόγραμμα
 }
 
@@ -407,7 +411,16 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-    esc: () => ({ value: exit, text: 'Έξοδος από το πρόγραμμα.' }),
+    esc: () => ({
+      value: '-exit-',
+      text: 'Bye, bye.',
+    }),
+    enter: (value) => {
+      if (value === exit) {
+        return { value, text: 'Bye, bye.' };
+      }
+      return { value };
+    },
     end: (action) => {
       action();
     },

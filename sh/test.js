@@ -61,7 +61,7 @@ const choices = [
   'rtd i-',
 ];
 
-const out = sh.fzf({
+sh.fzf({
   type: 'list-multi',
   message: 'Value:',
   // header: 'min: 0, max: 100',
@@ -79,5 +79,9 @@ const out = sh.fzf({
 
   height: '90%',
   preview: { type: 'text', style: 'right:50%' },
+  enter: () => ({ value: '-retry-', text: sh.red('hello') }),
+  esc: () => ({ value: 'paok', text: sh.red('esc for paok') }),
+  end: (answer) => {
+    console.log(answer);
+  },
 });
-console.log(out);
