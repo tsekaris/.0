@@ -4,20 +4,6 @@ const childProcess = require('child_process');
 // const { rejects } = require('assert');
 
 const sh = {
-  _: {
-    // private variables
-    message: '',
-  },
-  get msg() {
-    // Μία φορά θα διαβαστεί
-    const text = this._.message;
-    this._.message = '';
-    return text;
-  },
-  set msg(text) {
-    this._.message = text;
-  },
-
   colors: {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
@@ -145,8 +131,15 @@ const sh = {
       height = '80%',
       choices = [],
       preview = { type: '', style: 'right:0%' },
-      enter = (value) => value,
-      esc = () => '-esc-',
+      enter = (value) => ({
+        value,
+        text: '',
+      }),
+      esc = () => ({
+        value: '-esc-',
+        text: '',
+      }),
+      end = () => {},
     } = db;
 
     switch (type) {
@@ -227,20 +220,21 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             values = type === 'list-multi' ? values : values[0];
-            values = enter(values);
-            switch (values) {
+            const enterObj = enter(values);
+            switch (enterObj.value) {
               case '-retry-':
-                console.log(sh.red(message), texts, sh.magenta(sh.msg));
+                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
                 return this.fzf(db);
               case '-esc-':
-                console.log(sh.red(message), texts, sh.magenta(sh.msg));
+                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
                 return '-esc-';
               case '-exit-':
-                console.log(sh.red(message), texts, sh.magenta(sh.msg));
+                console.log(sh.red(message), texts, sh.magenta(enterObj.text));
                 return process.exit(1);
               default:
-                console.log(sh.cyan(message), texts, sh.magenta(sh.msg));
-                return values;
+                console.log(sh.cyan(message), texts, sh.magenta(enterObj.text));
+                end(enterObj.value);
+                return enterObj.value;
             }
           }
           case 1: {
@@ -254,8 +248,14 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.red(message), '-esc-');
-            return esc();
+            const escObj = esc();
+            if (escObj.value === '-esc-') {
+              console.log(sh.red(message), '-esc-', sh.magenta(escObj.text));
+            } else {
+              console.log(sh.cyan(message), '-esc-', sh.magenta(escObj.text));
+              end(escObj.value);
+            }
+            return escObj.value;
           }
           default:
             console.log(sh.red(message), '-error-');
@@ -308,26 +308,33 @@ const sh = {
                 return this.fzf(db);
               }
             }
-            const answerEnter = enter(answer);
-            switch (answerEnter) {
+            const enterObj = enter(answer);
+            switch (enterObj.value) {
               case '-retry-':
-                console.log(sh.red(message), answer, sh.magenta(sh.msg));
+                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
                 return this.fzf(db);
               case '-esc-':
-                console.log(sh.red(message), answer, sh.magenta(sh.msg));
+                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
                 return '-esc-';
               case '-exit-':
-                console.log(sh.red(message), answer, sh.magenta(sh.msg));
+                console.log(sh.red(message), answer, sh.magenta(enterObj.text));
                 return process.exit(1);
               default:
-                console.log(sh.cyan(message), answer, sh.magenta(sh.msg));
-                return answerEnter;
+                console.log(sh.cyan(message), answer, sh.magenta(enterObj.text));
+                end(enterObj.value);
+                return enterObj.value;
             }
           }
           case 130: {
             // escaped.
-            console.log(sh.red(message), '-esc-');
-            return esc();
+            const escObj = esc();
+            if (escObj.value === '-esc-') {
+              console.log(sh.red(message), '-esc-', sh.magenta(escObj.text));
+            } else {
+              console.log(sh.cyan(message), '-esc-', sh.magenta(escObj.text));
+              end(escObj.value);
+            }
+            return escObj.value;
           }
           default:
             console.log(sh.red(message), '-error-');

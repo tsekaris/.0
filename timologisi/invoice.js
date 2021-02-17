@@ -52,11 +52,10 @@ function newInvoice() {
         ['11|Νοέμβριος', 11],
         ['12|Δεκέμβριος', 12],
       ],
-      enter: (value) => {
+      end: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
         invoice.date.month = value;
-        return value;
       },
     },
     () => ({
@@ -64,9 +63,8 @@ function newInvoice() {
       message: 'Μέρα:',
       header: 'no|ημέρα',
       choices: getDays(invoice.date.year, invoice.date.month),
-      enter: (value) => {
+      end: (value) => {
         invoice.date.day = value;
-        return value;
       },
     }),
     {
@@ -75,10 +73,12 @@ function newInvoice() {
       preset: today.getHours(),
       enter: (value) => {
         if (value >= 0 && value < 24) {
-          invoice.date.hour = value;
-          return value;
+          return { value, text: '' };
         }
-        return '-retry-';
+        return { value: '-retry-', text: 'Τιμή εκτός ορίων 0..23.' };
+      },
+      end: (value) => {
+        invoice.date.hour = value;
       },
     },
     {
@@ -87,8 +87,7 @@ function newInvoice() {
       preset: today.getMinutes(),
       enter: (value) => {
         if (value < 0 || value > 60) {
-          sh.msg = 'Από 0 εώς 59.';
-          return '-retry-';
+          return { value: '-retry-', text: 'Από 0 εώς 59.' };
         }
         function twoDigits(val) {
           return `0${val}`.slice(-2);
@@ -100,10 +99,9 @@ function newInvoice() {
           + twoDigits(invoice.date.minute);
 
         if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          sh.msg = 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.';
-          return '-retry-';
+          return { value: '-retry-', text: 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.' };
         }
-        return value;
+        return { value, text: '' };
       },
     },
     {
@@ -120,10 +118,9 @@ function newInvoice() {
         style: 'down:50%',
       },
       height: '95%',
-      enter: (value) => {
+      end: (value) => {
         invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
         invoice.to = value;
-        return value;
       },
     },
     {
@@ -131,10 +128,12 @@ function newInvoice() {
       message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
       enter: (value) => {
         if (value > 0) {
-          invoice.amount = value;
-          return value;
+          return { value, text: '' };
         }
-        return '-retry-';
+        return { value: '-retry-', text: 'Τιμή > 0.' };
+      },
+      end: (value) => {
+        invoice.amount = value;
       },
     },
     {
@@ -144,11 +143,13 @@ function newInvoice() {
       choices: [0, 24],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
-          invoice.fpa = {};
-          invoice.fpa.percent = value;
-          return value;
+          return { value, text: '' };
         }
-        return '-retry-';
+        return { value: '-retry-', text: 'Τιμή εκτός 0..100' };
+      },
+      end: (value) => {
+        invoice.fpa = {};
+        invoice.fpa.percent = value;
       },
     },
     {
@@ -158,11 +159,13 @@ function newInvoice() {
       choices: [0, 20],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
-          invoice.parakratisi = {};
-          invoice.parakratisi.percent = value;
-          return value;
+          return { value, text: '' };
         }
-        return '-retry-';
+        return { value: '-retry-', text: 'Τιμή εκτός 0..100' };
+      },
+      end: (value) => {
+        invoice.parakratisi = {};
+        invoice.parakratisi.percent = value;
       },
     },
     {
@@ -172,10 +175,12 @@ function newInvoice() {
       choices: ['-vim-'],
       enter: (value) => {
         if (value !== '') {
-          invoice.description = value;
-          return value;
+          return { value, text: '' };
         }
-        return '-retry-';
+        return { value: '-retry-', text: 'Όχι κενή τιμή' };
+      },
+      end: (value) => {
+        invoice.description = value;
       },
     },
     {
@@ -185,12 +190,11 @@ function newInvoice() {
         ['ναι', true],
         ['όχι', false],
       ],
-      enter: (value) => {
+      end: (value) => {
         if (value) {
           calculate(invoice);
           invoicesDb.push(invoice).write();
         }
-        return value;
       },
     },
   ]);
@@ -202,7 +206,6 @@ function stats() {
   const trimino2 = invoicesDb.filter((record) => record.date.month > 3 && record.date.month <= 6);
   const trimino3 = invoicesDb.filter((record) => record.date.month > 6 && record.date.month <= 9);
   const trimino4 = invoicesDb.filter((record) => record.date.month > 9 && record.date.month <= 12);
-
   const statistics = {};
   statistics.trimino1 = {};
   statistics.trimino2 = {};
@@ -245,9 +248,8 @@ function editInvoice() {
         type: 'json',
         style: 'right:50%',
       },
-      enter: (value) => {
+      end: (value) => {
         answers.invoice = value;
-        return value;
       },
     },
     {
@@ -257,9 +259,8 @@ function editInvoice() {
         ['edit', 'edit'],
         ['delete', 'delete'],
       ],
-      enter: (value) => {
+      end: (value) => {
         answers.action = value;
-        return value;
       },
     },
     () => {
@@ -273,11 +274,10 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            enter: (answer) => {
+            end: (answer) => {
               if (answer) {
                 invoicesDb.find({ id: answers.invoice.id }).assign(invoiceEdited).write();
               }
-              return answer;
             },
           };
         }
@@ -289,11 +289,10 @@ function editInvoice() {
               ['όχι', false],
               ['ναι', true],
             ],
-            enter: (answer) => {
+            end: (answer) => {
               if (answer) {
                 invoicesDb.remove({ id: answers.invoice.id }).write();
               }
-              return answer;
             },
           };
         default:
@@ -387,25 +386,16 @@ ${invoice.description}
 
 // #testing
 
-function testing() {
-  const obj = {
-    onoma: 'mihalis',
-    epitheto: 'tsekaris',
-  };
-  sh.msg = obj;
-  console.log(sh.msg);
-  // sh.log.write('paok');
-  // console.log(sh.log.texts);
-}
+function testing() {}
 
 function exit() {
-  console.log('Bye.');
+  console.log(sh.blue('Bye, bye.'));
   process.exit(1); // έξοδος από το πρόγραμμα
 }
 
 // #menu
 function menu() {
-  const answer = sh.fzf({
+  sh.fzf({
     type: 'list',
     message: 'Ενέργεια',
     header: 'search|ενέργεια',
@@ -417,13 +407,12 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
+    esc: () => ({ value: exit, text: 'Έξοδος από το πρόγραμμα.' }),
+    end: (action) => {
+      action();
+    },
   });
-  if (answer === '-esc-') {
-    exit();
-  } else {
-    answer();
-    menu();
-  }
+  menu();
 }
 
 menu();
