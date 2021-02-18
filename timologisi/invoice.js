@@ -75,9 +75,10 @@ function newInvoice() {
       preset: today.getHours(),
       enter: (value) => {
         if (value >= 0 && value < 24) {
-          return { value, text: '' };
+          return value;
         }
-        return { value: '-retry-', text: 'Τιμή εκτός ορίων 0..23.' };
+        console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
+        return '-retry-';
       },
       end: (value) => {
         invoice.date.hour = value;
@@ -101,12 +102,10 @@ function newInvoice() {
           + twoDigits(invoice.date.minute);
 
         if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          return {
-            value: '-retry-',
-            text: 'Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.',
-          };
+          console.log(sh.red('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.'));
+          return '-retry-';
         }
-        return { value, text: '' };
+        return value;
       },
     },
     {
@@ -133,9 +132,10 @@ function newInvoice() {
       message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
       enter: (value) => {
         if (value > 0) {
-          return { value, text: '' };
+          return value;
         }
-        return { value: '-retry-', text: 'Τιμή > 0.' };
+        console.log(sh.red('Τιμή > 0.'));
+        return '-retry-';
       },
       end: (value) => {
         invoice.amount = value;
@@ -148,9 +148,10 @@ function newInvoice() {
       choices: [0, 24],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
-          return { value, text: '' };
+          return value;
         }
-        return { value: '-retry-', text: 'Τιμή εκτός 0..100' };
+        console.log(sh.red('Τιμή εκτός 0..100'));
+        return '-retry-';
       },
       end: (value) => {
         invoice.fpa = {};
@@ -164,9 +165,10 @@ function newInvoice() {
       choices: [0, 20],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
-          return { value, text: '' };
+          return value;
         }
-        return { value: '-retry-', text: 'Τιμή εκτός 0..100' };
+        console.log(sh.red('Τιμή εκτός 0..100'));
+        return '-retry-';
       },
       end: (value) => {
         invoice.parakratisi = {};
@@ -180,9 +182,10 @@ function newInvoice() {
       choices: ['-vim-'],
       enter: (value) => {
         if (value !== '') {
-          return { value, text: '' };
+          return value;
         }
-        return { value: '-retry-', text: 'Όχι κενή τιμή' };
+        console.log(sh.red('Όχι κενή τιμή'));
+        return '-retry-';
       },
       end: (value) => {
         invoice.description = value;
@@ -394,6 +397,7 @@ ${invoice.description}
 function testing() {}
 
 function exit() {
+  console.log(sh.magenta('Bye, bye.'));
   process.exit(1); // έξοδος από το πρόγραμμα
 }
 
@@ -401,7 +405,7 @@ function exit() {
 function menu() {
   sh.fzf({
     type: 'list',
-    message: 'Ενέργεια',
+    message: 'Ενέργεια:',
     header: 'search|ενέργεια',
     choices: [
       ['new invoice|Νέο τιμολόγιο.', newInvoice],
@@ -411,15 +415,9 @@ function menu() {
       ['testing|Για τεστάρισμα κώδικα.', testing],
       ['exit|Έξοδος από το πρόγραμμα.', exit],
     ],
-    esc: () => ({
-      value: '-exit-',
-      text: 'Bye, bye.',
-    }),
-    enter: (value) => {
-      if (value === exit) {
-        return { value, text: 'Bye, bye.' };
-      }
-      return { value };
+    esc: () => {
+      console.log(sh.magenta('Bye, bye.'));
+      return '-exit-';
     },
     end: (action) => {
       action();

@@ -85,17 +85,17 @@ const sh = {
     // Απαραίτητο το '' στο echo γιατί αλλιώς χάνονται τα "" από το json.
     switch (typeof data) {
       case 'string':
-        return this.run2(`echo '${data}' | vipe `).out;
+        return sh.run2(`echo '${data}' | vipe `).out;
       case 'object':
         return JSON.parse(
-          this.run2(`echo '${JSON.stringify(data, null, 2)}' | vipe --suffix json`).out,
+          sh.run2(`echo '${JSON.stringify(data, null, 2)}' | vipe --suffix json`).out,
         );
       default:
         return '';
     }
     // Χωρίς vipe
     // Απαραίτητα τα /dev/tty γιατί αλλιώς δεν εμφανίζει τίποτα στο vim
-    // return this.run(
+    // return sh.run(
     // `echo '${objJson}' > vim.json; vim vim.json < /dev/tty > /dev/tty`,
     // );
   },
@@ -111,7 +111,7 @@ const sh = {
       // Η every αν επιστρεψει false τότε λειτουργεί σαν break
       const answers = [];
       db.every((question) => {
-        const answer = this.fzf(question);
+        const answer = sh.fzf(question);
         if (answer !== '-esc-') {
           answers.push(answer);
           return true;
@@ -121,31 +121,39 @@ const sh = {
       return answers;
     }
     if (typeof db === 'function') {
-      return this.fzf(db());
+      return sh.fzf(db());
     }
     const {
       type = 'input', // list, list-multi, input, input-number
       message = 'Εισαγωγή τιμής:',
       header = '',
       preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
-      height = '80%',
+      height = '50%',
       choices = [],
       preview = { type: '', style: 'right:0%' },
-      enter = (value) => ({
-        value,
-        text: '',
-      }),
-      esc = () => ({
-        value: '-esc-',
-        text: '',
-      }),
+      enter = (value) => value,
+      esc = () => '-esc-',
       end = () => {},
     } = db;
+
+    function ret(value) {
+      switch (value) {
+        case '-retry-':
+          return sh.fzf(db);
+        case '-esc-':
+          return '-esc-';
+        case '-exit-':
+          return process.exit(1);
+        default:
+          end(value);
+          return value;
+      }
+    }
 
     switch (type) {
       case 'list':
       case 'list-multi': {
-        const script = this.run2(
+        const script = sh.run2(
           [
             (() => {
               let fzfPreviews = '';
@@ -220,65 +228,28 @@ const sh = {
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
             values = type === 'list-multi' ? values : values[0];
-            const obj = enter(values);
-            if (obj.text === undefined) {
-              obj.text = '';
-            }
-            switch (obj.value) {
-              case '-retry-':
-                console.log(sh.red(message), texts, sh.magenta(obj.text));
-                return this.fzf(db);
-              case '-esc-':
-                console.log(sh.red(message), texts, sh.magenta(obj.text));
-                return '-esc-';
-              case '-exit-':
-                console.log(sh.red(message), texts, sh.magenta(obj.text));
-                return process.exit(1);
-              default:
-                console.log(sh.cyan(message), texts, sh.magenta(obj.text));
-                end(obj.value);
-                return obj.value;
-            }
+            console.log(sh.cyan(message), texts);
+            return ret(enter(values));
           }
           case 1: {
             // Δεν υπάρχει επιλογή.
-            console.log(
-              sh.red(message),
-              script.out.split('\n').shift(),
-              sh.magenta('Δεν υπάρχει επιλογή.'),
-            );
-            return this.fzf(db); // Ξανά η διαδικασία.
+            console.log(sh.cyan(message), script.out.split('\n').shift());
+            console.log(sh.red('Δεν υπάρχει επιλογή.'));
+            return sh.fzf(db); // Ξανά η διαδικασία.
           }
           case 130: {
             // escaped.
-            const obj = esc();
-            if (obj.text === undefined) {
-              obj.text = '';
-            }
-            switch (obj.value) {
-              case '-retry-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return this.fzf(db);
-              case '-esc-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return '-esc-';
-              case '-exit-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return process.exit(1);
-              default:
-                console.log(sh.cyan(message), '-esc-', sh.magenta(obj.text));
-                end(obj.value);
-                return obj.value;
-            }
+            console.log(sh.cyan(message), '-esc-');
+            return ret(esc());
           }
           default:
-            console.log(sh.red(message), '-error-');
+            console.log(sh.cyan(message), '-error-');
             return process.exit(1);
         }
       }
       case 'input':
       case 'input-number': {
-        const script = this.run2(
+        const script = sh.run2(
           [
             `${
               choices.length > 0
@@ -307,7 +278,7 @@ const sh = {
                 answer = input;
                 break;
               case '-vim-':
-                answer = this.vim(input);
+                answer = sh.vim(input);
                 break;
               default:
                 // αν υπάρχουν επιλογές επέστρεψε την επιλογή
@@ -318,59 +289,26 @@ const sh = {
             if (type === 'input-number') {
               answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
               if (typeof answer !== 'number') {
-                console.log(sh.red(message), answer, sh.magenta('Δεν είναι αριθμός.'));
-                return this.fzf(db);
+                console.log(sh.cyan(message), answer);
+                console.log(sh.red('Δεν είναι αριθμός.'));
+                return sh.fzf(db);
               }
             }
-            const obj = enter(answer);
-            if (obj.text === undefined) {
-              obj.text = '';
-            }
-            switch (obj.value) {
-              case '-retry-':
-                console.log(sh.red(message), answer, sh.magenta(obj.text));
-                return this.fzf(db);
-              case '-esc-':
-                console.log(sh.red(message), answer, sh.magenta(obj.text));
-                return '-esc-';
-              case '-exit-':
-                console.log(sh.red(message), answer, sh.magenta(obj.text));
-                return process.exit(1);
-              default:
-                console.log(sh.cyan(message), answer, sh.magenta(obj.text));
-                end(obj.value);
-                return obj.value;
-            }
+            console.log(sh.cyan(message), answer);
+            return ret(enter(answer));
           }
           case 130: {
             // escaped.
-            const obj = esc();
-            if (obj.text === undefined) {
-              obj.text = '';
-            }
-            switch (obj.value) {
-              case '-retry-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return this.fzf(db);
-              case '-esc-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return '-esc-';
-              case '-exit-':
-                console.log(sh.red(message), '-esc-', sh.magenta(obj.text));
-                return process.exit(1);
-              default:
-                console.log(sh.cyan(message), '-esc-', sh.magenta(obj.text));
-                end(obj.value);
-                return obj.value;
-            }
+            console.log(sh.cyan(message), '-esc-');
+            return ret(esc());
           }
           default:
-            console.log(sh.red(message), '-error-');
+            console.log(sh.cyan(message), '-error-');
             return process.exit(1);
         }
       }
       default:
-        console.log(sh.red(message), '-error-');
+        console.log(sh.cyan(message), '-error-');
         return process.exit(1);
     }
   },
