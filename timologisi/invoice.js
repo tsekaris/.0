@@ -150,7 +150,7 @@ function newInvoice() {
         if (value >= 0 && value <= 100) {
           return value;
         }
-        console.log(sh.red('Τιμή εκτός 0..100'));
+        console.log(sh.red('Τιμή εκτός 0..100.'));
         return '-retry-';
       },
       end: (value) => {
@@ -167,7 +167,7 @@ function newInvoice() {
         if (value >= 0 && value <= 100) {
           return value;
         }
-        console.log(sh.red('Τιμή εκτός 0..100'));
+        console.log(sh.red('Τιμή εκτός 0..100.'));
         return '-retry-';
       },
       end: (value) => {
@@ -254,7 +254,7 @@ function editInvoice() {
         .value(),
       preview: {
         type: 'json',
-        style: 'right:50%',
+        style: 'right:70%',
       },
       end: (value) => {
         answers.invoice = value;
@@ -394,7 +394,11 @@ ${invoice.description}
 
 // #testing
 
-function testing() {}
+function testing() {
+  const value = -12.56;
+  // value = +(1.35).toFixed(1);
+  console.log(value);
+}
 
 function exit() {
   console.log(sh.magenta('Bye, bye.'));
@@ -406,6 +410,7 @@ function menu() {
   sh.fzf({
     type: 'list',
     message: 'Ενέργεια:',
+    details: 'paok ole',
     header: 'search|ενέργεια',
     choices: [
       ['new invoice|Νέο τιμολόγιο.', newInvoice],

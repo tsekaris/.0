@@ -126,11 +126,16 @@ const sh = {
     const {
       type = 'input', // list, list-multi, input, input-number
       message = 'Εισαγωγή τιμής:',
+      details = '', // header του fzf
       header = '',
       preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
+      exact = false, // search αυστηρό όταν είναι true
       height = '50%',
       choices = [],
-      preview = { type: '', style: 'right:0%' },
+      preview = {
+        type: '',
+        style: 'right:0%', // :follow:wrap
+      },
       enter = (value) => value,
       esc = () => '-esc-',
       end = () => {},
@@ -178,9 +183,11 @@ const sh = {
               return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t' | fzf`;
             })(),
             `--prompt "${message} "`, // Μήνυμα.
+            `${details === '' ? '' : `--header='${details}'`}`,
             `${header === '' ? '' : '--header-lines=1'}`, // Ονόματα πεδίων.
             `--query "${preset}"`, // Προεπιλογή εισαγωγής.
             `--height=${height}`, // Ύψος
+            `${exact ? '--exact' : ''}`,
             '--tabstop=1', // Το tab έχει μήκος 1 space.
             '--cycle', // Από το τέλος κατευθείαν στην αρχή.
             '--color=bg+:-1', // Χρώματα.
@@ -188,6 +195,7 @@ const sh = {
             '--print-query', // Επιστρέφει το κείμενο αναζήτησης.
             "-d '\t'", // Τα πεδία των επιλογών χωρισμένο με tabs.
             '--with-nth=2..', // Για να μην εμφανίζεται το index.
+            '--no-mouse',
             (() => {
               // Preview
               switch (preview.type) {
@@ -203,7 +211,7 @@ const sh = {
                   return '';
               }
             })(),
-            `--preview-window=${preview.style}:wrap`, // Παράθυρο preview.
+            `--preview-window=${preview.style}`, // Παράθυρο preview.
             '--marker="+"', // Σύμβολο πολλαπλής επιλογής.
             `${type === 'list-multi' ? '-m' : ''}`, // Πολλαπλή επιλογή.
           ].join(' '),
@@ -239,11 +247,11 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), '-esc-');
+            console.log(sh.cyan(message), sh.red('-esc-'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), '-error-');
+            console.log(sh.cyan(message), sh.red('-error-'));
             return process.exit(1);
         }
       }
@@ -256,7 +264,7 @@ const sh = {
                 ? `echo "-insert-\n${choices.join('\n')}" | fzf`
                 : 'echo "" | fzf --pointer=" "'
             }`,
-            `${header === '' ? '' : `--header='${header}'`}`,
+            `${details === '' ? '' : `--header='${details}'`}`,
             `--height=${height}`,
             '--color=bg+:-1',
             '--info=hidden',
@@ -264,6 +272,7 @@ const sh = {
             '--print-query',
             `--prompt "${message} "`,
             `--query "${preset}"`,
+            '--no-mouse',
           ].join(' '),
         );
         switch (script.status) {
@@ -285,7 +294,6 @@ const sh = {
                 // αλλιώς επέστρεψε το text που εισάγεται
                 answer = choices.length > 0 ? choice : input;
             }
-
             if (type === 'input-number') {
               answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
               if (typeof answer !== 'number') {
@@ -299,16 +307,16 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), '-esc-');
+            console.log(sh.cyan(message), sh.red('-esc-'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), '-error-');
+            console.log(sh.cyan(message), sh.red('-error-'));
             return process.exit(1);
         }
       }
       default:
-        console.log(sh.cyan(message), '-error-');
+        console.log(sh.cyan(message), sh.red('-error-'));
         return process.exit(1);
     }
   },
