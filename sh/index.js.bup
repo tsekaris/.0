@@ -120,9 +120,9 @@ const sh = {
       });
       return answers;
     }
-    const question = db.question !== undefined ? db.question : () => {};
-    const enter = db.enter !== undefined ? db.enter : (value) => value;
-    const esc = db.esc !== undefined ? db.esc : () => '-esc-';
+    if (typeof db === 'function') {
+      return sh.fzf(db());
+    }
     const {
       type = 'input', // list, list-multi, input, input-number
       message = 'Εισαγωγή τιμής:',
@@ -138,8 +138,10 @@ const sh = {
         type: '',
         style: 'right:0%', // :follow:wrap
       },
-      // end = () => {},
-    } = question();
+      enter = (value) => value,
+      esc = () => '-esc-',
+      end = () => {},
+    } = db;
 
     function ret(value) {
       switch (value) {
@@ -150,6 +152,7 @@ const sh = {
         case '-exit-':
           return process.exit(1);
         default:
+          end(value);
           return value;
       }
     }
