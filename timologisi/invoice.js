@@ -35,7 +35,7 @@ function newInvoice() {
 
   sh.fzf([
     {
-      question: () => ({
+      question: {
         type: 'list',
         message: 'Μήνας:',
         header: 'no|μήνας',
@@ -54,7 +54,7 @@ function newInvoice() {
           ['12|Δεκέμβριος', 12],
         ],
         preset: today.getMonth() + 1,
-      }),
+      },
       enter: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
@@ -74,13 +74,13 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input-number',
         message: 'Ώρα:',
         preset: today.getHours(),
-      }),
+      },
       enter: (value) => {
-        if (value < 0 && value >= 24) {
+        if (value > 0 && value < 24) {
           invoice.date.hour = value;
           return true;
         }
@@ -89,11 +89,11 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input-number',
         message: 'Λεπτό:',
         preset: today.getMinutes(),
-      }),
+      },
       enter: (value) => {
         if (value < 0 || value > 60) {
           console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
@@ -116,7 +116,7 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'list',
         message: 'Πελάτης:',
         header: 'id|name',
@@ -130,17 +130,17 @@ function newInvoice() {
           style: 'down:50%',
         },
         height: '95%',
-      }),
+      },
       enter: (value) => {
         invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
         invoice.to = value;
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input-number',
         message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-      }),
+      },
       enter: (value) => {
         if (value > 0) {
           invoice.amount = value;
@@ -151,12 +151,12 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input-number',
         message: 'ΦΠΑ:',
         preset: 24,
         choices: [0, 24],
-      }),
+      },
       enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.fpa = {};
@@ -168,12 +168,12 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input-number',
         message: 'Παρακράτηση:',
         preset: 20,
         choices: [0, 20],
-      }),
+      },
       enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.parakratisi = {};
@@ -185,12 +185,12 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'input',
         message: 'Περιγραφή εργασιών:',
         header: 'Μία γραμμή',
         choices: ['-vim-'],
-      }),
+      },
       enter: (value) => {
         if (value !== '') {
           invoice.description = value;
@@ -201,14 +201,14 @@ function newInvoice() {
       },
     },
     {
-      question: () => ({
+      question: {
         type: 'list',
         message: 'Αποθήκευση;',
         choices: [
           ['ναι', true],
           ['όχι', false],
         ],
-      }),
+      },
       enter: (value) => {
         if (value) {
           calculate(invoice);
@@ -256,7 +256,7 @@ function editInvoice() {
 
   sh.fzf([
     {
-      question: () => ({
+      question: {
         type: 'list',
         message: 'Select:',
         header: 'no|πελάτης',
@@ -268,7 +268,7 @@ function editInvoice() {
           type: 'json',
           style: 'right:70%',
         },
-      }),
+      },
       enter: (value) => {
         answers.invoice = value;
       },
@@ -394,7 +394,7 @@ ${invoice.description}
 
   sh.fzf([
     {
-      question: () => ({
+      question: {
         type: 'list',
         message: 'Επιλογή',
         header: 'no|πελάτης',
@@ -407,7 +407,7 @@ ${invoice.description}
           type: 'markdown',
           style: 'right:70%',
         },
-      }),
+      },
     },
   ]);
 }
@@ -432,7 +432,7 @@ function exit() {
 // #menu
 function menu() {
   sh.fzf({
-    question: () => ({
+    question: {
       type: 'list',
       message: 'Ενέργεια:',
       details: 'paok ole',
@@ -445,10 +445,10 @@ function menu() {
         ['testing|Για τεστάρισμα κώδικα.', testing],
         ['exit|Έξοδος από το πρόγραμμα.', exit],
       ],
-    }),
+    },
     esc: () => {
       console.log(sh.magenta('Bye, bye.'));
-      return '-exit-';
+      return 'exit';
     },
     enter: (action) => {
       action();
