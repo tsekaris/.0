@@ -1,7 +1,4 @@
 const childProcess = require('child_process');
-// const { resolve } = require('dns');
-// const { basename } = require('path');
-// const { rejects } = require('assert');
 
 const sh = {
   colors: {
@@ -157,6 +154,18 @@ const sh = {
     }
 
     switch (type) {
+      case 'action': {
+        // Η περίπτωση που δεν θέλουμε απάντηση από τον χρήστη.
+        // Βάζουμε κώδικα στην enter και απλά εκτελείται.
+        // Η enter δεν εχει τιμή value αλλά μπορεί να επιστρέψουμε τιμή (αλλιώς undefined).
+        let value = enter();
+        if (value === '-retry-') {
+          // Αλλιώς θα μπει σε infinity loop.
+          console.log(sh.red('-retry- σε action type.'));
+          value = '-exit-';
+        }
+        return ret(value);
+      }
       case 'list':
       case 'list-multi': {
         const script = sh.run2(
