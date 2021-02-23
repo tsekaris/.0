@@ -154,17 +154,14 @@ const sh = {
     }
 
     switch (type) {
-      case 'action': {
-        // Η περίπτωση που δεν θέλουμε απάντηση από τον χρήστη.
-        // Βάζουμε κώδικα στην enter και απλά εκτελείται.
-        // Η enter δεν εχει τιμή value αλλά μπορεί να επιστρέψουμε τιμή (αλλιώς undefined).
-        let value = enter();
+      case 'force-enter': {
+        const value = enter();
         if (value === '-retry-') {
-          // Αλλιώς θα μπει σε infinity loop.
-          console.log(sh.red('-retry- σε action type.'));
-          value = '-exit-';
+          // Οδηγεί σε infinity loop.
+          console.log(sh.red('Όχι -retry- σε "force-enter".'));
+          return process.exit(1);
         }
-        return ret(value);
+        return value;
       }
       case 'list':
       case 'list-multi': {

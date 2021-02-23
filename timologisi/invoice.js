@@ -394,13 +394,16 @@ ${invoice.description}
 // #testing
 
 function testing() {
-  function flow(d) {
-    const db = d;
-    db.name = 'tsekaris';
-  }
-  const d = {};
-  console.log(flow(d));
-  console.log(d);
+  sh.fzf([
+    {
+      type: 'force-enter',
+      enter: () => {
+        console.log(sh.magenta('hello paok'));
+        return 'ok';
+      },
+    },
+    {},
+  ]);
 }
 
 function exit() {
