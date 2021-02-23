@@ -109,24 +109,21 @@ const sh = {
     if (Array.isArray(db)) {
       // Η forEach δεν έχει break
       // Η every αν επιστρεψει false τότε λειτουργεί σαν break
-
-      let returnValue = 'ok';
+      const answers = [];
       db.every((question) => {
         const answer = sh.fzf(question);
-        if (answer !== 'esc') {
+        if (answer !== '-esc-') {
+          answers.push(answer);
           return true;
         }
-        returnValue = 'esc';
         return false;
       });
-      return returnValue;
+      return answers;
     }
     if (typeof db === 'function') {
       return sh.fzf(db());
     }
 
-    // let question = db.question !== undefined ? db.question : {};
-    const { question = {}, enter = () => 'ok', esc = () => 'esc' } = db;
     const {
       type = 'input', // list, list-multi, input, input-number
       message = 'Εισαγωγή τιμής:',
@@ -142,18 +139,20 @@ const sh = {
         type: '',
         style: 'right:0%', // :follow:wrap
       },
-    } = typeof question === 'function' ? question() : question;
+      enter = (value) => value,
+      esc = () => '-esc-',
+    } = db;
 
     function ret(value) {
       switch (value) {
-        case 'retry':
+        case '-retry-':
           return sh.fzf(db);
-        case 'esc':
-          return 'esc';
-        case 'exit':
+        case '-esc-':
+          return '-esc-';
+        case '-exit-':
           return process.exit(1);
         default:
-          return 'ok';
+          return value;
       }
     }
 
@@ -249,11 +248,11 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), sh.red('esc'));
+            console.log(sh.cyan(message), sh.red('-esc-'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), sh.red('error'));
+            console.log(sh.cyan(message), sh.red('-error-'));
             return process.exit(1);
         }
       }
@@ -309,16 +308,16 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), sh.red('esc'));
+            console.log(sh.cyan(message), sh.red('-esc-'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), sh.red('error'));
+            console.log(sh.cyan(message), sh.red('-error-'));
             return process.exit(1);
         }
       }
       default:
-        console.log(sh.cyan(message), sh.red('error'));
+        console.log(sh.cyan(message), sh.red('-error-'));
         return process.exit(1);
     }
   },

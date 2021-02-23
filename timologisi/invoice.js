@@ -35,65 +35,59 @@ function newInvoice() {
 
   sh.fzf([
     {
-      question: {
-        type: 'list',
-        message: 'Μήνας:',
-        header: 'no|μήνας',
-        choices: [
-          ['1|Ιανουάριος', 1],
-          ['2|Φεβρουάριος', 2],
-          ['3|Μάρτιος', 3],
-          ['4|Απρίλιος', 4],
-          ['5|Μάιος', 5],
-          ['6|Ιούνιος', 6],
-          ['7|Ιούλιος', 7],
-          ['8|Αύγουστος', 8],
-          ['9|Σεπτέμβριος', 9],
-          ['10|Οκτώβριος', 10],
-          ['11|Νοέμβριος', 11],
-          ['12|Δεκέμβριος', 12],
-        ],
-        preset: today.getMonth() + 1,
-      },
+      type: 'list',
+      message: 'Μήνας:',
+      header: 'no|μήνας',
+      choices: [
+        ['1|Ιανουάριος', 1],
+        ['2|Φεβρουάριος', 2],
+        ['3|Μάρτιος', 3],
+        ['4|Απρίλιος', 4],
+        ['5|Μάιος', 5],
+        ['6|Ιούνιος', 6],
+        ['7|Ιούλιος', 7],
+        ['8|Αύγουστος', 8],
+        ['9|Σεπτέμβριος', 9],
+        ['10|Οκτώβριος', 10],
+        ['11|Νοέμβριος', 11],
+        ['12|Δεκέμβριος', 12],
+      ],
+      preset: today.getMonth() + 1,
       enter: (value) => {
         invoice.date = {};
         invoice.date.year = 2021;
         invoice.date.month = value;
+        return value;
       },
     },
-    {
-      question: () => ({
-        type: 'list',
-        message: 'Μέρα:',
-        header: 'no|ημέρα',
-        choices: getDays(invoice.date.year, invoice.date.month),
-        preset: today.getDate(),
-      }),
+    () => ({
+      type: 'list',
+      message: 'Μέρα:',
+      header: 'no|ημέρα',
+      choices: getDays(invoice.date.year, invoice.date.month),
+      preset: today.getDate(),
       enter: (value) => {
         invoice.date.day = value;
+        return value;
       },
-    },
+    }),
     {
-      question: {
-        type: 'input-number',
-        message: 'Ώρα:',
-        preset: today.getHours(),
-      },
+      type: 'input-number',
+      message: 'Ώρα:',
+      preset: today.getHours(),
       enter: (value) => {
         if (value > 0 && value < 24) {
           invoice.date.hour = value;
-          return true;
+          return value;
         }
         console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
         return '-retry-';
       },
     },
     {
-      question: {
-        type: 'input-number',
-        message: 'Λεπτό:',
-        preset: today.getMinutes(),
-      },
+      type: 'input-number',
+      message: 'Λεπτό:',
+      preset: today.getMinutes(),
       enter: (value) => {
         if (value < 0 || value > 60) {
           console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
@@ -112,108 +106,98 @@ function newInvoice() {
           console.log(sh.red('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.'));
           return '-retry-';
         }
-        return true;
+        return value;
       },
     },
     {
-      question: {
-        type: 'list',
-        message: 'Πελάτης:',
-        header: 'id|name',
-        choices: contactsDb
-          .filter((contact) => contact.id !== 'tsekaris')
-          .sortBy('id')
-          .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
-          .value(),
-        preview: {
-          type: 'json',
-          style: 'down:50%',
-        },
-        height: '95%',
+      type: 'list',
+      message: 'Πελάτης:',
+      header: 'id|name',
+      choices: contactsDb
+        .filter((contact) => contact.id !== 'tsekaris')
+        .sortBy('id')
+        .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
+        .value(),
+      preview: {
+        type: 'json',
+        style: 'down:50%',
       },
+      height: '95%',
       enter: (value) => {
         invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
         invoice.to = value;
+        return value;
       },
     },
     {
-      question: {
-        type: 'input-number',
-        message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
-      },
+      type: 'input-number',
+      message: 'Ποσό τιμολόγησης (χωρίς ΦΠΑ):',
       enter: (value) => {
         if (value > 0) {
           invoice.amount = value;
-          return true;
+          return value;
         }
         console.log(sh.red('Τιμή > 0.'));
         return '-retry-';
       },
     },
     {
-      question: {
-        type: 'input-number',
-        message: 'ΦΠΑ:',
-        preset: 24,
-        choices: [0, 24],
-      },
+      type: 'input-number',
+      message: 'ΦΠΑ:',
+      preset: 24,
+      choices: [0, 24],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.fpa = {};
           invoice.fpa.percent = value;
-          return true;
+          return value;
         }
         console.log(sh.red('Τιμή εκτός 0..100.'));
         return '-retry-';
       },
     },
     {
-      question: {
-        type: 'input-number',
-        message: 'Παρακράτηση:',
-        preset: 20,
-        choices: [0, 20],
-      },
+      type: 'input-number',
+      message: 'Παρακράτηση:',
+      preset: 20,
+      choices: [0, 20],
       enter: (value) => {
         if (value >= 0 && value <= 100) {
           invoice.parakratisi = {};
           invoice.parakratisi.percent = value;
-          return true;
+          return value;
         }
         console.log(sh.red('Τιμή εκτός 0..100.'));
         return '-retry-';
       },
     },
     {
-      question: {
-        type: 'input',
-        message: 'Περιγραφή εργασιών:',
-        header: 'Μία γραμμή',
-        choices: ['-vim-'],
-      },
+      type: 'input',
+      message: 'Περιγραφή εργασιών:',
+      header: 'Μία γραμμή',
+      choices: ['-vim-'],
       enter: (value) => {
         if (value !== '') {
           invoice.description = value;
-          return true;
+          return value;
         }
         console.log(sh.red('Όχι κενή τιμή'));
         return '-retry-';
       },
     },
     {
-      question: {
-        type: 'list',
-        message: 'Αποθήκευση;',
-        choices: [
-          ['ναι', true],
-          ['όχι', false],
-        ],
-      },
+      type: 'list',
+      message: 'Αποθήκευση;',
+      choices: [
+        ['ναι', true],
+        ['όχι', false],
+      ],
       enter: (value) => {
         if (value) {
           calculate(invoice);
           invoicesDb.push(invoice).write();
         }
+        return value;
       },
     },
   ]);
@@ -256,74 +240,71 @@ function editInvoice() {
 
   sh.fzf([
     {
-      question: {
-        type: 'list',
-        message: 'Select:',
-        header: 'no|πελάτης',
-        choices: invoicesDb
-          .sortBy('id')
-          .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv)])
-          .value(),
-        preview: {
-          type: 'json',
-          style: 'right:70%',
-        },
+      type: 'list',
+      message: 'Select:',
+      header: 'no|πελάτης',
+      choices: invoicesDb
+        .sortBy('id')
+        .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv)])
+        .value(),
+      preview: {
+        type: 'json',
+        style: 'right:70%',
       },
       enter: (value) => {
         answers.invoice = value;
+        return value;
       },
     },
     {
-      question: () => ({
-        type: 'list',
-        message: 'Ενέργεια',
-        choices: [
-          ['edit', 'edit'],
-          ['delete', 'delete'],
-        ],
-      }),
+      type: 'list',
+      message: 'Ενέργεια',
+      choices: [
+        ['edit', 'edit'],
+        ['delete', 'delete'],
+      ],
       enter: (value) => {
         answers.action = value;
+        return value;
       },
     },
-    {
-      question: () => {
-        switch (answers.action) {
-          case 'edit': {
-            answers.invoiceEdited = sh.vim(answers.invoice);
-            return {
-              type: 'list',
-              message: 'Αποθήκευση;',
-              choices: [
-                ['όχι', 'no'],
-                ['ναι', 'edit-yes'],
-              ],
-            };
-          }
-          case 'delete':
-            return {
-              type: 'list',
-              message: 'Διαγραφή;',
-              choices: [
-                ['όχι', 'no'],
-                ['ναι', 'delete-yes'],
-              ],
-            };
-          default:
-            return null; // Βγάζει σφάλμα
+    () => {
+      switch (answers.action) {
+        case 'edit': {
+          answers.invoiceEdited = sh.vim(answers.invoice);
+          return {
+            type: 'list',
+            message: 'Αποθήκευση;',
+            choices: [
+              ['όχι', false],
+              ['ναι', true],
+            ],
+            enter: (answer) => {
+              if (answer) {
+                invoicesDb.find({ id: answers.invoice.id }).assign(answers.invoiceEdited).write();
+              }
+              return answer;
+            },
+          };
         }
-      },
-      enter: (answer) => {
-        switch (answer) {
-          case 'edit-yes':
-            invoicesDb.find({ id: answers.invoice.id }).assign(answers.invoiceEdited).write();
-            break;
-          case 'delete-yes':
-            invoicesDb.remove({ id: answers.invoice.id }).write();
-            break;
-          default:
-        }
-      },
+        case 'delete':
+          return {
+            type: 'list',
+            message: 'Διαγραφή;',
+            choices: [
+              ['όχι', false],
+              ['ναι', true],
+            ],
+            enter: (answer) => {
+              if (answer) {
+                invoicesDb.remove({ id: answers.invoice.id }).write();
+              }
+              return answer;
+            },
+          };
+        default:
+          return null;
+      }
     },
   ]);
 }
@@ -394,19 +375,17 @@ ${invoice.description}
 
   sh.fzf([
     {
-      question: {
-        type: 'list',
-        message: 'Επιλογή',
-        header: 'no|πελάτης',
-        choices: invoicesDb
-          .sortBy('id')
-          .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, md(invoice)])
-          .value(),
-        height: '70%',
-        preview: {
-          type: 'markdown',
-          style: 'right:70%',
-        },
+      type: 'list',
+      message: 'Επιλογή',
+      header: 'no|πελάτης',
+      choices: invoicesDb
+        .sortBy('id')
+        .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, md(invoice)])
+        .value(),
+      height: '70%',
+      preview: {
+        type: 'markdown',
+        style: 'right:70%',
       },
     },
   ]);
@@ -432,26 +411,25 @@ function exit() {
 // #menu
 function menu() {
   sh.fzf({
-    question: {
-      type: 'list',
-      message: 'Ενέργεια:',
-      details: 'paok ole',
-      header: 'search|ενέργεια',
-      choices: [
-        ['new invoice|Νέο τιμολόγιο.', newInvoice],
-        ['edit invoice|Επεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
-        ['markdown|Εκτύπωση.', markdown],
-        ['statistics|Στατιστικά.', stats],
-        ['testing|Για τεστάρισμα κώδικα.', testing],
-        ['exit|Έξοδος από το πρόγραμμα.', exit],
-      ],
-    },
+    type: 'list',
+    message: 'Ενέργεια:',
+    details: 'paok ole',
+    header: 'search|ενέργεια',
+    choices: [
+      ['new invoice|Νέο τιμολόγιο.', newInvoice],
+      ['edit invoice|Επεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
+      ['markdown|Εκτύπωση.', markdown],
+      ['statistics|Στατιστικά.', stats],
+      ['testing|Για τεστάρισμα κώδικα.', testing],
+      ['exit|Έξοδος από το πρόγραμμα.', exit],
+    ],
     esc: () => {
       console.log(sh.magenta('Bye, bye.'));
-      return 'exit';
+      return '-exit-';
     },
     enter: (action) => {
       action();
+      return action;
     },
   });
   menu();
