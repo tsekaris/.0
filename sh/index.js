@@ -1,12 +1,14 @@
 const childProcess = require('child_process');
+const util = require('util');
 
 const sh = {
+  util,
   colors: {
     reset: '\x1b[0m',
     bright: '\x1b[1m',
     dim: '\x1b[2m',
     underscore: '\x1b[4m',
-    blink: '\x1b[5m',
+    blidnk: '\x1b[5m',
     reverse: '\x1b[7m',
     hidden: '\x1b[8m',
 
@@ -75,18 +77,33 @@ const sh = {
     return { status, out, req };
   },
 
-  vim(data) {
+  log(obj) {
+    // Σαν την console.log αλλά επιστέφει σε variable και όχι στο terminal
+    // Χρήση σε fzf preview
+    return `'"${util.inspect(obj, { colors: true, depth: null, compact: false })}"'`;
+  },
+
+  vim(data, type) {
     // cat db.json | jq -c '.invoices[]' | fzf --preview 'echo {} | jq'
     // data: string ή object
     // απαιτείται εγκατάσταση του vipe
     // Απαραίτητο το '' στο echo γιατί αλλιώς χάνονται τα "" από το json.
     switch (typeof data) {
-      case 'string':
-        return sh.run2(`echo '${data}' | vipe `).out;
-      case 'object':
+      case 'string': {
+        const suffix = type !== undefined ? `--suffix ${type}` : '';
+        return sh.run2(`echo '${data}' | vipe ${suffix}`).out;
+      }
+
+      case 'object': {
+        let objText = `'"${util.inspect(data, { depth: null, compact: false })}"'`;
+        objText = sh.run2(`echo 'const d = ${objText};' | vipe --suffix js`).out;
+        return new Function(`${objText}return d`)(); /* eslint-disable-line */
+        /*
         return JSON.parse(
           sh.run2(`echo '${JSON.stringify(data, null, 2)}' | vipe --suffix json`).out,
         );
+        */
+      }
       default:
         return '';
     }
@@ -122,25 +139,28 @@ const sh = {
     }
 
     const {
-      type = 'input', // list, list-multi, input, input-number
-      message = 'Εισαγωγή τιμής:',
-      details = '', // header του fzf
-      header = '',
-      preset = '', // Για το input κυρίως. Η default τιμή.  query για fzf.
+      type = 'input', // list, list-multi, input, input-number, force-enter
+      message = 'Εισαγωγή τιμής:', // Ερώτηση.
+      details = '', // header για έξτρα πληροφορίες
+      header = '', // header των chocies.
+      preset = '', // Η default τιμή.  query για fzf.
       exact = false, // search αυστηρό όταν είναι true
       mouse = false, // Το touch ή mouse.
-      // Στον termux με mouse δεν μπορούμε να δούμε τις παραπάνω τιμές. Λύση με tmux.
-      height = '50%',
-      choices = [],
+      // Στον termux με mouse και preview δεν μπορούμε να δούμε τις παραπάνω ενέργειες.
+      // Λύση με tmux.
+      height = '50%', // Ύψος fzf.
+      choices = [], // Επιλογές για list ή list-multi.
       preview = {
-        type: '',
-        style: 'right:0%', // :follow:wrap
+        // Εμφάνιση preview.
+        type: '', // text, json, markdown, html
+        style: 'right:0%',
       },
-      enter = (value) => value,
-      esc = () => '-esc-',
+      enter = (value) => value, // Όταν πατηθεί enter. value είναι η επιλογή.
+      esc = () => '-esc-', // Όταν πατηθεί esc.
     } = db;
 
     function ret(value) {
+      // Κώδικας που επαναλαμβάνεται για όταν η fzf κάνει return.
       switch (value) {
         case '-retry-':
           return sh.fzf(db);
@@ -155,6 +175,8 @@ const sh = {
 
     switch (type) {
       case 'force-enter': {
+        // Δεν υπάρχει διαδραστικότητα με τον χειριστή.
+        // Εκτελείται αναγκαστικά η enter χωρίς να πατηθεί κάποιο enter.
         const value = enter();
         if (value === '-retry-') {
           // Οδηγεί σε infinity loop.
@@ -168,6 +190,8 @@ const sh = {
         const script = sh.run2(
           [
             (() => {
+              // Προετοιμασία data για fzf.
+              // Προσθήκη index (0..n) σαν πρώτο πεδίο.
               let fzfPreviews = '';
               let fzfChoices = choices
                 .map((choice, index) => {
@@ -184,29 +208,29 @@ const sh = {
                 fzfChoices = `index|${header}\n${fzfChoices}`;
               }
               // Bash
-              // previews (): function διαχείρισης των prviews.
+              // previews (): function διαχείρισης των previews.
               // tr: Αντικατάσταση των | με tabs.
               // column: Δημιουργία columns σύμφωνα με το μήκος.
               return `previews () { data=(${fzfPreviews}); echo "$\{data[$1]}"; };export -f previews;echo '${fzfChoices}' | tr '|' '\t' | column -t -s $'\t' -o '\t' | fzf`;
             })(),
             `--prompt "${message} "`, // Μήνυμα.
-            `${details === '' ? '' : `--header='${details}'`}`,
+            `${details === '' ? '' : `--header='${details}'`}`, // Έξτρα πληροφορίες. header.
             `${header === '' ? '' : '--header-lines=1'}`, // Ονόματα πεδίων.
             `--query "${preset}"`, // Προεπιλογή εισαγωγής.
             `--height=${height}`, // Ύψος
-            `${exact ? '--exact' : ''}`,
-            `${mouse ? '' : '--no-mouse'}`,
+            `${exact ? '--exact' : ''}`, // Ακριβής αναζήτηση
+            `${mouse ? '' : '--no-mouse'}`, // Χρήση mouse ή touch.
             '--tabstop=1', // Το tab έχει μήκος 1 space.
             '--cycle', // Από το τέλος κατευθείαν στην αρχή.
             '--color=bg+:-1', // Χρώματα.
-            '--info=inline', // Οι πληροφορίε της αναζήτησης σε μία γραμμή.
-            '--print-query', // Επιστρέφει το κείμενο αναζήτησης.
+            '--info=inline', // Οι πληροφορίες της αναζήτησης σε μία γραμμή.
+            '--print-query', // Επιστρέφει και το κείμενο αναζήτησης.
             "-d '\t'", // Τα πεδία των επιλογών χωρισμένο με tabs.
             '--with-nth=2..', // Για να μην εμφανίζεται το index.
             (() => {
               // Preview
               switch (preview.type) {
-                case 'text':
+                case 'plain':
                   return "--preview='previews {1}'";
                 case 'json':
                   return "--preview='previews {1} | jq -C'";
@@ -218,7 +242,7 @@ const sh = {
                   return '';
               }
             })(),
-            `--preview-window=${preview.style}`, // Παράθυρο preview.
+            `--preview-window=${preview.style}:wrap`, // Παράθυρο preview.
             '--marker="+"', // Σύμβολο πολλαπλής επιλογής.
             `${type === 'list-multi' ? '-m' : ''}`, // Πολλαπλή επιλογή.
           ].join(' '),
@@ -226,10 +250,10 @@ const sh = {
         switch (script.status) {
           case 0: {
             // Υπάρχει επιλογή.
-            let values = [];
-            let texts = [];
+            let values = []; // Οι τιμές που επιστέφει στο πρόγραμμα.
+            let texts = []; // Κείμενο που επιλέγει ο χρήστης.
             const data = script.out.split('\n'); //  ['query', '8\tChoice1', '9\tChoice2']
-            data.shift(); // ['8\tChoice1', '9\tChoice2']
+            data.shift(); // ['8\tChoice1', '9\tChoice2'] έφυγε το query
             data.forEach((record) => {
               // record: '8\tChoice1'
               const index = record.split('\t')[0] * 1;
@@ -238,7 +262,8 @@ const sh = {
               values.push(choices[index][1]);
             });
 
-            // Αν είναι μία η τιμή να μην εμαφανίζονται τα []
+            // Αν είναι μία η τιμή να μην εμφανίζονται τα [].
+            // Αισθητική παρέμβαση.
             texts = texts.length !== 1 ? texts : texts[0];
 
             // Αν είναι πολλαπλή επιστρέφει array ακόμα και όταν έχει επιλεχτεί 1.
@@ -254,11 +279,12 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), sh.red('-esc-'));
+            console.log(sh.cyan(message), sh.red('esc'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), sh.red('-error-'));
+            // 2: error
+            console.log(sh.cyan(message), sh.red('fzf: Error.'));
             return process.exit(1);
         }
       }
@@ -271,37 +297,43 @@ const sh = {
                 ? `echo "-insert-\n${choices.join('\n')}" | fzf`
                 : 'echo "" | fzf --pointer=" "'
             }`,
-            `${details === '' ? '' : `--header='${details}'`}`,
-            `${mouse ? '' : '--no-mouse'}`,
-            `--height=${height}`,
-            '--color=bg+:-1',
-            '--info=hidden',
+            // Αν υπάρχουν οι επιλογές προσθήκη του -insert-.
+            // Αν δεν υπάρχουν τότε δεν χρειάζεται το σύμβολο επιλογής (pointer).
+            // Αν επιλεχθεί το -insert- επιλέγεται η εισαγωγή του χρήστη.
+            `${details === '' ? '' : `--header='${details}'`}`, // Έξτρα πληροφορίες.
+            `${mouse ? '' : '--no-mouse'}`, // mouse
+            `--height=${height}`, // Ύψος εμφάνισης.
+            '--color=bg+:-1', // Χρώματα.
+            '--info=hidden', // Δεν χρειάζονται οι πληροφορίες αναζήτησης.
             '--disabled', // Δεν υπάρχει search. Απλή επιλογή.
-            '--print-query',
-            `--prompt "${message} "`,
-            `--query "${preset}"`,
+            '--print-query', // Επιστρέφει και το input query του χρήστη.
+            `--prompt "${message} "`, // Μήνυμα.
+            `--query "${preset}"`, // Προεπιλογή.
           ].join(' '),
         );
         switch (script.status) {
           case 0:
           case 1: {
             const data = script.out.split('\n');
-            const input = data[0]; // query
-            const choice = data[1]; // menu
+            const input = data[0]; // query, η εισαγωγή του χρήστη.
+            const choice = data[1]; // η επιλογή από το menu.
             let answer;
             switch (choice) {
               case '-insert-':
+                // επέστρεψε την εισαγωγή του χρήστη.
                 answer = input;
                 break;
               case '-vim-':
+                // επεξεργασία με vim.
                 answer = sh.vim(input);
                 break;
               default:
-                // αν υπάρχουν επιλογές επέστρεψε την επιλογή
-                // αλλιώς επέστρεψε το text που εισάγεται
+                // αν δεν υπάρχουν επιλογές επέστρεψε την εισαγωγή του χρήστη.
+                // αλλιώς επέστρεψε την επιλογή πχ default τιμές.
                 answer = choices.length > 0 ? choice : input;
             }
             if (type === 'input-number') {
+              // πρέπει να έχει εισαχθεί ή επιλεχθεί αριθμός.
               answer = Number.isNaN(answer * 1) === false && answer !== '' ? answer * 1 : answer;
               if (typeof answer !== 'number') {
                 console.log(sh.cyan(message), answer);
@@ -314,16 +346,17 @@ const sh = {
           }
           case 130: {
             // escaped.
-            console.log(sh.cyan(message), sh.red('-esc-'));
+            console.log(sh.cyan(message), sh.red('esc'));
             return ret(esc());
           }
           default:
-            console.log(sh.cyan(message), sh.red('-error-'));
+            // 2: error
+            console.log(sh.cyan(message), sh.red('fzf: Error.'));
             return process.exit(1);
         }
       }
       default:
-        console.log(sh.cyan(message), sh.red('-error-'));
+        console.log(sh.cyan(message), sh.red('fzf: Δεν υπάρχει type.'));
         return process.exit(1);
     }
   },

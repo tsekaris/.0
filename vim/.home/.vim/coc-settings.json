@@ -2,5 +2,6 @@
   "eslint.autoFixOnSave": true,
   "prettier.eslintIntegration": true,
   "coc.preferences.formatOnSaveFiletypes": ["javascript"],
-  "javascript.suggestionActions.enabled": false
+  "javascript.suggestionActions.enabled": false,
+  "prettier.singleQuote": true
 }

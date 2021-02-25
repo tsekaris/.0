@@ -76,7 +76,7 @@ function newInvoice() {
       message: 'Ώρα:',
       preset: today.getHours(),
       enter: (value) => {
-        if (value > 0 && value < 24) {
+        if (value >= 0 && value < 24) {
           invoice.date.hour = value;
           return value;
         }
@@ -116,10 +116,10 @@ function newInvoice() {
       choices: contactsDb
         .filter((contact) => contact.id !== 'tsekaris')
         .sortBy('id')
-        .map((record) => [`${record.id}|${record.name}`, record, JSON.stringify(record)])
+        .map((record) => [`${record.id}|${record.name}`, record, sh.log(record)])
         .value(),
       preview: {
-        type: 'json',
+        type: 'plain',
         style: 'down:50%',
       },
       height: '95%',
@@ -245,10 +245,10 @@ function editInvoice() {
       header: 'no|πελάτης',
       choices: invoicesDb
         .sortBy('id')
-        .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv)])
+        .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
         .value(),
       preview: {
-        type: 'json',
+        type: 'plain',
         style: 'right:70%',
       },
       enter: (value) => {
@@ -394,16 +394,26 @@ ${invoice.description}
 // #testing
 
 function testing() {
-  sh.fzf([
-    {
-      type: 'force-enter',
-      enter: () => {
-        console.log(sh.magenta('hello paok'));
-        return 'ok';
-      },
+  sh.fzf({
+    type: 'list',
+    message: 'Select:',
+    header: 'no|πελάτης',
+    choices: invoicesDb
+      .sortBy('id')
+      .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv, null, 2)])
+      // .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
+      .value(),
+    preview: {
+      type: 'json',
+      // type: 'text',
+      style: 'right:70%',
     },
-    {},
-  ]);
+    enter: (inv) => {
+      const invEdited = sh.vim(inv);
+      console.log(invEdited);
+      return inv;
+    },
+  });
 }
 
 function exit() {
