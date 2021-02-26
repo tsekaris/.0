@@ -44,6 +44,9 @@ set mouse=a
 inoremap jk <esc>
 inoremap kj <esc>
 
+" Disable coc at start up.
+" let g:coc_start_at_startup = v:false
+
 " Register which key map
 call which_key#register('<Space>', "g:which_key_map")
 
