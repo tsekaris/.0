@@ -88,14 +88,14 @@ const sh = {
     // data: string ή object
     // απαιτείται εγκατάσταση του vipe
     // Απαραίτητο το '' στο echo γιατί αλλιώς χάνονται τα "" από το json.
+
     switch (typeof data) {
       case 'string': {
         const suffix = type !== undefined ? `--suffix ${type}` : '';
         return sh.run2(`echo '${data}' | vipe ${suffix}`).out;
       }
-
-      case 'object': {
-        let objText = `'"${util.inspect(data, { depth: null, compact: false })}"'`;
+      default: {
+        let objText = `'"${util.inspect(data, { depth: null, compact: 1 })}"'`;
         objText = sh.run2(`echo 'const d = ${objText};' | vipe --suffix js`).out;
         return new Function(`${objText}return d`)(); /* eslint-disable-line */
         /*
@@ -104,8 +104,6 @@ const sh = {
         );
         */
       }
-      default:
-        return '';
     }
     // Χωρίς vipe
     // Απαραίτητα τα /dev/tty γιατί αλλιώς δεν εμφανίζει τίποτα στο vim
@@ -148,16 +146,21 @@ const sh = {
       mouse = false, // Το touch ή mouse.
       // Στον termux με mouse και preview δεν μπορούμε να δούμε τις παραπάνω ενέργειες.
       // Λύση με tmux.
-      height = '50%', // Ύψος fzf.
+      height = '90%', // Ύψος fzf.
       choices = [], // Επιλογές για list ή list-multi.
-      preview = {
-        // Εμφάνιση preview.
-        type: '', // text, json, markdown, html
-        style: 'right:0%',
-      },
+      preview = {}, // Δες παρακάτω
       enter = (value) => value, // Όταν πατηθεί enter. value είναι η επιλογή.
       esc = () => '-esc-', // Όταν πατηθεί esc.
     } = db;
+
+    if (preview.type === undefined) {
+      preview.type = 'plain';
+    }
+
+    if (preview.style === undefined) {
+      preview.style = 'down:90%';
+    }
+    preview.enable = false; // Ορίζεται από το αν το choices έχει preview.
 
     function ret(value) {
       // Κώδικας που επαναλαμβάνεται για όταν η fzf κάνει return.
@@ -198,9 +201,12 @@ const sh = {
                   // choice[0]: text
                   // choice[1]: return value
                   // choice[2]: preview
-                  fzfPreviews = choice[2] !== undefined
-                    ? `${fzfPreviews} '${choice[2]}'`
-                    : `${fzfPreviews} 'no preview'`;
+                  if (choice[2] !== undefined) {
+                    fzfPreviews = `${fzfPreviews} '${choice[2]}'`;
+                    preview.enable = true;
+                  } else {
+                    fzfPreviews = `${fzfPreviews} ''`;
+                  }
                   return `${index}|${choice[0]}`;
                 })
                 .join('\n');
@@ -229,22 +235,27 @@ const sh = {
             '--with-nth=2..', // Για να μην εμφανίζεται το index.
             (() => {
               // Preview
-              switch (preview.type) {
-                case 'plain':
-                  return "--preview='previews {1}'";
-                case 'json':
-                  return "--preview='previews {1} | jq -C'";
-                case 'markdown':
-                  return "--preview='previews {1} | bat --language=md --color=always --style=plain'";
-                case 'html':
-                  return "--preview='previews {1} | w3m -T text/html'";
-                default:
-                  return '';
+              if (preview.enable) {
+                switch (preview.type) {
+                  case 'plain':
+                    return "--preview='previews {1}'";
+                  case 'json':
+                    return "--preview='previews {1} | jq -C'";
+                  case 'markdown':
+                    return "--preview='previews {1} | bat --language=md --color=always --style=plain'";
+                  case 'html':
+                    return "--preview='previews {1} | w3m -T text/html'";
+                  default:
+                    console.log(sh.red('fzf: Άγνωστος τύπος preview.'));
+                    return process.exit(1);
+                }
               }
+              return '';
             })(),
             `--preview-window=${preview.style}:wrap`, // Παράθυρο preview.
             '--marker="+"', // Σύμβολο πολλαπλής επιλογής.
             `${type === 'list-multi' ? '-m' : ''}`, // Πολλαπλή επιλογή.
+            '--bind=ctrl-space:toggle-preview', // κλείσιμο και άνοιγμα preview
           ].join(' '),
         );
         switch (script.status) {

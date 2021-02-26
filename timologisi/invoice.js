@@ -400,16 +400,19 @@ function testing() {
     header: 'no|πελάτης',
     choices: invoicesDb
       .sortBy('id')
-      .map((inv) => [`${inv.id}|${inv.to.id}`, inv, JSON.stringify(inv, null, 2)])
+      .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
       // .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
       .value(),
+    // height: '100%',
     preview: {
-      type: 'json',
-      // type: 'text',
-      style: 'right:70%',
+      // type: 'json',
+      // type: 'plain',
+      // style: 'right:70%',
     },
     enter: (inv) => {
-      const invEdited = sh.vim(inv);
+      let invEdited = inv;
+      invEdited.test = 'paok';
+      invEdited = sh.vim(invEdited);
       console.log(invEdited);
       return inv;
     },
