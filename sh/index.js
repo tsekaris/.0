@@ -146,7 +146,7 @@ const sh = {
       mouse = false, // Το touch ή mouse.
       // Στον termux με mouse και preview δεν μπορούμε να δούμε τις παραπάνω ενέργειες.
       // Λύση με tmux.
-      height = '90%', // Ύψος fzf.
+      height = '99%', // Ύψος fzf.
       choices = [], // Επιλογές για list ή list-multi.
       preview = {}, // Δες παρακάτω
       enter = (value) => value, // Όταν πατηθεί enter. value είναι η επιλογή.
@@ -158,7 +158,7 @@ const sh = {
     }
 
     if (preview.style === undefined) {
-      preview.style = 'down:90%';
+      preview.style = 'down:99%';
     }
     preview.enable = false; // Ορίζεται από το αν το choices έχει preview.
 
@@ -196,13 +196,15 @@ const sh = {
               // Προετοιμασία data για fzf.
               // Προσθήκη index (0..n) σαν πρώτο πεδίο.
               let fzfPreviews = '';
+              const lines = '\n\n\n\n\n\n\n\n\n\n';
+              // Για να λυθεί το πρόβλημα των previews με wrap
               let fzfChoices = choices
                 .map((choice, index) => {
                   // choice[0]: text
                   // choice[1]: return value
                   // choice[2]: preview
                   if (choice[2] !== undefined) {
-                    fzfPreviews = `${fzfPreviews} '${choice[2]}'`;
+                    fzfPreviews = `${fzfPreviews} '${choice[2]}${lines}'`;
                     preview.enable = true;
                   } else {
                     fzfPreviews = `${fzfPreviews} ''`;

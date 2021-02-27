@@ -16,7 +16,7 @@ function calculate(db) {
 }
 
 function newInvoice() {
-  const invoice = {};
+  let invoice = {};
 
   // #date
   const getDays = (year, month) => {
@@ -118,11 +118,6 @@ function newInvoice() {
         .sortBy('id')
         .map((record) => [`${record.id}|${record.name}`, record, sh.log(record)])
         .value(),
-      preview: {
-        type: 'plain',
-        style: 'down:50%',
-      },
-      height: '95%',
       enter: (value) => {
         invoice.from = contactsDb.find({ id: 'tsekaris' }).value();
         invoice.to = value;
@@ -183,6 +178,14 @@ function newInvoice() {
         }
         console.log(sh.red('Όχι κενή τιμή'));
         return '-retry-';
+      },
+    },
+    {
+      type: 'force-enter',
+      enter: () => {
+        invoice = sh.vim(invoice);
+        console.log(invoice);
+        return invoice;
       },
     },
     {
@@ -247,10 +250,6 @@ function editInvoice() {
         .sortBy('id')
         .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
         .value(),
-      preview: {
-        type: 'plain',
-        style: 'right:70%',
-      },
       enter: (value) => {
         answers.invoice = value;
         return value;
@@ -382,10 +381,8 @@ ${invoice.description}
         .sortBy('id')
         .map((invoice) => [`${invoice.id}|${invoice.to.id}`, invoice.id, md(invoice)])
         .value(),
-      height: '70%',
       preview: {
         type: 'markdown',
-        style: 'right:70%',
       },
     },
   ]);
