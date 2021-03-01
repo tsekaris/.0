@@ -54,6 +54,19 @@ function newInvoice() {
       ],
       preset: today.getMonth() + 1,
       enter: (value) => {
+        switch (true) {
+          case value <= 3:
+            invoice.trimino = 1;
+            break;
+          case value <= 6:
+            invoice.trimino = 2;
+            break;
+          case value <= 9:
+            invoice.trimino = 3;
+            break;
+          default:
+            invoice.trimino = 4;
+        }
         invoice.date = {};
         invoice.date.year = 2021;
         invoice.date.month = value;
@@ -184,7 +197,7 @@ function newInvoice() {
       type: 'force-enter',
       enter: () => {
         invoice = sh.vim(invoice);
-        console.log(invoice);
+        // console.log(invoice);
         return invoice;
       },
     },
@@ -245,11 +258,13 @@ function editInvoice() {
     {
       type: 'list',
       message: 'Select:',
-      header: 'no|πελάτης',
+      header: 'τρίμηνο|id|πελάτης|ποσό',
       choices: invoicesDb
         .sortBy('id')
-        .map((inv) => [`${inv.id}|${inv.to.id}`, inv, sh.log(inv)])
+        .map((inv) => [`tr${inv.trimino}|${inv.id}|${inv.to.id}|${inv.amount}`, inv, sh.log(inv)])
+        // .map((inv) => [`${inv.id}|tr${inv.trimino}|${inv.to.id}`, inv, sh.log(inv)])
         .value(),
+      exact: true,
       enter: (value) => {
         answers.invoice = value;
         return value;
@@ -426,7 +441,6 @@ function menu() {
   sh.fzf({
     type: 'list',
     message: 'Ενέργεια:',
-    details: 'paok ole',
     header: 'search|ενέργεια',
     choices: [
       ['new invoice|Νέο τιμολόγιο.', newInvoice],

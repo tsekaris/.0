@@ -146,7 +146,7 @@ const sh = {
       mouse = false, // Το touch ή mouse.
       // Στον termux με mouse και preview δεν μπορούμε να δούμε τις παραπάνω ενέργειες.
       // Λύση με tmux.
-      height = '99%', // Ύψος fzf.
+      height = '90%', // Ύψος fzf. Default: 100%
       choices = [], // Επιλογές για list ή list-multi.
       preview = {}, // Δες παρακάτω
       enter = (value) => value, // Όταν πατηθεί enter. value είναι η επιλογή.
@@ -158,7 +158,7 @@ const sh = {
     }
 
     if (preview.style === undefined) {
-      preview.style = 'down:99%';
+      preview.style = 'right:50%'; // default και για το fzf.
     }
     preview.enable = false; // Ορίζεται από το αν το choices έχει preview.
 
@@ -226,6 +226,7 @@ const sh = {
             `${header === '' ? '' : '--header-lines=1'}`, // Ονόματα πεδίων.
             `--query "${preset}"`, // Προεπιλογή εισαγωγής.
             `--height=${height}`, // Ύψος
+            // '--min-height=5',
             `${exact ? '--exact' : ''}`, // Ακριβής αναζήτηση
             `${mouse ? '' : '--no-mouse'}`, // Χρήση mouse ή touch.
             '--tabstop=1', // Το tab έχει μήκος 1 space.
