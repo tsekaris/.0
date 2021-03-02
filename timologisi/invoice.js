@@ -16,112 +16,122 @@ function calculate(db) {
 }
 
 function newInvoice() {
-  let invoice = {};
+  const invoice = {};
 
-  // #date
-  const getDays = (year, month) => {
-    const monthIndex = month - 1; // 0..11
-    const names = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο', 'Κυριακή'];
-    const date = new Date(year, monthIndex, 1);
-    const result = [];
-    while (date.getMonth() === monthIndex) {
-      result.push([`${date.getDate()}|${names[date.getDay()]}`, date.getDate()]);
-      date.setDate(date.getDate() + 1);
+  function id() {
+    // #date
+    function getDays(year, month) {
+      // Η συναρτηση αυτή μας δίνει
+      // τους αριθμούς ημέρας
+      // τις ημέρες (Δευτέρα, Τρίτη κτλ)
+      // για συγκεκριμένο μήνα του χρόνου.
+      const monthIndex = month - 1; // 0..11
+      const names = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο', 'Κυριακή'];
+      const date = new Date(year, monthIndex, 1);
+      const result = [];
+      while (date.getMonth() === monthIndex) {
+        result.push([`${date.getDate()}|${names[date.getDay()]}`, date.getDate()]);
+        date.setDate(date.getDate() + 1);
+      }
+      return result;
     }
-    return result;
-  };
 
-  const today = new Date();
-
-  sh.fzf([
-    {
-      type: 'list',
-      message: 'Μήνας:',
-      header: 'no|μήνας',
-      choices: [
-        ['1|Ιανουάριος', 1],
-        ['2|Φεβρουάριος', 2],
-        ['3|Μάρτιος', 3],
-        ['4|Απρίλιος', 4],
-        ['5|Μάιος', 5],
-        ['6|Ιούνιος', 6],
-        ['7|Ιούλιος', 7],
-        ['8|Αύγουστος', 8],
-        ['9|Σεπτέμβριος', 9],
-        ['10|Οκτώβριος', 10],
-        ['11|Νοέμβριος', 11],
-        ['12|Δεκέμβριος', 12],
-      ],
-      preset: today.getMonth() + 1,
-      enter: (value) => {
-        switch (true) {
-          case value <= 3:
-            invoice.trimino = 1;
-            break;
-          case value <= 6:
-            invoice.trimino = 2;
-            break;
-          case value <= 9:
-            invoice.trimino = 3;
-            break;
-          default:
-            invoice.trimino = 4;
-        }
-        invoice.date = {};
-        invoice.date.year = 2021;
-        invoice.date.month = value;
-        return value;
-      },
-    },
-    () => ({
-      type: 'list',
-      message: 'Μέρα:',
-      header: 'no|ημέρα',
-      choices: getDays(invoice.date.year, invoice.date.month),
-      preset: today.getDate(),
-      enter: (value) => {
-        invoice.date.day = value;
-        return value;
-      },
-    }),
-    {
-      type: 'input-number',
-      message: 'Ώρα:',
-      preset: today.getHours(),
-      enter: (value) => {
-        if (value >= 0 && value < 24) {
-          invoice.date.hour = value;
+    const today = new Date();
+    sh.fzf([
+      {
+        type: 'list',
+        message: 'Μήνας:',
+        header: 'no|μήνας',
+        choices: [
+          ['1|Ιανουάριος', 1],
+          ['2|Φεβρουάριος', 2],
+          ['3|Μάρτιος', 3],
+          ['4|Απρίλιος', 4],
+          ['5|Μάιος', 5],
+          ['6|Ιούνιος', 6],
+          ['7|Ιούλιος', 7],
+          ['8|Αύγουστος', 8],
+          ['9|Σεπτέμβριος', 9],
+          ['10|Οκτώβριος', 10],
+          ['11|Νοέμβριος', 11],
+          ['12|Δεκέμβριος', 12],
+        ],
+        preset: today.getMonth() + 1,
+        enter: (value) => {
+          switch (true) {
+            case value <= 3:
+              invoice.trimino = 1;
+              break;
+            case value <= 6:
+              invoice.trimino = 2;
+              break;
+            case value <= 9:
+              invoice.trimino = 3;
+              break;
+            default:
+              invoice.trimino = 4;
+          }
+          invoice.date = {};
+          invoice.date.year = 2021;
+          invoice.date.month = value;
           return value;
-        }
-        console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
-        return '-retry-';
+        },
       },
-    },
-    {
-      type: 'input-number',
-      message: 'Λεπτό:',
-      preset: today.getMinutes(),
-      enter: (value) => {
-        if (value < 0 || value > 60) {
+      () => ({
+        type: 'list',
+        message: 'Μέρα:',
+        header: 'no|ημέρα',
+        choices: getDays(invoice.date.year, invoice.date.month),
+        preset: today.getDate(),
+        enter: (value) => {
+          invoice.date.day = value;
+          return value;
+        },
+      }),
+      {
+        type: 'input-number',
+        message: 'Ώρα:',
+        preset: today.getHours(),
+        enter: (value) => {
+          if (value >= 0 && value < 24) {
+            invoice.date.hour = value;
+            return value;
+          }
           console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
           return '-retry-';
-        }
-        function twoDigits(val) {
-          return `0${val}`.slice(-2);
-        }
-        invoice.date.minute = value;
-        invoice.id = twoDigits(invoice.date.month)
-          + twoDigits(invoice.date.day)
-          + twoDigits(invoice.date.hour)
-          + twoDigits(invoice.date.minute);
-
-        if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
-          console.log(sh.red('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.'));
-          return '-retry-';
-        }
-        return value;
+        },
       },
-    },
+      {
+        type: 'input-number',
+        message: 'Λεπτό:',
+        preset: today.getMinutes(),
+        enter: (value) => {
+          if (value < 0 || value > 60) {
+            console.log(sh.red('Τιμή εκτός ορίων 0..23.'));
+            return '-retry-';
+          }
+          function twoDigits(val) {
+            return `0${val}`.slice(-2);
+          }
+          invoice.date.minute = value;
+          invoice.id = twoDigits(invoice.date.month)
+            + twoDigits(invoice.date.day)
+            + twoDigits(invoice.date.hour)
+            + twoDigits(invoice.date.minute);
+
+          if (invoicesDb.find({ id: invoice.id }).value() !== undefined) {
+            console.log(sh.red('Υπάρχει τιμολόγιο με την ίδια ημερομηνία και ώρα.'));
+            id();
+          }
+          return value;
+        },
+      },
+    ]);
+  }
+
+  id();
+
+  sh.fzf([
     {
       type: 'list',
       message: 'Πελάτης:',
@@ -196,26 +206,24 @@ function newInvoice() {
     {
       type: 'force-enter',
       enter: () => {
-        invoice = sh.vim(invoice);
-        // console.log(invoice);
-        return invoice;
+        calculate(invoice);
       },
     },
-    {
+    () => ({
       type: 'list',
       message: 'Αποθήκευση;',
+      // details: sh.log(invoice),
       choices: [
-        ['ναι', true],
+        ['ναι', true, sh.log(invoice)],
         ['όχι', false],
       ],
       enter: (value) => {
         if (value) {
-          calculate(invoice);
           invoicesDb.push(invoice).write();
         }
         return value;
       },
-    },
+    }),
   ]);
 }
 
@@ -249,10 +257,9 @@ function stats() {
     + statistics.trimino4.fpa;
   console.log(statistics);
 }
-
 // #edit invoice
 function editInvoice() {
-  const answers = {};
+  let invoice;
 
   sh.fzf([
     {
@@ -266,63 +273,68 @@ function editInvoice() {
         .value(),
       exact: true,
       enter: (value) => {
-        answers.invoice = value;
+        invoice = sh.vim(value);
+        calculate(invoice);
         return value;
       },
     },
-    {
+    () => ({
       type: 'list',
-      message: 'Ενέργεια',
+      message: 'Αποθήκευση;',
       choices: [
-        ['edit', 'edit'],
-        ['delete', 'delete'],
+        ['όχι', false, sh.log(invoice)],
+        ['ναι', true, sh.log(invoice)],
       ],
-      enter: (value) => {
-        answers.action = value;
-        return value;
-      },
-    },
-    () => {
-      switch (answers.action) {
-        case 'edit': {
-          answers.invoiceEdited = sh.vim(answers.invoice);
-          return {
-            type: 'list',
-            message: 'Αποθήκευση;',
-            choices: [
-              ['όχι', false],
-              ['ναι', true],
-            ],
-            enter: (answer) => {
-              if (answer) {
-                invoicesDb.find({ id: answers.invoice.id }).assign(answers.invoiceEdited).write();
-              }
-              return answer;
-            },
-          };
+      enter: (answer) => {
+        if (answer) {
+          invoicesDb.find({ id: invoice.id }).assign(invoice).write();
         }
-        case 'delete':
-          return {
-            type: 'list',
-            message: 'Διαγραφή;',
-            choices: [
-              ['όχι', false],
-              ['ναι', true],
-            ],
-            enter: (answer) => {
-              if (answer) {
-                invoicesDb.remove({ id: answers.invoice.id }).write();
-              }
-              return answer;
-            },
-          };
-        default:
-          return null;
-      }
-    },
+        return answer;
+      },
+    }),
   ]);
 }
 
+// delete invoices
+function deleteInvoices() {
+  let invoices;
+
+  sh.fzf([
+    {
+      type: 'list-multi',
+      message: 'Select:',
+      header: 'τρίμηνο|id|πελάτης|ποσό',
+      choices: invoicesDb
+        .sortBy('id')
+        .map((inv) => [`tr${inv.trimino}|${inv.id}|${inv.to.id}|${inv.amount}`, inv, sh.log(inv)])
+        // .map((inv) => [`${inv.id}|tr${inv.trimino}|${inv.to.id}`, inv, sh.log(inv)])
+        .value(),
+      exact: true,
+      enter: (choices) => {
+        invoices = choices;
+        return choices;
+      },
+    },
+    () => ({
+      type: 'list',
+      message: 'Διαγραφή;',
+      choices: [
+        ['όχι', false, sh.log(invoices)],
+        ['ναι', true, sh.log(invoices)],
+      ],
+      height: '100%',
+      mouse: true,
+      enter: (answer) => {
+        if (answer) {
+          invoices.forEach((invoice) => {
+            invoicesDb.remove({ id: invoice.id }).write();
+          });
+        }
+        return answer;
+      },
+    }),
+  ]);
+}
 // #markdown
 function markdown() {
   function md(invoice) {
@@ -445,6 +457,7 @@ function menu() {
     choices: [
       ['new invoice|Νέο τιμολόγιο.', newInvoice],
       ['edit invoice|Επεξεργασία αποθηκευμένου τιμολογίου.', editInvoice],
+      ['delete invoices|Διαγραφή αποθηκευμένων τιμολογίων.', deleteInvoices],
       ['markdown|Εκτύπωση.', markdown],
       ['statistics|Στατιστικά.', stats],
       ['testing|Για τεστάρισμα κώδικα.', testing],
