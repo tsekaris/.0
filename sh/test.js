@@ -78,10 +78,6 @@ sh.fzf({
   // validation: (value) => (value > 0 && value <= 100) || value === 'paok ole' || value === '',
 
   height: '90%',
-  preview: { type: 'text', style: 'right:50%' },
   enter: () => ({ value: '-retry-', text: sh.red('hello') }),
   esc: () => ({ value: 'paok', text: sh.red('esc for paok') }),
-  end: (answer) => {
-    console.log(answer);
-  },
 });

@@ -196,7 +196,8 @@ const sh = {
               // Προετοιμασία data για fzf.
               // Προσθήκη index (0..n) σαν πρώτο πεδίο.
               let fzfPreviews = '';
-              const lines = '\n\n\n\n\n\n\n\n\n\n';
+              // const lines = '\n'.repeat(100);
+              const lines = '';
               // Για να λυθεί το πρόβλημα των previews με wrap
               let fzfChoices = choices
                 .map((choice, index) => {
